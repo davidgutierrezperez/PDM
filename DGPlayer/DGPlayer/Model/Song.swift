@@ -8,8 +8,8 @@
 import UIKit
 
 struct Song {
-    let name: String
-    let singer: String?
+    let title: String?
+    let artist: String?
     let band: String?
     let image: UIImage?
     
