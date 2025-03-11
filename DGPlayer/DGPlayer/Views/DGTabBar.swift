@@ -45,8 +45,11 @@ class DGTabBar: UITabBarController {
         viewController.tabBarItem = tabBarItem
         viewController.tabBarItem.title = title
         
+        let navController = UINavigationController(rootViewController: viewController)
+        navController.navigationBar.prefersLargeTitles = true
         
-        return UINavigationController(rootViewController: viewController)
+        
+        return navController
     }
 
 }

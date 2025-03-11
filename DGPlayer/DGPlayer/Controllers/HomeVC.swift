@@ -13,6 +13,19 @@ class HomeVC: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        
+        navigationItem.rightBarButtonItem = configureAddButton()
+    }
+    
+    private func configureAddButton() -> UIBarButtonItem {
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(buttonTupped))
+        addButton.tintColor = .systemRed
+        
+        return addButton
+    }
+    
+    @objc func buttonTupped(){
+        print("Boton pulsado")
     }
     
 
