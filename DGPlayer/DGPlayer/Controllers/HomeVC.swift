@@ -9,8 +9,9 @@ import UIKit
 
 class HomeVC: UIViewController {
     
-    private var collectionView: UICollectionView!
+    private var collectionView: DGCollectionView!
     
+    // Código generado por IA
     private let songs: [Song] = [
         Song(title: "Creature Comfort", artist: "nil", band: "Arcade Fire", image: UIImage(named: "cover1")),
         Song(title: "Welcome to Your Life", artist: "nil", band: "Grouplove", image: UIImage(named: "cover2")),
@@ -24,9 +25,13 @@ class HomeVC: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        collectionView = DGCollectionView(songs: songs)
+        
+        view.addSubview(collectionView.collectionView)
+        configureCollectionView()
         
         navigationItem.rightBarButtonItem = configureAddButton()
-        configureCollectionView()
+
     }
     
     private func configureAddButton() -> UIBarButtonItem {
@@ -37,25 +42,14 @@ class HomeVC: UIViewController {
     }
     
     private func configureCollectionView(){
-        let layout = UICollectionViewFlowLayout()
-                layout.scrollDirection = .vertical
-                layout.itemSize = CGSize(width: view.frame.width - 20, height: 60)
-                layout.minimumLineSpacing = 10
+        collectionView.collectionView.translatesAutoresizingMaskIntoConstraints = false
 
-                collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-                collectionView.dataSource = self
-                collectionView.delegate = self
-        collectionView.register(DGSongCell.self, forCellWithReuseIdentifier: DGSongCell.reusableIdentifier)
-
-                view.addSubview(collectionView)
-                collectionView.translatesAutoresizingMaskIntoConstraints = false
-
-                NSLayoutConstraint.activate([
-                    collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-                    collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                    collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                    collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-                ])
+        NSLayoutConstraint.activate([
+            collectionView.collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
     
     @objc func buttonTupped(){
@@ -76,16 +70,3 @@ extension HomeVC: UIDocumentPickerDelegate {
     }
 }
 
-extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DGSongCell.reusableIdentifier, for: indexPath) as! DGSongCell
-        let song = songs[indexPath.item]
-        cell.configure(song:song)
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return songs.count
-    }
-}

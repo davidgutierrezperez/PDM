@@ -41,6 +41,7 @@ class DGSongCell: UICollectionViewCell {
         songBand.translatesAutoresizingMaskIntoConstraints = false
         songImage.translatesAutoresizingMaskIntoConstraints = false
         
+        // 
         NSLayoutConstraint.activate([
                 // Imagen
                 songImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
