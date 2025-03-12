@@ -14,12 +14,12 @@ class HomeVC: UIViewController {
     
     // Código generado por IA
     private var songs: [Song] = [
-        Song(title: "Creature Comfort", artist: "nil", band: "Arcade Fire", image: UIImage(named: "cover1")),
-        Song(title: "Welcome to Your Life", artist: "nil", band: "Grouplove", image: UIImage(named: "cover2")),
-        Song(title: "Ophelia", artist: "nil", band: "The Lumineers", image: UIImage(named: "cover3")),
-        Song(title: "Electric Feel", artist: "nil", band: "MGMT", image: UIImage(named: "cover4")),
-        Song(title: "Why Won't You Make Up Your Mind?", artist: "nil", band: "Tame Impala", image: UIImage(named: "cover5")),
-        Song(title: "Lonely Boy", artist: "nil", band: "The Black Keys", image: UIImage(named: "cover6"))
+        Song(title: "Creature Comfort", artist: "nil", band: "Arcade Fire", image: UIImage(named: "cover1"), audio: nil),
+        Song(title: "Welcome to Your Life", artist: "nil", band: "Grouplove", image: UIImage(named: "cover2"), audio: nil),
+        Song(title: "Ophelia", artist: "nil", band: "The Lumineers", image: UIImage(named: "cover3"), audio: nil),
+        Song(title: "Electric Feel", artist: "nil", band: "MGMT", image: UIImage(named: "cover4"), audio: nil),
+        Song(title: "Why Won't You Make Up Your Mind?", artist: "nil", band: "Tame Impala", image: UIImage(named: "cover5"), audio: nil),
+        Song(title: "Lonely Boy", artist: "nil", band: "The Black Keys", image: UIImage(named: "cover6"), audio: nil)
     ]
 
     override func viewDidLoad() {
@@ -72,23 +72,16 @@ extension HomeVC: UIDocumentPickerDelegate {
         guard let selectedFile = urls.first else { return }
         
         let songTitle = selectedFile.lastPathComponent
-        let songImage = getImageFromAudio(from: selectedFile)
+        let songImage = FileManagerHelper.getImageFromAudioFile(from: selectedFile)
         
-        let song = Song(title: songTitle, artist: nil, band: nil, image: songImage)
+        let song = Song(title: songTitle, artist: nil, band: nil, image: songImage, audio: selectedFile)
+        FileManagerHelper.saveAudioFile(from: selectedFile)
         
         addSongToCollectionView(song: song)
         
     }
     
-    func getImageFromAudio(from url:URL) -> UIImage {
-        let asset = AVURLAsset(url: url)
-        
-        for metada in asset.commonMetadata {
-            if metada.commonKey == .commonKeyArtwork, let data = metada.value as? Data {
-                return UIImage(data: data) ?? UIImage()
-            }
-        }
-        
-        return UIImage()
-    }
+   
+
+    
 }
