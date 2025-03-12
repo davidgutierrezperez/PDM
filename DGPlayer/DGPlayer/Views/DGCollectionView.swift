@@ -43,6 +43,7 @@ class DGCollectionView: UICollectionViewController {
     
     func addSong(song: Song){
         self.songs.append(song)
+        collectionView.reloadData()
     }
 
 

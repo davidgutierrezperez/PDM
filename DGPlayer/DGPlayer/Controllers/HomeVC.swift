@@ -6,13 +6,14 @@
 //
 
 import UIKit
+import AVFoundation
 
 class HomeVC: UIViewController {
     
     private var collectionView: DGCollectionView!
     
     // Código generado por IA
-    private let songs: [Song] = [
+    private var songs: [Song] = [
         Song(title: "Creature Comfort", artist: "nil", band: "Arcade Fire", image: UIImage(named: "cover1")),
         Song(title: "Welcome to Your Life", artist: "nil", band: "Grouplove", image: UIImage(named: "cover2")),
         Song(title: "Ophelia", artist: "nil", band: "The Lumineers", image: UIImage(named: "cover3")),
@@ -32,6 +33,10 @@ class HomeVC: UIViewController {
         
         navigationItem.rightBarButtonItem = configureAddButton()
 
+    }
+    
+    private func addSongToCollectionView(song: Song){
+        collectionView.addSong(song: song)
     }
     
     private func configureAddButton() -> UIBarButtonItem {
@@ -66,7 +71,24 @@ extension HomeVC: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let selectedFile = urls.first else { return }
         
-        print(selectedFile.lastPathComponent)
+        let songTitle = selectedFile.lastPathComponent
+        let songImage = getImageFromAudio(from: selectedFile)
+        
+        let song = Song(title: songTitle, artist: nil, band: nil, image: songImage)
+        
+        addSongToCollectionView(song: song)
+        
+    }
+    
+    func getImageFromAudio(from url:URL) -> UIImage {
+        let asset = AVURLAsset(url: url)
+        
+        for metada in asset.commonMetadata {
+            if metada.commonKey == .commonKeyArtwork, let data = metada.value as? Data {
+                return UIImage(data: data) ?? UIImage()
+            }
+        }
+        
+        return UIImage()
     }
 }
-

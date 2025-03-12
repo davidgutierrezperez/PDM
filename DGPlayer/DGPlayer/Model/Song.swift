@@ -13,4 +13,17 @@ struct Song {
     let band: String?
     let image: UIImage?
     
+    init(){
+        title = "Title"
+        artist = "Artists"
+        band = "Band"
+        image = UIImage()
+    }
+    
+    init(title: String?, artist: String?, band: String?, image: UIImage?) {
+        self.title = title
+        self.artist = artist ?? "Unknown"
+        self.band = band ?? "Unknown"
+        self.image = image
+    }
 }
