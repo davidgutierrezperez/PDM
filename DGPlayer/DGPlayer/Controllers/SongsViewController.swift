@@ -95,6 +95,7 @@ extension SongsViewController: UICollectionViewDelegate {
         let songVC = SongVC(song: song)
         
         songVC.title = song.title
+        
         navigationController?.pushViewController(songVC, animated: true)
     }
 }

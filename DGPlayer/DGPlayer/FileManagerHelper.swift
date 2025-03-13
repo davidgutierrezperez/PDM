@@ -14,6 +14,10 @@ class FileManagerHelper {
     
     private init(){}
     
+    static func getFilePath(from relativePath: String) -> URL? {
+        return FileManagerHelper.getDocumentsDirectory().appendingPathComponent(relativePath)
+   }
+    
     static func getImageFromAudioFile(from url: URL) -> UIImage {
         let audio = AVURLAsset(url: url)
         

@@ -16,6 +16,10 @@ class SongVC: UIViewController {
     private var forwardButton: UIButton!
     private var albumArtImageView: UIImageView!
     private var audioPlayer: AVAudioPlayer?
+    private var timerSong: Timer!
+    private var progressSlider: UISlider!
+    var nextSong: SongVC?
+    var previousSong: SongVC?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,21 +35,66 @@ class SongVC: UIViewController {
     
         super.init(nibName: nil, bundle: nil)
         
-        // Inicializar los botones antes de super.init()
-        self.pauseButton = configureButtonWithSystemNameImage(systemName: "pause.fill", target: self, action: #selector(playSong))
-        self.backwardButton = configureButtonWithSystemNameImage(systemName: "backward.fill", target: self,  action: #selector(playSong))
-        self.forwardButton = configureButtonWithSystemNameImage(systemName: "forward.fill", target: self, action: #selector(playSong))
-
-        // Crear la imagen del álbum
-        self.albumArtImageView = UIImageView(image: song.image ?? UIImage(systemName: "music.note"))
-        self.albumArtImageView.contentMode = .scaleAspectFit
-
+        configureButtons()
+        configureImageSong()
+        configureProgressSlider()
         
         configure()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func playSong(){
+        guard let audioPath = song.audio?.lastPathComponent else { return }
+        let audioURL = FileManagerHelper.getFilePath(from: audioPath)
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: audioURL!)
+            audioPlayer?.play()
+        } catch {
+            print("Error al reproducir la canción: \(error.localizedDescription)")
+        }
+    }
+    
+    @objc private func playPauseSong(){
+        if let player = audioPlayer {
+            if player.isPlaying {
+                player.pause()
+                timerSong?.invalidate()
+                changePauseButtonSymbol(systemName: "play.fill")
+            } else {
+                player.play()
+                startProgressTime()
+                changePauseButtonSymbol(systemName: "pause.fill")
+            }
+        } else {
+            playSong()
+            startProgressTime()
+            changePauseButtonSymbol(systemName: "pause.fill")
+        }
+    }
+    
+    @objc private func sliderChanged(_ sender: UISlider){
+        guard let player = audioPlayer else { return }
+        player.currentTime = TimeInterval(sender.value) * player.duration
+    }
+    
+    @objc private func changeToNextSong(){
+        navigationController?.pushViewController(nextSong!, animated: true)
+    }
+    
+    @objc private func changeToPreviousSong(){
+        navigationController?.pushViewController(previousSong!, animated: true)
+    }
+    
+    private func startProgressTime(){
+        timerSong?.invalidate()
+        timerSong = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            guard let self = self, let player = self.audioPlayer else { return }
+            self.progressSlider.value = Float(player.currentTime / player.duration)
+        }
     }
     
     private func configureButtonWithSystemNameImage(systemName: String, target: Any, action: Selector) -> UIButton {
@@ -55,23 +104,35 @@ class SongVC: UIViewController {
         
         return button
     }
+
+    private func changePauseButtonSymbol(systemName: String){
+        pauseButton.setImage(UIImage(systemName: systemName), for: .normal)
+    }
     
-    @objc private func playSong(){
-        guard let audioPath = song.audio?.lastPathComponent else { return }
-        let audioURL = FileManagerHelper.getDocumentsDirectory().appendingPathComponent(audioPath)
-        
-        print("El path del archivo es: ", audioURL)
-        
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: audioURL)
-            audioPlayer?.play()
-        } catch {
-            print("Error al reproducir la canción: \(error.localizedDescription)")
-        }
+    private func configureProgressSlider(){
+        progressSlider = UISlider()
+        progressSlider.minimumValue = 0
+        progressSlider.maximumValue = 1
+        progressSlider.tintColor = .systemBlue
+        progressSlider.translatesAutoresizingMaskIntoConstraints = false
+        self.progressSlider.addTarget(self, action: #selector(sliderChanged(_:)), for: .valueChanged)
+    }
+    
+    
+    private func configureButtons(){
+        self.pauseButton = configureButtonWithSystemNameImage(systemName: "play.fill", target: self, action: #selector(playPauseSong))
+        self.backwardButton = configureButtonWithSystemNameImage(systemName: "backward.fill", target: self,  action: #selector(changeToPreviousSong))
+        self.forwardButton = configureButtonWithSystemNameImage(systemName: "forward.fill", target: self, action: #selector(changeToNextSong))
+    }
+    
+    private func configureImageSong(){
+        self.albumArtImageView = UIImageView(image: song.image ?? UIImage(systemName: "music.note"))
+        self.albumArtImageView.contentMode = .scaleAspectFit
     }
     
     private func configure(){
         // Agregar subviews
+        view.addSubview(progressSlider)
         view.addSubview(albumArtImageView)
         view.addSubview(backwardButton)
         view.addSubview(pauseButton)
@@ -90,19 +151,26 @@ class SongVC: UIViewController {
             albumArtImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             albumArtImageView.heightAnchor.constraint(equalTo: albumArtImageView.widthAnchor),
 
-            // Botones de control
-            backwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -80),
-            backwardButton.topAnchor.constraint(equalTo: albumArtImageView.bottomAnchor, constant: 40),
+            // Barra de progreso encima de los botones
+            progressSlider.topAnchor.constraint(equalTo: albumArtImageView.bottomAnchor, constant: 20),
+            progressSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            progressSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+            progressSlider.heightAnchor.constraint(equalToConstant: 2), // Pequeña altura para la barra
+
+            // Botones de control debajo de la barra de progreso
+            backwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -100),
+            backwardButton.topAnchor.constraint(equalTo: progressSlider.bottomAnchor, constant: 20),
 
             pauseButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             pauseButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
 
-            forwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 80),
+            forwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 100),
             forwardButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor)
         ])
     }
         
         
 }
+
 
 
