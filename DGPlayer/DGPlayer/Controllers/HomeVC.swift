@@ -11,13 +11,18 @@ import AVFoundation
 class HomeVC: UIViewController {
     
     private var collectionView: DGCollectionView!
+    private var songs: [Song] = []
+    private var filteredSongs : [Song] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
         
-        collectionView = DGCollectionView(songs: FileManagerHelper.loadSongsFromCoreData())
+        songs = FileManagerHelper.loadSongsFromCoreData()
+        filteredSongs = []
+        
+        collectionView = DGCollectionView(songs: self.songs)
         view.addSubview(collectionView.collectionView)
         configureCollectionView()
         
@@ -39,10 +44,16 @@ class HomeVC: UIViewController {
     private func configureSearchController() -> UISearchController {
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search a song"
         
         return searchController
+    }
+    
+    func setSongs(songs: [Song]){
+        collectionView.setSongs(songs: songs)
+        collectionView.collectionView.reloadData()
     }
     
     
@@ -75,16 +86,29 @@ extension HomeVC: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let selectedFile = urls.first else { return }
         
-        FileManagerHelper.handleSelectedAudio(url: selectedFile)
-        reloadCollectionView()
+        if (FileManagerHelper.handleSelectedAudio(url: selectedFile)){
+            let updatedSongs = FileManagerHelper.loadSongsFromCoreData()
+            if let newSong = updatedSongs.last {
+                songs.append(newSong)
+                addSongToCollectionView(song: newSong)
+            }
+        }
     }
     
 }
 
-extension HomeVC: UISearchResultsUpdating {
+extension HomeVC: UISearchResultsUpdating, UISearchBarDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         guard let filter = searchController.searchBar.text, !filter.isEmpty else { return }
         
-        
+        filteredSongs = songs.filter { $0.title?.lowercased().contains(filter.lowercased()) ?? false }
+
+        setSongs(songs: filteredSongs)
+        reloadCollectionView()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        setSongs(songs: songs)
+        reloadCollectionView()
     }
 }

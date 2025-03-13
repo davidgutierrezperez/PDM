@@ -26,14 +26,18 @@ class FileManagerHelper {
         return UIImage()
     }
     
-    static func handleSelectedAudio(url: URL){
+    static func handleSelectedAudio(url: URL) -> Bool {
         if (!checkIfAudioFileExist(from: url)){
-            guard let savedURL = FileManagerHelper.saveAudioFile(from: url) else { return }
+            guard let savedURL = FileManagerHelper.saveAudioFile(from: url) else { return false }
             
             let image = FileManagerHelper.getImageFromAudioFile(from: savedURL)
             
             saveSongToCoreData(title: savedURL.lastPathComponent, artist: "", band: "", image: image, audioPath: savedURL)
+            
+            return true
         }
+        
+        return false
     }
 
     
