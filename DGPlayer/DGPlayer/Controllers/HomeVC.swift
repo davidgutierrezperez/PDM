@@ -8,16 +8,13 @@
 import UIKit
 import AVFoundation
 
-class HomeVC: UIViewController {
-    
-    private var collectionView: DGCollectionView!
-    private var songs: [Song] = []
-    private var filteredSongs : [Song] = []
-    
+class HomeVC: SongsViewController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        navigationItem.hidesSearchBarWhenScrolling = false
         
         songs = FileManagerHelper.loadSongsFromCoreData()
         filteredSongs = []
@@ -27,10 +24,10 @@ class HomeVC: UIViewController {
         configureCollectionView()
         
         navigationItem.rightBarButtonItem = configureAddButton()
-        navigationItem.searchController = configureSearchController()
     }
     
     private func addSongToCollectionView(song: Song){
+        songs.append(song)
         collectionView.addSong(song: song)
     }
     
@@ -51,28 +48,8 @@ class HomeVC: UIViewController {
         return searchController
     }
     
-    func setSongs(songs: [Song]){
-        collectionView.setSongs(songs: songs)
-        collectionView.collectionView.reloadData()
-    }
     
-    
-    func reloadCollectionView(){
-        collectionView.collectionView.reloadData()
-    }
-    
-    private func configureCollectionView(){
-        collectionView.collectionView.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            collectionView.collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
-    
-    @objc func buttonTupped(){
+     @objc func buttonTupped(){
         let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.mp3])
         documentPicker.delegate = self
         
@@ -89,26 +66,9 @@ extension HomeVC: UIDocumentPickerDelegate {
         if (FileManagerHelper.handleSelectedAudio(url: selectedFile)){
             let updatedSongs = FileManagerHelper.loadSongsFromCoreData()
             if let newSong = updatedSongs.last {
-                songs.append(newSong)
                 addSongToCollectionView(song: newSong)
             }
         }
     }
     
-}
-
-extension HomeVC: UISearchResultsUpdating, UISearchBarDelegate {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let filter = searchController.searchBar.text, !filter.isEmpty else { return }
-        
-        filteredSongs = songs.filter { $0.title?.lowercased().contains(filter.lowercased()) ?? false }
-
-        setSongs(songs: filteredSongs)
-        reloadCollectionView()
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        setSongs(songs: songs)
-        reloadCollectionView()
-    }
 }

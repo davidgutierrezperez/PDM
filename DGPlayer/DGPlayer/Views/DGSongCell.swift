@@ -25,47 +25,52 @@ class DGSongCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(song: Song){
+    
+    func configure(song: Song) {
         songTitle.text = song.title
-        songArtist.text = song.artist
-        songBand.text = song.band
-        songImage.image = song.image ?? UIImage(systemName: "music.note")
+        songImage.image = song.image
         
-        contentView.addSubview(songTitle)
-        contentView.addSubview(songArtist)
-        contentView.addSubview(songBand)
-        contentView.addSubview(songImage)
-        
-        songTitle.translatesAutoresizingMaskIntoConstraints = false
-        songArtist.translatesAutoresizingMaskIntoConstraints = false
-        songBand.translatesAutoresizingMaskIntoConstraints = false
-        songImage.translatesAutoresizingMaskIntoConstraints = false
-        
-        // 
-        NSLayoutConstraint.activate([
-                // Imagen
-                songImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                songImage.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-                songImage.widthAnchor.constraint(equalToConstant: 50),
-                songImage.heightAnchor.constraint(equalToConstant: 50),
-                    
-                // Título de la canción
-                songTitle.leadingAnchor.constraint(equalTo: songImage.trailingAnchor, constant: 10),
-                songTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-                songTitle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+        if (songImage.image == nil){
+            songImage.image = UIImage(systemName: "music.note")
+        }
 
-                // Artista
-                songArtist.leadingAnchor.constraint(equalTo: songTitle.leadingAnchor),
-                songArtist.topAnchor.constraint(equalTo: songTitle.bottomAnchor, constant: 2),
-                songArtist.trailingAnchor.constraint(equalTo: songTitle.trailingAnchor),
-                    
-                // Banda (si no hay artista, mostrar esto)
-                songBand.leadingAnchor.constraint(equalTo: songTitle.leadingAnchor),
-                songBand.topAnchor.constraint(equalTo: songArtist.bottomAnchor, constant: 2),
-                songBand.trailingAnchor.constraint(equalTo: songTitle.trailingAnchor),
-                songBand.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
-            ])
+        // 🔹 Ajustar imagen para tamaño uniforme
+        songImage.contentMode = .scaleAspectFill
+        songImage.clipsToBounds = true
+        songImage.layer.cornerRadius = 6
+        songImage.layer.masksToBounds = true
+
+        // Configuración de estilos
+        songTitle.font = UIFont.boldSystemFont(ofSize: 16)
+
+        // Fondo gris claro con bordes redondeados
+        contentView.backgroundColor = UIColor.systemGray6
+        contentView.layer.cornerRadius = 10
+        contentView.layer.masksToBounds = true
+
+        // Agregar subviews
+        contentView.addSubview(songImage)
+        contentView.addSubview(songTitle)
+
+        // Desactivar AutoResizingMask
+        songImage.translatesAutoresizingMaskIntoConstraints = false
+        songTitle.translatesAutoresizingMaskIntoConstraints = false
+
+        // Constraints
+        NSLayoutConstraint.activate([
+            // 🔹 Imagen con tamaño uniforme
+            songImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            songImage.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            songImage.widthAnchor.constraint(equalToConstant: 35),  // 🔥 Tamaño más pequeño
+            songImage.heightAnchor.constraint(equalToConstant: 35),
+
+            // 🔹 Título de la canción (centrado verticalmente)
+            songTitle.leadingAnchor.constraint(equalTo: songImage.trailingAnchor, constant: 10),
+            songTitle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            songTitle.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -12)
+        ])
     }
+
     
 
     

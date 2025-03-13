@@ -1,0 +1,100 @@
+//
+//  SongsViewController.swift
+//  DGPlayer
+//
+//  Created by David Gutierrez on 13/3/25.
+//
+
+import UIKit
+
+class SongsViewController: UIViewController {
+    
+    var collectionView: DGCollectionView!
+    var songs: [Song] = []
+    var filteredSongs : [Song] = []
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        view.backgroundColor = .systemBackground
+
+        navigationItem.searchController = configureSearchController()
+    }
+    
+    private func configureSearchController() -> UISearchController {
+        let searchController = UISearchController()
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search a song"
+        
+        return searchController
+    }
+    
+    func configureCollectionView(){
+        collectionView.collectionView.delegate = self
+        collectionView.collectionView.collectionViewLayout.collectionView?.delegate = self
+        collectionView.collectionView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            collectionView.collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            collectionView.collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            collectionView.collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    func setSongs(songs: [Song]){
+        collectionView.setSongs(songs: songs)
+        collectionView.collectionView.reloadData()
+    }
+    
+    
+    func reloadCollectionView(){
+        collectionView.collectionView.reloadData()
+    }
+    
+
+}
+
+extension SongsViewController: UISearchResultsUpdating, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let filter = searchController.searchBar.text, !filter.isEmpty else { return }
+        
+        if (filter.isEmpty){
+            setSongs(songs: songs)
+        } else {
+            filteredSongs = songs.filter { $0.title?.lowercased().contains(filter.lowercased()) ?? false }
+
+            setSongs(songs: filteredSongs)
+        }
+        reloadCollectionView()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        setSongs(songs: songs)
+        reloadCollectionView()
+    }
+}
+
+extension SongsViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let song: Song
+        
+        if let searchText = navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
+            song = filteredSongs[indexPath.item]
+        } else {
+            song = songs[indexPath.item]
+        }
+        let songVC = SongVC(song: song)
+        
+        songVC.title = song.title
+        navigationController?.pushViewController(songVC, animated: true)
+    }
+}
+
+extension SongsViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 50)
+    }
+}
