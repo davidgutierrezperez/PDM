@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 struct Song {
     let title: String?
@@ -30,3 +31,5 @@ struct Song {
         self.audio = audio
     }
 }
+
+

@@ -34,6 +34,7 @@ class DGCollectionView: UICollectionViewController {
         
         self.collectionView!.register(DGSongCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         
+        
     }
     
     func setSongs(songs: [Song]){
@@ -45,6 +46,7 @@ class DGCollectionView: UICollectionViewController {
         self.songs.append(song)
         collectionView.reloadData()
     }
+    
 
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {

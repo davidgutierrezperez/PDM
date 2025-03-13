@@ -12,27 +12,17 @@ class HomeVC: UIViewController {
     
     private var collectionView: DGCollectionView!
     
-    // Código generado por IA
-    private var songs: [Song] = [
-        Song(title: "Creature Comfort", artist: "nil", band: "Arcade Fire", image: UIImage(named: "cover1"), audio: nil),
-        Song(title: "Welcome to Your Life", artist: "nil", band: "Grouplove", image: UIImage(named: "cover2"), audio: nil),
-        Song(title: "Ophelia", artist: "nil", band: "The Lumineers", image: UIImage(named: "cover3"), audio: nil),
-        Song(title: "Electric Feel", artist: "nil", band: "MGMT", image: UIImage(named: "cover4"), audio: nil),
-        Song(title: "Why Won't You Make Up Your Mind?", artist: "nil", band: "Tame Impala", image: UIImage(named: "cover5"), audio: nil),
-        Song(title: "Lonely Boy", artist: "nil", band: "The Black Keys", image: UIImage(named: "cover6"), audio: nil)
-    ]
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        collectionView = DGCollectionView(songs: songs)
         
+        collectionView = DGCollectionView(songs: FileManagerHelper.loadSongsFromCoreData())
         view.addSubview(collectionView.collectionView)
         configureCollectionView()
         
         navigationItem.rightBarButtonItem = configureAddButton()
-
+        navigationItem.searchController = configureSearchController()
     }
     
     private func addSongToCollectionView(song: Song){
@@ -44,6 +34,20 @@ class HomeVC: UIViewController {
         addButton.tintColor = .systemRed
         
         return addButton
+    }
+    
+    private func configureSearchController() -> UISearchController {
+        let searchController = UISearchController()
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search a song"
+        
+        return searchController
+    }
+    
+    
+    func reloadCollectionView(){
+        collectionView.collectionView.reloadData()
     }
     
     private func configureCollectionView(){
@@ -71,17 +75,16 @@ extension HomeVC: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let selectedFile = urls.first else { return }
         
-        let songTitle = selectedFile.lastPathComponent
-        let songImage = FileManagerHelper.getImageFromAudioFile(from: selectedFile)
-        
-        let song = Song(title: songTitle, artist: nil, band: nil, image: songImage, audio: selectedFile)
-        FileManagerHelper.saveAudioFile(from: selectedFile)
-        
-        addSongToCollectionView(song: song)
-        
+        FileManagerHelper.handleSelectedAudio(url: selectedFile)
+        reloadCollectionView()
     }
     
-   
+}
 
-    
+extension HomeVC: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let filter = searchController.searchBar.text, !filter.isEmpty else { return }
+        
+        
+    }
 }
