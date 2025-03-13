@@ -12,11 +12,17 @@ class SongsViewController: UIViewController {
     var collectionView: DGCollectionView!
     var songs: [Song] = []
     var filteredSongs : [Song] = []
+    let scrollView = UIScrollView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.addSubview(scrollView)
+        scrollView.isScrollEnabled = true
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        
         view.backgroundColor = .systemBackground
+        navigationItem.hidesSearchBarWhenScrolling = false
 
         navigationItem.searchController = configureSearchController()
     }

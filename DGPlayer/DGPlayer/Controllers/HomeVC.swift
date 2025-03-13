@@ -12,9 +12,6 @@ class HomeVC: SongsViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .systemBackground
-        navigationItem.hidesSearchBarWhenScrolling = false
         
         songs = FileManagerHelper.loadSongsFromCoreData()
         filteredSongs = []

@@ -19,6 +19,7 @@ class DGTabBar: UITabBarController {
     private func configure(){
         tabBar.backgroundColor = .systemFill
         tabBar.tintColor = .systemRed
+        tabBar.isTranslucent = false
         
         let homeVC = configureNavigationController(viewController: HomeVC(),
                                                    title: "Home",

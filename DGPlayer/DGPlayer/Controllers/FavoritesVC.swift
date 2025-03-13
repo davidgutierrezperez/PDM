@@ -7,12 +7,10 @@
 
 import UIKit
 
-class FavoritesVC: UIViewController {
+class FavoritesVC: SongsViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .systemBackground
     
     }
     
