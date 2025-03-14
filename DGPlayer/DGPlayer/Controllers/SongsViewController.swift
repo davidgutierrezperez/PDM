@@ -85,16 +85,17 @@ extension SongsViewController: UISearchResultsUpdating, UISearchBarDelegate {
 
 extension SongsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let song: Song
+        var songsCollection: [Song] = []
+        var indexCurrentSong: Int
         
         if let searchText = navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
-            song = filteredSongs[indexPath.item]
+            songsCollection.append(filteredSongs[indexPath.item])
+            indexCurrentSong = 0
         } else {
-            song = songs[indexPath.item]
+            songsCollection = songs
+            indexCurrentSong = indexPath.item
         }
-        let songVC = SongVC(song: song)
-        
-        songVC.title = song.title
+        let songVC = SongVC(indexSelectedSong: indexCurrentSong, songs: songsCollection)
         
         navigationController?.pushViewController(songVC, animated: true)
     }

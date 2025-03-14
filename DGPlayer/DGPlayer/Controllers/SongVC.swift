@@ -11,6 +11,8 @@ import AVFoundation
 class SongVC: UIViewController {
     
     private var song: Song
+    private var songs: [Song]
+    private var indexSelectedSong: Int
     private var pauseButton: UIButton!
     private var backwardButton: UIButton!
     private var forwardButton: UIButton!
@@ -18,8 +20,6 @@ class SongVC: UIViewController {
     private var audioPlayer: AVAudioPlayer?
     private var timerSong: Timer!
     private var progressSlider: UISlider!
-    var nextSong: SongVC?
-    var previousSong: SongVC?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,10 +30,14 @@ class SongVC: UIViewController {
         navigationController?.navigationItem.backButtonTitle = "Home"
     }
     
-    init(song: Song) {
-        self.song = song
+    init(indexSelectedSong: Int, songs: [Song]) {
+        self.indexSelectedSong = indexSelectedSong
+        self.songs = songs
+        self.song = self.songs[self.indexSelectedSong]
     
         super.init(nibName: nil, bundle: nil)
+        
+        title = song.title
         
         configureButtons()
         configureImageSong()
@@ -46,16 +50,20 @@ class SongVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func playSong(){
+    private func activateAudioPlayer(){
         guard let audioPath = song.audio?.lastPathComponent else { return }
         let audioURL = FileManagerHelper.getFilePath(from: audioPath)
         
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: audioURL!)
-            audioPlayer?.play()
         } catch {
-            print("Error al reproducir la canción: \(error.localizedDescription)")
+            print("No se pudo activar el reproductor de audio")
         }
+    }
+    
+    @objc private func playSong(){
+        activateAudioPlayer()
+        audioPlayer?.play()
     }
     
     @objc private func playPauseSong(){
@@ -76,18 +84,21 @@ class SongVC: UIViewController {
         }
     }
     
+    @objc private func changeToNextSong(){
+        indexSelectedSong = (indexSelectedSong == songs.count - 1) ? 0 : (indexSelectedSong + 1)
+        updateView(with: songs[indexSelectedSong])
+    }
+    
+    @objc private func changeToPreviousSong(){
+        indexSelectedSong = (indexSelectedSong == 0) ? (songs.count - 1) : (indexSelectedSong - 1)
+        updateView(with: songs[indexSelectedSong])
+    }
+    
     @objc private func sliderChanged(_ sender: UISlider){
         guard let player = audioPlayer else { return }
         player.currentTime = TimeInterval(sender.value) * player.duration
     }
     
-    @objc private func changeToNextSong(){
-        navigationController?.pushViewController(nextSong!, animated: true)
-    }
-    
-    @objc private func changeToPreviousSong(){
-        navigationController?.pushViewController(previousSong!, animated: true)
-    }
     
     private func startProgressTime(){
         timerSong?.invalidate()
@@ -130,6 +141,11 @@ class SongVC: UIViewController {
         self.albumArtImageView.contentMode = .scaleAspectFit
     }
     
+    private func disableBackAndForwardButtons(){
+        backwardButton.isEnabled = false
+        forwardButton.isEnabled = false
+    }
+    
     private func configure(){
         // Agregar subviews
         view.addSubview(progressSlider)
@@ -137,6 +153,10 @@ class SongVC: UIViewController {
         view.addSubview(backwardButton)
         view.addSubview(pauseButton)
         view.addSubview(forwardButton)
+        
+        if (songs.count == 1){
+            disableBackAndForwardButtons()
+        }
 
         // Usamos Auto Layout para posicionar los elementos
         albumArtImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -167,6 +187,19 @@ class SongVC: UIViewController {
             forwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 100),
             forwardButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor)
         ])
+    }
+    
+    private func updateView(with song: Song){
+        self.song = song
+        
+        title = song.title
+        audioPlayer?.stop()
+        albumArtImageView.image = song.image ?? UIImage(systemName: "music.note")
+        activateAudioPlayer()
+        changePauseButtonSymbol(systemName: "play.fill")
+        
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
     }
         
         
