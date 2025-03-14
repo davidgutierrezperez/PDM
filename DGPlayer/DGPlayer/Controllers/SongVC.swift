@@ -56,6 +56,7 @@ class SongVC: UIViewController {
         
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: audioURL!)
+            audioPlayer?.delegate = self
         } catch {
             print("No se pudo activar el reproductor de audio")
         }
@@ -75,7 +76,9 @@ class SongVC: UIViewController {
             } else {
                 player.play()
                 startProgressTime()
-                changePauseButtonSymbol(systemName: "pause.fill")
+                
+                let newIcon = (player.currentTime == player.duration) ? "play.fill" : "pause.fill"
+                changePauseButtonSymbol(systemName: newIcon)
             }
         } else {
             playSong()
@@ -102,7 +105,7 @@ class SongVC: UIViewController {
     
     private func startProgressTime(){
         timerSong?.invalidate()
-        timerSong = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+        timerSong = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self, let player = self.audioPlayer else { return }
             self.progressSlider.value = Float(player.currentTime / player.duration)
         }
@@ -203,6 +206,12 @@ class SongVC: UIViewController {
     }
         
         
+}
+
+extension SongVC: AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        changePauseButtonSymbol(systemName: "play.fill")
+    }
 }
 
 
