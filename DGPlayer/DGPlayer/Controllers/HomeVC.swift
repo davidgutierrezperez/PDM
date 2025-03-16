@@ -21,6 +21,7 @@ class HomeVC: SongsViewController {
         configureCollectionView()
         
         navigationItem.rightBarButtonItem = configureAddButton()
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     private func addSongToCollectionView(song: Song){

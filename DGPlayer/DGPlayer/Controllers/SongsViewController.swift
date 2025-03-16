@@ -96,6 +96,7 @@ extension SongsViewController: UICollectionViewDelegate {
             indexCurrentSong = indexPath.item
         }
         let songVC = SongVC(indexSelectedSong: indexCurrentSong, songs: songsCollection)
+        songVC.navigationController?.navigationBar.prefersLargeTitles = false
         
         navigationController?.pushViewController(songVC, animated: true)
     }
