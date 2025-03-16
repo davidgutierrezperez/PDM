@@ -26,7 +26,7 @@ class SongVC: UIViewController, DGSongControlDelegate {
 
         view.backgroundColor = .systemBackground
         
-        navigationController?.navigationBar.prefersLargeTitles = false
+        self.navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.navigationItem.backButtonTitle = "Home"
     }
     
@@ -44,6 +44,7 @@ class SongVC: UIViewController, DGSongControlDelegate {
         
         resetTimers()
         configureButtons()
+        configureVolumeButtons()
         configureImageSong()
         configureProgressSlider()
         configureVolumeSlider()
@@ -113,6 +114,14 @@ class SongVC: UIViewController, DGSongControlDelegate {
         guard let player = audioPlayer else { return }
         
         player.volume = songControls.volumeSlider.value
+        songControls.changeVolumeIcon()
+    }
+    
+    @objc private func noVolumeSong(){
+        guard let player = audioPlayer else { return }
+        
+        player.volume = 0
+        songControls.volumeSlider.value = 0
     }
     
     func progressSliderChanged(to value: Float) {}
@@ -134,6 +143,22 @@ class SongVC: UIViewController, DGSongControlDelegate {
 
     private func changePauseButtonSymbol(systemName: String){
         songControls.pauseButton.setImage(UIImage(systemName: systemName), for: .normal)
+    }
+    
+    @objc private func progressiveVolumeButton(){
+        guard let player = audioPlayer else { return }
+        
+        let newVolume = (player.volume + 0.33 < 1) ? player.volume + 0.33 : 1
+        player.volume = newVolume
+        songControls.volumeSlider.value = newVolume
+        songControls.changeVolumeIcon()
+        
+    
+    }
+    
+    private func configureVolumeButtons(){
+        songControls.noVolumeButton.addTarget(self, action: #selector(noVolumeSong), for: .touchUpInside)
+        songControls.progressiveVolumeButton.addTarget(self, action: #selector(progressiveVolumeButton), for: .touchUpInside)
     }
     
     private func configureProgressSlider(){
