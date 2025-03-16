@@ -9,6 +9,7 @@ class DGSongControl: UIViewController {
     var songCurrentLabel = UILabel()
     var songDurationLabel = UILabel()
     var progressSlider = UISlider()
+    var volumeSlider = UISlider()
     var pauseButton = UIButton()
     var backwardButton = UIButton()
     var forwardButton = UIButton()
@@ -63,6 +64,7 @@ class DGSongControl: UIViewController {
         
         progressSlider.translatesAutoresizingMaskIntoConstraints = false
     }
+    
     
     @objc private func sliderChanged(_ sender: UISlider) {
         delegate?.progressSliderChanged(to: sender.value)

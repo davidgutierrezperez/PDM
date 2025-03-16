@@ -109,7 +109,14 @@ class SongVC: UIViewController, DGSongControlDelegate {
         songControls.songCurrentLabel.text = formatTime(time: newTime)
     }
     
+    @objc private func volumeSliderChanged(_ send: UISlider){
+        guard let player = audioPlayer else { return }
+        
+        player.volume = songControls.volumeSlider.value
+    }
+    
     func progressSliderChanged(to value: Float) {}
+    func volumeSliderChanged(to value: Float){}
     
     
     private func startProgressTime(){
@@ -134,6 +141,10 @@ class SongVC: UIViewController, DGSongControlDelegate {
         songControls.progressSlider.isContinuous = true
         
         songControls.progressSlider.addTarget(self, action: #selector(sliderChanged(_:)), for: .valueChanged)
+    }
+    
+    private func configureVolumeSlider(){
+        
     }
     
     private func configureButtons(){
