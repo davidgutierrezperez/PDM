@@ -26,8 +26,6 @@ class SongVC: UIViewController, DGSongControlDelegate {
 
         view.backgroundColor = .systemBackground
         
-        configureProgressSlider()
-        
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.navigationItem.backButtonTitle = "Home"
     }
@@ -186,6 +184,7 @@ class SongVC: UIViewController, DGSongControlDelegate {
 
         songControls.songCurrentLabel.text = "0:00"
         songControls.songDurationLabel.text = formatTime(time: player.duration)
+        songControls.volumeSlider.value = 0.5
 
         // 🔹 Iniciar el timer solo si el audio tiene duración válida
         if player.duration > 0 {
