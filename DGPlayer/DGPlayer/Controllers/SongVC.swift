@@ -48,6 +48,7 @@ class SongVC: UIViewController, DGSongControlDelegate {
         configureButtons()
         configureImageSong()
         configureProgressSlider()
+        configureVolumeSlider()
         configure()
     }
     
@@ -63,6 +64,7 @@ class SongVC: UIViewController, DGSongControlDelegate {
             audioPlayer = try AVAudioPlayer(contentsOf: audioURL!)
             songControls.songDurationTimer = audioPlayer?.duration ?? 0.0
             audioPlayer?.delegate = self
+            audioPlayer?.volume = 0.3
         } catch {
             print("No se pudo activar el reproductor de audio")
         }
@@ -144,7 +146,10 @@ class SongVC: UIViewController, DGSongControlDelegate {
     }
     
     private func configureVolumeSlider(){
+        songControls.volumeSlider.isUserInteractionEnabled = true
+        songControls.volumeSlider.isContinuous = true
         
+        songControls.volumeSlider.addTarget(self, action: #selector(volumeSliderChanged(_:)), for: .valueChanged)
     }
     
     private func configureButtons(){

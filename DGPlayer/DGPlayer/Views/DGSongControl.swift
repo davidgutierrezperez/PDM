@@ -2,6 +2,8 @@ import UIKit
 
 protocol DGSongControlDelegate: AnyObject {
     func progressSliderChanged(to value: Float)
+    
+    func volumeSliderChanged(to value: Float)
 }
 
 class DGSongControl: UIViewController {
@@ -27,6 +29,7 @@ class DGSongControl: UIViewController {
         configureButtons()
         configureSongLabels()
         configureSlider()
+        configureVolumeSlider()
         configure()
     }
     
@@ -55,19 +58,43 @@ class DGSongControl: UIViewController {
         forwardButton.translatesAutoresizingMaskIntoConstraints = false
     }
     
+    private func configureSliderByDefault() -> UISlider {
+        let slider = UISlider()
+        
+        slider.minimumValue = 0
+        slider.maximumValue = 1
+        slider.tintColor = .systemBlue
+        slider.isContinuous = true
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        
+        return slider
+    }
+    
     private func configureSlider() {
         progressSlider.minimumValue = 0
         progressSlider.maximumValue = 1
         progressSlider.tintColor = .systemBlue
-        progressSlider.isContinuous = true  // 🔹 Permite actualización fluida
-        progressSlider.addTarget(self, action: #selector(sliderChanged(_:)), for: .valueChanged)
-        
+        progressSlider.isContinuous = true
         progressSlider.translatesAutoresizingMaskIntoConstraints = false
+        progressSlider.addTarget(self, action: #selector(sliderChanged(_:)), for: .valueChanged)
     }
     
+    private func configureVolumeSlider(){
+        volumeSlider.minimumValue = 0
+        volumeSlider.maximumValue = 1
+        volumeSlider.value = 0.5
+        volumeSlider.tintColor = .systemBlue
+        volumeSlider.isContinuous = true
+        volumeSlider.translatesAutoresizingMaskIntoConstraints = false
+        volumeSlider.addTarget(self, action: #selector(volumeSliderChanged(_:)), for: .valueChanged)
+    }
     
     @objc private func sliderChanged(_ sender: UISlider) {
         delegate?.progressSliderChanged(to: sender.value)
+    }
+    
+    @objc private func volumeSliderChanged(_ sender: UISlider){
+        delegate?.volumeSliderChanged(to: sender.value)
     }
     
     private func formatTime(time: TimeInterval) -> String {
@@ -83,6 +110,7 @@ class DGSongControl: UIViewController {
         view.addSubview(pauseButton)
         view.addSubview(backwardButton)
         view.addSubview(forwardButton)
+        view.addSubview(volumeSlider)
         
         NSLayoutConstraint.activate([
             // 🔹 Barra de progreso
@@ -108,7 +136,12 @@ class DGSongControl: UIViewController {
             pauseButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
 
             forwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 100),
-            forwardButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor)
+            forwardButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
+            
+            volumeSlider.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                volumeSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+                volumeSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+                volumeSlider.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
     }
 }
