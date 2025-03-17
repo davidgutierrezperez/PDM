@@ -8,7 +8,7 @@
 import UIKit
 import AVFoundation
 
-class HomeVC: SongsViewController {
+class HomeVC: SongsVC {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,17 +16,17 @@ class HomeVC: SongsViewController {
         songs = FileManagerHelper.loadSongsFromCoreData()
         filteredSongs = []
         
-        collectionView = DGCollectionView(songs: self.songs)
-        view.addSubview(collectionView.tableView)
-        configureCollectionView()
+        tableView = DGTableView(songs: self.songs)
+        view.addSubview(tableView.tableView)
+        configureTableView()
         
         navigationItem.rightBarButtonItem = configureAddButton()
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
-    private func addSongToCollectionView(song: Song){
+    private func addSongToTableView(song: Song){
         songs.append(song)
-        collectionView.addSong(song: song)
+        tableView.addSong(song: song)
     }
     
     private func configureAddButton() -> UIBarButtonItem {
@@ -64,7 +64,7 @@ extension HomeVC: UIDocumentPickerDelegate {
         if (FileManagerHelper.handleSelectedAudio(url: selectedFile)){
             let updatedSongs = FileManagerHelper.loadSongsFromCoreData()
             if let newSong = updatedSongs.last {
-                addSongToCollectionView(song: newSong)
+                addSongToTableView(song: newSong)
             }
         }
     }

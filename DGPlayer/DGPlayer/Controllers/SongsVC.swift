@@ -7,9 +7,9 @@
 
 import UIKit
 
-class SongsViewController: UIViewController {
+class SongsVC: UIViewController {
     
-    var collectionView: DGCollectionView!
+    var tableView: DGTableView!
     var songs: [Song] = []
     var filteredSongs : [Song] = []
     let scrollView = UIScrollView()
@@ -37,32 +37,32 @@ class SongsViewController: UIViewController {
         return searchController
     }
     
-    func configureCollectionView(){
-        collectionView.tableView.delegate = self
-        collectionView.tableView.translatesAutoresizingMaskIntoConstraints = false
+    func configureTableView(){
+        tableView.tableView.delegate = self
+        tableView.tableView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            collectionView.tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            collectionView.tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            collectionView.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            tableView.tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            tableView.tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            tableView.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
     func setSongs(songs: [Song]){
-        collectionView.setSongs(songs: songs)
-        collectionView.tableView.reloadData()
+        tableView.setSongs(songs: songs)
+        tableView.tableView.reloadData()
     }
     
     
     func reloadCollectionView(){
-        collectionView.tableView.reloadData()
+        tableView.tableView.reloadData()
     }
     
 
 }
 
-extension SongsViewController: UISearchResultsUpdating, UISearchBarDelegate {
+extension SongsVC: UISearchResultsUpdating, UISearchBarDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         guard let filter = searchController.searchBar.text, !filter.isEmpty else { return }
         
@@ -82,7 +82,7 @@ extension SongsViewController: UISearchResultsUpdating, UISearchBarDelegate {
     }
 }
 
-extension SongsViewController: UITableViewDelegate {
+extension SongsVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var songsCollection: [Song] = []
@@ -96,7 +96,7 @@ extension SongsViewController: UITableViewDelegate {
             indexCurrentSong = indexPath.item
         }
         
-        let songVC = SongVC(indexSelectedSong: indexCurrentSong, songs: songsCollection)
+        let songVC = SongPlayerVC(indexSelectedSong: indexCurrentSong, songs: songsCollection)
         songVC.navigationController?.navigationBar.prefersLargeTitles = false
         
         navigationController?.pushViewController(songVC, animated: true)
@@ -105,7 +105,7 @@ extension SongsViewController: UITableViewDelegate {
 
 }
 
-extension SongsViewController: UICollectionViewDelegateFlowLayout {
+extension SongsVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 50)
     }

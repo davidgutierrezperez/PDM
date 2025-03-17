@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FavoritesVC: SongsViewController {
+class FavoritesVC: SongsVC {
 
     override func viewDidLoad() {
         super.viewDidLoad()

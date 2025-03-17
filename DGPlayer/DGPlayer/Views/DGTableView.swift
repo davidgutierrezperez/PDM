@@ -1,5 +1,5 @@
 //
-//  DGCollectionView.swift
+//  DGTableView.swift
 //  DGPlayer
 //
 //  Created by David Gutierrez on 12/3/25.
@@ -9,7 +9,7 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
-class DGCollectionView: UITableViewController {
+class DGTableView: UITableViewController {
     
     private var songs : [Song] = []
 

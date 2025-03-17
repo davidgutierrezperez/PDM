@@ -1,5 +1,5 @@
 //
-//  SongVC.swift
+//  SongPlayerVC.swift
 //  DGPlayer
 //
 //  Created by David Gutierrez on 13/3/25.
@@ -8,7 +8,7 @@
 import UIKit
 import AVFoundation
 
-class SongVC: UIViewController, DGSongControlDelegate {
+class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     private var song: Song
     private var songs: [Song]
@@ -259,7 +259,7 @@ class SongVC: UIViewController, DGSongControlDelegate {
     }
 }
 
-extension SongVC: AVAudioPlayerDelegate {
+extension SongPlayerVC: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         changePauseButtonSymbol(systemName: "play.fill")
     }
