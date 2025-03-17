@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DGSongCell: UICollectionViewCell {
+class DGSongCell: UITableViewCell {
     
     static let reusableIdentifier = "DGSongCell"
     
@@ -17,8 +17,10 @@ class DGSongCell: UICollectionViewCell {
     private let songImage = UIImageView()
 
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        selectionStyle = .none
     }
     
     required init?(coder: NSCoder) {
@@ -26,16 +28,18 @@ class DGSongCell: UICollectionViewCell {
     }
     
     
+    
     func configure(song: Song) {
         songTitle.text = song.title
         songImage.image = song.image
+        songImage.contentMode = .scaleAspectFill
         
         if (songImage.image == nil){
             songImage.image = UIImage(systemName: "music.note")
+            songImage.contentMode = .scaleAspectFit
         }
 
-        // 🔹 Ajustar imagen para tamaño uniforme
-        songImage.contentMode = .scaleAspectFill
+        // Ajustar imagen para tamaño uniforme
         songImage.clipsToBounds = true
         songImage.layer.cornerRadius = 6
         songImage.layer.masksToBounds = true
@@ -44,7 +48,6 @@ class DGSongCell: UICollectionViewCell {
         songTitle.font = UIFont.boldSystemFont(ofSize: 16)
 
         // Fondo gris claro con bordes redondeados
-        contentView.backgroundColor = UIColor.systemGray6
         contentView.layer.cornerRadius = 10
         contentView.layer.masksToBounds = true
 
@@ -58,14 +61,14 @@ class DGSongCell: UICollectionViewCell {
 
         // Constraints
         NSLayoutConstraint.activate([
-            // 🔹 Imagen con tamaño uniforme
+            // 🔹 Imagen ocupa toda la altura y parte del ancho
             songImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            songImage.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            songImage.widthAnchor.constraint(equalToConstant: 35),  // 🔥 Tamaño más pequeño
-            songImage.heightAnchor.constraint(equalToConstant: 35),
-
-            // 🔹 Título de la canción (centrado verticalmente)
-            songTitle.leadingAnchor.constraint(equalTo: songImage.trailingAnchor, constant: 10),
+            songImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
+            songImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6),
+            songImage.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.25),  // 🔥 Ocupa el 25% del ancho
+            
+            // 🔹 Título centrado verticalmente a la derecha
+            songTitle.leadingAnchor.constraint(equalTo: songImage.trailingAnchor, constant: 12),
             songTitle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             songTitle.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -12)
         ])

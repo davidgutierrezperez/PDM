@@ -150,10 +150,9 @@ class SongVC: UIViewController, DGSongControlDelegate {
         
         let newVolume = (player.volume + 0.33 < 1) ? player.volume + 0.33 : 1
         player.volume = newVolume
+        
         songControls.volumeSlider.value = newVolume
         songControls.changeVolumeIcon()
-        
-    
     }
     
     private func configureVolumeButtons(){

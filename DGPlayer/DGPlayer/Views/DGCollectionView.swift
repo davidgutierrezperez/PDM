@@ -9,19 +9,15 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
-class DGCollectionView: UICollectionViewController {
+class DGCollectionView: UITableViewController {
     
     private var songs : [Song] = []
 
     
     init(songs: [Song]){
         self.songs = songs
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: UIScreen.main.bounds.width - 20, height: 60)
-        layout.minimumLineSpacing = 10
-        super.init(collectionViewLayout: layout)
+    
+        super.init(style: .plain)
     }
     
     required init?(coder: NSCoder) {
@@ -32,41 +28,41 @@ class DGCollectionView: UICollectionViewController {
         super.viewDidLoad()
 
         
-        self.collectionView!.register(DGSongCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        
-        
+        tableView.register(DGSongCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.rowHeight = 60
     }
     
     func setSongs(songs: [Song]){
         self.songs = songs
-        collectionView.reloadData()
+        tableView.reloadData()
     }
     
     func addSong(song: Song){
         self.songs.append(song)
-        collectionView.reloadData()
+        tableView.reloadData()
     }
     
-
-
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
 
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return songs.count
     }
 
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! DGSongCell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! DGSongCell
         let song = songs[indexPath.item]
         cell.configure(song: song)
     
         return cell
     }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 10
+    }
+    
     
 
 

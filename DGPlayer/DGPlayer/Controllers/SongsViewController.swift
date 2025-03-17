@@ -38,26 +38,25 @@ class SongsViewController: UIViewController {
     }
     
     func configureCollectionView(){
-        collectionView.collectionView.delegate = self
-        collectionView.collectionView.collectionViewLayout.collectionView?.delegate = self
-        collectionView.collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.tableView.delegate = self
+        collectionView.tableView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            collectionView.collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            collectionView.collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            collectionView.collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            collectionView.tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            collectionView.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
     func setSongs(songs: [Song]){
         collectionView.setSongs(songs: songs)
-        collectionView.collectionView.reloadData()
+        collectionView.tableView.reloadData()
     }
     
     
     func reloadCollectionView(){
-        collectionView.collectionView.reloadData()
+        collectionView.tableView.reloadData()
     }
     
 
@@ -83,8 +82,9 @@ extension SongsViewController: UISearchResultsUpdating, UISearchBarDelegate {
     }
 }
 
-extension SongsViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+extension SongsViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var songsCollection: [Song] = []
         var indexCurrentSong: Int
         
@@ -95,11 +95,14 @@ extension SongsViewController: UICollectionViewDelegate {
             songsCollection = songs
             indexCurrentSong = indexPath.item
         }
+        
         let songVC = SongVC(indexSelectedSong: indexCurrentSong, songs: songsCollection)
         songVC.navigationController?.navigationBar.prefersLargeTitles = false
         
         navigationController?.pushViewController(songVC, animated: true)
     }
+    
+
 }
 
 extension SongsViewController: UICollectionViewDelegateFlowLayout {

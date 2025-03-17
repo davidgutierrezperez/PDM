@@ -17,7 +17,7 @@ class HomeVC: SongsViewController {
         filteredSongs = []
         
         collectionView = DGCollectionView(songs: self.songs)
-        view.addSubview(collectionView.collectionView)
+        view.addSubview(collectionView.tableView)
         configureCollectionView()
         
         navigationItem.rightBarButtonItem = configureAddButton()
