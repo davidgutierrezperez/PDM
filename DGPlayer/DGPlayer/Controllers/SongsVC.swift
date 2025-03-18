@@ -10,12 +10,15 @@ import UIKit
 class SongsVC: UIViewController {
     
     var tableView: DGTableView!
-    var songs: [Song] = []
-    var filteredSongs : [Song] = []
     let scrollView = UIScrollView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let songs = FileManagerHelper.loadSongsFromCoreData()
+        tableView = DGTableView(songs: songs)
+        tableView.delegate = self
+        tableView.tableView.delegate = tableView
         
         view.addSubview(scrollView)
         scrollView.isScrollEnabled = true
@@ -55,7 +58,7 @@ class SongsVC: UIViewController {
     }
     
     
-    func reloadCollectionView(){
+    func reloadTableView(){
         tableView.tableView.reloadData()
     }
     
@@ -64,21 +67,19 @@ class SongsVC: UIViewController {
 
 extension SongsVC: UISearchResultsUpdating, UISearchBarDelegate {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let filter = searchController.searchBar.text, !filter.isEmpty else { return }
-        
-        if (filter.isEmpty){
-            setSongs(songs: songs)
-        } else {
-            filteredSongs = songs.filter { $0.title?.lowercased().contains(filter.lowercased()) ?? false }
-
-            setSongs(songs: filteredSongs)
+        guard let filter = searchController.searchBar.text?.lowercased(), !filter.isEmpty else {
+            reloadTableView()
+            return
         }
-        reloadCollectionView()
+        
+        let filteredSongs = tableView.songs.filter { $0.title?.lowercased().contains(filter) ?? false }
+        tableView.setFilteredSong(songs: filteredSongs)
     }
-    
+
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        setSongs(songs: songs)
-        reloadCollectionView()
+        print(tableView.songs.count)
+        setSongs(songs: tableView.songs)
+        reloadTableView()
     }
 }
 
@@ -89,10 +90,10 @@ extension SongsVC: UITableViewDelegate {
         var indexCurrentSong: Int
         
         if let searchText = navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
-            songsCollection.append(filteredSongs[indexPath.item])
+            songsCollection.append(self.tableView.filteredSongs[indexPath.item])
             indexCurrentSong = 0
         } else {
-            songsCollection = songs
+            songsCollection = self.tableView.songs
             indexCurrentSong = indexPath.item
         }
         
@@ -101,12 +102,18 @@ extension SongsVC: UITableViewDelegate {
         
         navigationController?.pushViewController(songVC, animated: true)
     }
-    
 
 }
 
 extension SongsVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 50)
+    }
+}
+
+extension SongsVC: DGTableViewDelegate {
+    func didDeleteSong(at index: Int){
+        
+        print("SongsVC: didDeleteSong")
     }
 }

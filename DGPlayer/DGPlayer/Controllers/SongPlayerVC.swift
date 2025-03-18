@@ -15,6 +15,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private var indexSelectedSong: Int
     
     private var albumArtImageView: UIImageView!
+    private var songTitle: UILabel!
     
     private var songControls = DGSongControl()
     
@@ -25,8 +26,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        
-        self.navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.navigationItem.backButtonTitle = "Home"
     }
     
@@ -34,14 +33,14 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         self.indexSelectedSong = indexSelectedSong
         self.songs = songs
         self.song = self.songs[self.indexSelectedSong]
-        
         songControls.songCurrentTimer = 0.0
+        
+
     
         super.init(nibName: nil, bundle: nil)
-        self.navigationController?.navigationBar.prefersLargeTitles = false
         
-        title = song.title
         
+        songTitle = configureSongTitle(title: song.title!)
         resetTimers()
         configureButtons()
         configureVolumeButtons()
@@ -78,16 +77,16 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             if player.isPlaying {
                 player.pause()
                 timerSong?.invalidate()
-                changePauseButtonSymbol(systemName: "play.fill")
+                changePauseButtonSymbol(systemName: DGSongControl.playIcon)
             } else {
                 player.play()
                 startProgressTime()
-                changePauseButtonSymbol(systemName: "pause.fill")
+                changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
             }
         } else {
             playSong()
             startProgressTime()
-            changePauseButtonSymbol(systemName: "pause.fill")
+            changePauseButtonSymbol(systemName: DGSongControl.playIcon)
         }
     }
     
@@ -142,7 +141,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
 
     private func changePauseButtonSymbol(systemName: String){
-        songControls.pauseButton.setImage(UIImage(systemName: systemName), for: .normal)
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
+        songControls.pauseButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
     }
     
     @objc private func progressiveVolumeButton(){
@@ -187,6 +187,23 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         albumArtImageView.translatesAutoresizingMaskIntoConstraints = false
     }
     
+    private func configureSongTitle(title: String) -> UILabel{
+        let newSongTitle = UILabel()
+        let maxCharacters = 50
+        if title.count > maxCharacters {
+            let index = song.title!.index(title.startIndex, offsetBy: maxCharacters)
+            newSongTitle.text = String(title[..<index]) + "..."
+        } else {
+            newSongTitle.text = title
+        }
+        newSongTitle.font = UIFont.boldSystemFont(ofSize: 12)
+        
+        
+        newSongTitle.translatesAutoresizingMaskIntoConstraints = false
+        
+        return newSongTitle
+    }
+    
     private func disableBackAndForwardButtons(){
         songControls.backwardButton.isEnabled = false
         songControls.forwardButton.isEnabled = false
@@ -218,6 +235,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     private func configure(){
         view.addSubview(albumArtImageView)
+        view.addSubview(songTitle)
 
         addChild(songControls)
         view.addSubview(songControls.view)
@@ -228,29 +246,36 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
 
         songControls.view.translatesAutoresizingMaskIntoConstraints = false
+        songTitle.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            albumArtImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            albumArtImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            albumArtImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            albumArtImageView.heightAnchor.constraint(equalTo: albumArtImageView.widthAnchor),
+                // 🔹 Imagen del álbum (arriba, centrada)
+                albumArtImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+                albumArtImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                albumArtImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+                albumArtImageView.heightAnchor.constraint(equalTo: albumArtImageView.widthAnchor),
 
-            songControls.view.topAnchor.constraint(equalTo: albumArtImageView.bottomAnchor, constant: 30),
-            songControls.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            songControls.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            songControls.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
-        ])
+                // 🔹 Título de la canción (debajo de la imagen, centrado)
+                songTitle.topAnchor.constraint(equalTo: albumArtImageView.bottomAnchor, constant: 15),
+                songTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
+                // 🔹 Controles (debajo del título)
+                songControls.view.topAnchor.constraint(equalTo: songTitle.bottomAnchor, constant: 40),
+                songControls.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                songControls.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                songControls.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+            ])
     }
     
     private func updateView(with song: Song){
         self.song = song
-        title = song.title
         
         audioPlayer?.stop()
         resetTimers()
         
         albumArtImageView.image = song.image ?? UIImage(systemName: "music.note")
-        changePauseButtonSymbol(systemName: "play.fill")
+        songTitle = configureSongTitle(title: song.title!)
+        changePauseButtonSymbol(systemName: DGSongControl.playIcon)
 
         view.setNeedsLayout()
         view.layoutIfNeeded()
@@ -261,6 +286,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
 
 extension SongPlayerVC: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        changePauseButtonSymbol(systemName: "play.fill")
+        changePauseButtonSymbol(systemName: DGSongControl.playIcon)
     }
 }

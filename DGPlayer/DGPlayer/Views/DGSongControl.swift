@@ -22,6 +22,11 @@ class DGSongControl: UIViewController {
     
     var progressSlider = UISlider()
     var volumeSlider = UISlider()
+    
+    static var pauseIcon: String = "pause.fill"
+    static var playIcon: String = "play.fill"
+    static var backwardIcon: String = "backward.end.fill"
+    static var forwardIcon: String = "forward.end.fill"
 
     
     weak var delegate: DGSongControlDelegate? 
@@ -49,10 +54,12 @@ class DGSongControl: UIViewController {
     }
     
     private func configureButtons() {
-        let largeConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
-        pauseButton.setImage(UIImage(systemName: "play.fill", withConfiguration: largeConfig), for: .normal)
-        backwardButton.setImage(UIImage(systemName: "backward.fill", withConfiguration: largeConfig), for: .normal)
-        forwardButton.setImage(UIImage(systemName: "forward.fill", withConfiguration: largeConfig), for: .normal)
+        let greateConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
+        
+        pauseButton.setImage(UIImage(systemName: DGSongControl.playIcon, withConfiguration: greateConfig), for: .normal)
+        backwardButton.setImage(UIImage(systemName: DGSongControl.backwardIcon, withConfiguration: largeConfig), for: .normal)
+        forwardButton.setImage(UIImage(systemName: DGSongControl.forwardIcon, withConfiguration: largeConfig), for: .normal)
         progressiveVolumeButton.setImage(UIImage(systemName: "speaker.wave.2.fill", withConfiguration: largeConfig), for: .normal)
         noVolumeButton.setImage(UIImage(systemName: "speaker.slash.fill", withConfiguration: largeConfig) ,for: .normal)
         
@@ -136,9 +143,12 @@ class DGSongControl: UIViewController {
         view.addSubview(pauseButton)
         view.addSubview(backwardButton)
         view.addSubview(forwardButton)
+        
+        /*
         view.addSubview(volumeSlider)
         view.addSubview(noVolumeButton)
         view.addSubview(progressiveVolumeButton)
+         */
         
         NSLayoutConstraint.activate([
             // 🔹 Barra de progreso
@@ -158,14 +168,14 @@ class DGSongControl: UIViewController {
 
             // 🔹 Botones de control (debajo del slider y timers)
             backwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -100),
-            backwardButton.topAnchor.constraint(equalTo: progressSlider.bottomAnchor, constant: 30),
+            backwardButton.topAnchor.constraint(equalTo: progressSlider.bottomAnchor, constant: 50),
 
             pauseButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             pauseButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
 
             forwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 100),
             forwardButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
-
+            /*
             // 🔹 Volume Slider (dejado como estaba)
             volumeSlider.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             volumeSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
@@ -179,6 +189,7 @@ class DGSongControl: UIViewController {
             // 🔹 Botón de volumen máximo (derecha del slider)
             progressiveVolumeButton.leadingAnchor.constraint(equalTo: volumeSlider.trailingAnchor, constant: 10),
             progressiveVolumeButton.centerYAnchor.constraint(equalTo: volumeSlider.centerYAnchor)
+             */
         ])
 
 

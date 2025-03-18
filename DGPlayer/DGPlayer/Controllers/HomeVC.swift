@@ -12,11 +12,7 @@ class HomeVC: SongsVC {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        songs = FileManagerHelper.loadSongsFromCoreData()
-        filteredSongs = []
-        
-        tableView = DGTableView(songs: self.songs)
+            
         view.addSubview(tableView.tableView)
         configureTableView()
         
@@ -25,7 +21,6 @@ class HomeVC: SongsVC {
     }
     
     private func addSongToTableView(song: Song){
-        songs.append(song)
         tableView.addSong(song: song)
     }
     

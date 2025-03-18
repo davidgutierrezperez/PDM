@@ -9,14 +9,20 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
+protocol DGTableViewDelegate: AnyObject {
+    func didDeleteSong(at index: Int)
+}
+
 class DGTableView: UITableViewController {
     
-    private var songs : [Song] = []
+    var songs: [Song] = []
+    var filteredSongs: [Song] = []
+    var isFiltering = false
+    
+    weak var delegate: DGTableViewDelegate?
 
-    
-    init(songs: [Song]){
+    init(songs: [Song]) {
         self.songs = songs
-    
         super.init(style: .plain)
     }
     
@@ -26,19 +32,30 @@ class DGTableView: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         
         tableView.register(DGSongCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.rowHeight = 60
     }
     
-    func setSongs(songs: [Song]){
+    func setSongs(songs: [Song]) {
         self.songs = songs
+        isFiltering = false
         tableView.reloadData()
     }
     
-    func addSong(song: Song){
+    func addSong(song: Song) {
         self.songs.append(song)
+        tableView.reloadData()
+    }
+    
+    func setFilteredSong(songs: [Song]){
+        self.filteredSongs = songs
+        isFiltering = true
+        tableView.reloadData()
+    }
+    
+    func addFilteredSong(song: Song){
+        self.filteredSongs.append(song)
         tableView.reloadData()
     }
     
@@ -46,14 +63,13 @@ class DGTableView: UITableViewController {
         return 1
     }
 
-
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return songs.count
+        return isFiltering ? filteredSongs.count : songs.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! DGSongCell
-        let song = songs[indexPath.item]
+        let song = isFiltering ? filteredSongs[indexPath.row] : songs[indexPath.row]
         cell.configure(song: song)
     
         return cell
@@ -63,7 +79,13 @@ class DGTableView: UITableViewController {
         return 10
     }
     
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            delegate?.didDeleteSong(at: indexPath.row)
+            songs.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
     
-
-
+    
 }
