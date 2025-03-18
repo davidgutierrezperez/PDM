@@ -18,6 +18,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private var songTitle: UILabel!
     
     private var songControls = DGSongControl()
+    private var isSongLooping = false
     
     private var audioPlayer: AVAudioPlayer?
     private var timerSong: Timer!
@@ -27,6 +28,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
 
         view.backgroundColor = .systemBackground
         navigationController?.navigationItem.backButtonTitle = "Home"
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     init(indexSelectedSong: Int, songs: [Song]) {
@@ -34,6 +36,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         self.songs = songs
         self.song = self.songs[self.indexSelectedSong]
         songControls.songCurrentTimer = 0.0
+        
         
 
     
@@ -123,6 +126,28 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.volumeSlider.value = 0
     }
     
+    @objc private func repeatSong(){
+        guard let player = audioPlayer else { return }
+        
+        if (!isSongLooping){
+            isSongLooping = true
+            player.numberOfLoops = Int.max
+            songControls.changeRepeatButtonSymbol(systemName: DGSongControl.isRepeatingIcon)
+        } else {
+            isSongLooping = false
+            player.numberOfLoops = 0
+            songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
+        }
+        
+    }
+    
+    @objc private func randomSong(){
+        guard let player = audioPlayer else { return }
+        
+        let randomNumber = Int.random(in: 0...(songs.count - 1))
+        updateView(with: songs[randomNumber])
+    }
+    
     func progressSliderChanged(to value: Float) {}
     func volumeSliderChanged(to value: Float){}
     
@@ -144,6 +169,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
         songControls.pauseButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
     }
+    
+    
     
     @objc private func progressiveVolumeButton(){
         guard let player = audioPlayer else { return }
@@ -178,25 +205,28 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.pauseButton.addTarget(self, action: #selector(playPauseSong), for: .touchUpInside)
         songControls.backwardButton.addTarget(self, action: #selector(changeToPreviousSong), for: .touchUpInside)
         songControls.forwardButton.addTarget(self, action: #selector(changeToNextSong), for: .touchUpInside)
+        songControls.repeatButton.addTarget(self, action: #selector(repeatSong), for: .touchUpInside)
+        songControls.randomSongButton.addTarget(self, action: #selector(randomSong), for: .touchUpInside)
     }
     
     private func configureImageSong(){
         self.albumArtImageView = UIImageView(image: song.image ?? UIImage(systemName: "music.note"))
-        self.albumArtImageView.contentMode = .scaleAspectFit
+        self.albumArtImageView.contentMode = .scaleToFill
+        albumArtImageView.clipsToBounds = true
         
         albumArtImageView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func configureSongTitle(title: String){
         let newSongTitle = UILabel()
-        let maxCharacters = 50
+        let maxCharacters = 40
         if title.count > maxCharacters {
             let index = song.title!.index(title.startIndex, offsetBy: maxCharacters)
             newSongTitle.text = String(title[..<index]) + "..."
         } else {
             newSongTitle.text = title
         }
-        newSongTitle.font = UIFont.boldSystemFont(ofSize: 12)
+        newSongTitle.font = UIFont.boldSystemFont(ofSize: 16)
         
         
         newSongTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -204,9 +234,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songTitle = newSongTitle
     }
     
-    private func disableBackAndForwardButtons(){
+    private func disableButtonsWhenSearching(){
         songControls.backwardButton.isEnabled = false
         songControls.forwardButton.isEnabled = false
+        songControls.randomSongButton.isEnabled = false
     }
     
     private func formatTime(time: TimeInterval) -> String {
@@ -236,30 +267,32 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private func configure(){
         view.addSubview(albumArtImageView)
         view.addSubview(songTitle)
+        
+        albumArtImageView.layer.cornerRadius = 10
 
         addChild(songControls)
         view.addSubview(songControls.view)
         songControls.didMove(toParent: self)
 
         if songs.count == 1 {
-            disableBackAndForwardButtons()
+            disableButtonsWhenSearching()
         }
 
         songControls.view.translatesAutoresizingMaskIntoConstraints = false
         songTitle.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-                // 🔹 Imagen del álbum (arriba, centrada)
+                //  Imagen del álbum (arriba, centrada)
                 albumArtImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
                 albumArtImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                albumArtImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+                albumArtImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.95),
                 albumArtImageView.heightAnchor.constraint(equalTo: albumArtImageView.widthAnchor),
 
-                // 🔹 Título de la canción (debajo de la imagen, centrado)
+                //  Título de la canción (debajo de la imagen, centrado)
                 songTitle.topAnchor.constraint(equalTo: albumArtImageView.bottomAnchor, constant: 15),
                 songTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
-                // 🔹 Controles (debajo del título)
+                //  Controles (debajo del título)
                 songControls.view.topAnchor.constraint(equalTo: songTitle.bottomAnchor, constant: 40),
                 songControls.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 songControls.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -273,7 +306,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             return
         }
 
-        let maxCharacters = 50
+        let maxCharacters = 40
         if title.count > maxCharacters {
             let index = title.index(title.startIndex, offsetBy: maxCharacters)
             songTitle?.text = String(title[..<index]) + "..."

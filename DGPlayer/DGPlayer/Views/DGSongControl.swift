@@ -17,6 +17,8 @@ class DGSongControl: UIViewController {
     var pauseButton = UIButton()
     var backwardButton = UIButton()
     var forwardButton = UIButton()
+    var repeatButton = UIButton()
+    var randomSongButton = UIButton()
     var noVolumeButton = UIButton()
     var progressiveVolumeButton = UIButton()
     
@@ -27,6 +29,9 @@ class DGSongControl: UIViewController {
     static var playIcon: String = "play.fill"
     static var backwardIcon: String = "backward.end.fill"
     static var forwardIcon: String = "forward.end.fill"
+    static var repeatIcon: String = "repeat"
+    static var isRepeatingIcon: String = "repeat.1"
+    static var randomSongIcon: String = "shuffle"
 
     
     weak var delegate: DGSongControlDelegate? 
@@ -56,22 +61,30 @@ class DGSongControl: UIViewController {
     private func configureButtons() {
         let greateConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
+        let mediaumConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
         
         pauseButton.setImage(UIImage(systemName: DGSongControl.playIcon, withConfiguration: greateConfig), for: .normal)
         backwardButton.setImage(UIImage(systemName: DGSongControl.backwardIcon, withConfiguration: largeConfig), for: .normal)
         forwardButton.setImage(UIImage(systemName: DGSongControl.forwardIcon, withConfiguration: largeConfig), for: .normal)
+        repeatButton.setImage(UIImage(systemName: DGSongControl.repeatIcon, withConfiguration: mediaumConfig), for: .normal)
+        randomSongButton.setImage(UIImage(systemName: DGSongControl.randomSongIcon, withConfiguration: mediaumConfig), for: .normal)
         progressiveVolumeButton.setImage(UIImage(systemName: "speaker.wave.2.fill", withConfiguration: largeConfig), for: .normal)
         noVolumeButton.setImage(UIImage(systemName: "speaker.slash.fill", withConfiguration: largeConfig) ,for: .normal)
         
-        pauseButton.tintColor = .systemRed
-        backwardButton.tintColor = .systemRed
-        forwardButton.tintColor = .systemRed
-        noVolumeButton.tintColor = .systemRed
-        progressiveVolumeButton.tintColor = .systemRed
+        
+        pauseButton.tintColor = .black
+        backwardButton.tintColor = .black
+        forwardButton.tintColor = .black
+        noVolumeButton.tintColor = .black
+        progressiveVolumeButton.tintColor = .black
+        repeatButton.tintColor = .black
+        randomSongButton.tintColor = .black
         
         pauseButton.translatesAutoresizingMaskIntoConstraints = false
         backwardButton.translatesAutoresizingMaskIntoConstraints = false
         forwardButton.translatesAutoresizingMaskIntoConstraints = false
+        repeatButton.translatesAutoresizingMaskIntoConstraints = false
+        randomSongButton.translatesAutoresizingMaskIntoConstraints = false
         noVolumeButton.translatesAutoresizingMaskIntoConstraints = false
         progressiveVolumeButton.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -88,6 +101,9 @@ class DGSongControl: UIViewController {
     }
     
     private func configureSlider() {
+        let smallThumb = UIImage(systemName: "circle.fill")?.resized(to:CGSize(width: 10, height: 10))
+        
+        progressSlider.setThumbImage(smallThumb, for: .normal)
         progressSlider.minimumValue = 0
         progressSlider.maximumValue = 1
         progressSlider.tintColor = .systemRed
@@ -104,6 +120,16 @@ class DGSongControl: UIViewController {
         volumeSlider.isContinuous = true
         volumeSlider.translatesAutoresizingMaskIntoConstraints = false
         volumeSlider.addTarget(self, action: #selector(volumeSliderChanged(_:)), for: .valueChanged)
+    }
+    
+    func changePauseButtonSymbol(systemName: String){
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
+        pauseButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
+    }
+    
+    func changeRepeatButtonSymbol(systemName: String){
+        let mediaumConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
+        repeatButton.setImage(UIImage(systemName: systemName, withConfiguration: mediaumConfig), for: .normal)
     }
     
     @objc private func sliderChanged(_ sender: UISlider) {
@@ -143,6 +169,8 @@ class DGSongControl: UIViewController {
         view.addSubview(pauseButton)
         view.addSubview(backwardButton)
         view.addSubview(forwardButton)
+        view.addSubview(repeatButton)
+        view.addSubview(randomSongButton)
         
         /*
         view.addSubview(volumeSlider)
@@ -154,19 +182,22 @@ class DGSongControl: UIViewController {
             // 🔹 Barra de progreso
             progressSlider.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             progressSlider.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            progressSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            progressSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+            progressSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            progressSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             progressSlider.heightAnchor.constraint(equalToConstant: 2),
 
             // 🔹 Tiempo actual (izquierda, alineado con el slider)
             songCurrentLabel.leadingAnchor.constraint(equalTo: progressSlider.leadingAnchor),
-            songCurrentLabel.centerYAnchor.constraint(equalTo: progressSlider.centerYAnchor, constant: -30),
+            songCurrentLabel.centerYAnchor.constraint(equalTo: progressSlider.centerYAnchor, constant: -20),
 
             // 🔹 Tiempo total (derecha, alineado con el slider)
             songDurationLabel.trailingAnchor.constraint(equalTo: progressSlider.trailingAnchor),
-            songDurationLabel.centerYAnchor.constraint(equalTo: progressSlider.centerYAnchor, constant: -30),
+            songDurationLabel.centerYAnchor.constraint(equalTo: progressSlider.centerYAnchor, constant: -20),
 
             // 🔹 Botones de control (debajo del slider y timers)
+            randomSongButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -180), // 🔹 A la izquierda de backwardButton
+            randomSongButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
+
             backwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -100),
             backwardButton.topAnchor.constraint(equalTo: progressSlider.bottomAnchor, constant: 50),
 
@@ -175,6 +206,10 @@ class DGSongControl: UIViewController {
 
             forwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 100),
             forwardButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
+
+            repeatButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 180), // 🔹 A la derecha de forwardButton
+            repeatButton.centerYAnchor.constraint(equalTo: forwardButton.centerYAnchor)
+        ])
             /*
             // 🔹 Volume Slider (dejado como estaba)
             volumeSlider.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -190,8 +225,17 @@ class DGSongControl: UIViewController {
             progressiveVolumeButton.leadingAnchor.constraint(equalTo: volumeSlider.trailingAnchor, constant: 10),
             progressiveVolumeButton.centerYAnchor.constraint(equalTo: volumeSlider.centerYAnchor)
              */
-        ])
 
 
+    }
+}
+
+extension UIImage {
+    func resized(to size: CGSize) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+        self.draw(in: CGRect(origin: .zero, size: size))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return resizedImage ?? self
     }
 }
