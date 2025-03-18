@@ -104,6 +104,44 @@ class FileManagerHelper {
         }
     }
     
+    static func deleteSong(song: Song){
+        deleteSongFromCoreData(title: song.title!)
+        deleteSongFromDocuments(song: song)
+    }
+    
+    static func deleteSongFromDocuments(song: Song){
+        guard let audioPath = song.audio else { return }
+        
+        let fileManager = FileManager.default
+        let fileURL = FileManagerHelper.getDocumentsDirectory().appendingPathComponent(audioPath.lastPathComponent)
+        
+        do {
+            try fileManager.removeItem(at: fileURL)
+            print("Se ha eliminado la canción: ", song.title)
+        } catch {
+            print("No se ha podido eliminar la canción: ", song.title)
+        }
+    }
+    
+    static func deleteSongFromCoreData(title: String){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest: NSFetchRequest<SongEntity> = SongEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let songToDelete = results.first {
+                context.delete(songToDelete)
+                try context.save()
+                print("Se ha podido eliminar la canción: ", title)
+            }
+        } catch {
+            print("No se ha podido eliminar la cancion: ", title)
+        }
+    }
+    
     static func loadSongsFromCoreData() -> [Song] {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return [] }
         let context = appDelegate.persistentContainer.viewContext

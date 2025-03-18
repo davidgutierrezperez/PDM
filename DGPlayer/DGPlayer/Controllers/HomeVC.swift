@@ -56,6 +56,8 @@ extension HomeVC: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let selectedFile = urls.first else { return }
         
+        print(FileManagerHelper.getDocumentsDirectory())
+        
         if (FileManagerHelper.handleSelectedAudio(url: selectedFile)){
             let updatedSongs = FileManagerHelper.loadSongsFromCoreData()
             if let newSong = updatedSongs.last {
