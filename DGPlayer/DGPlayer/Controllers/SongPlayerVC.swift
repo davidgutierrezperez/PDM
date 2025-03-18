@@ -40,7 +40,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         super.init(nibName: nil, bundle: nil)
         
         
-        songTitle = configureSongTitle(title: song.title!)
+        configureSongTitle(title: song.title!)
         resetTimers()
         configureButtons()
         configureVolumeButtons()
@@ -187,7 +187,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         albumArtImageView.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    private func configureSongTitle(title: String) -> UILabel{
+    private func configureSongTitle(title: String){
         let newSongTitle = UILabel()
         let maxCharacters = 50
         if title.count > maxCharacters {
@@ -201,7 +201,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         newSongTitle.translatesAutoresizingMaskIntoConstraints = false
         
-        return newSongTitle
+        songTitle = newSongTitle
     }
     
     private func disableBackAndForwardButtons(){
@@ -267,6 +267,21 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             ])
     }
     
+    private func updateSongTitle(with title: String?) {
+        guard let title = title, !title.isEmpty else {
+            songTitle?.text = "Unknown Title" 
+            return
+        }
+
+        let maxCharacters = 50
+        if title.count > maxCharacters {
+            let index = title.index(title.startIndex, offsetBy: maxCharacters)
+            songTitle?.text = String(title[..<index]) + "..."
+        } else {
+            songTitle?.text = title
+        }
+    }
+    
     private func updateView(with song: Song){
         self.song = song
         
@@ -274,13 +289,14 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         resetTimers()
         
         albumArtImageView.image = song.image ?? UIImage(systemName: "music.note")
-        songTitle = configureSongTitle(title: song.title!)
         changePauseButtonSymbol(systemName: DGSongControl.playIcon)
+        updateSongTitle(with: song.title)
 
         view.setNeedsLayout()
         view.layoutIfNeeded()
         
-        navigationController?.navigationBar.prefersLargeTitles = false
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
 }
 

@@ -117,9 +117,9 @@ class FileManagerHelper {
         
         do {
             try fileManager.removeItem(at: fileURL)
-            print("Se ha eliminado la canción: ", song.title)
+            print("Se ha eliminado la canción: ", song.title!)
         } catch {
-            print("No se ha podido eliminar la canción: ", song.title)
+            print("No se ha podido eliminar la canción: ", song.title!)
         }
     }
     
