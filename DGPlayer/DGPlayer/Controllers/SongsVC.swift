@@ -11,6 +11,9 @@ class SongsVC: UIViewController {
     
     var tableView: DGTableView!
     let scrollView = UIScrollView()
+    var addButton = UIBarButtonItem()
+    var enableSearchButton = UIBarButtonItem()
+    var isSearchEnable: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,9 +31,12 @@ class SongsVC: UIViewController {
         navigationItem.hidesSearchBarWhenScrolling = false
 
         navigationItem.searchController = configureSearchController()
+        
+        addButton = configureAddButton()
+        enableSearchButton = configureSearchButton()
     }
     
-    private func configureSearchController() -> UISearchController {
+    func configureSearchController() -> UISearchController {
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
@@ -65,6 +71,25 @@ class SongsVC: UIViewController {
     func deleteSong(at index: Int){
         let songToDelete = tableView.songs[index]
         FileManagerHelper.deleteSong(song: songToDelete)
+    }
+    
+    private func configureAddButton() -> UIBarButtonItem {
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: nil)
+        addButton.tintColor = .systemRed
+        
+        return addButton
+    }
+    
+    private func configureSearchButton() -> UIBarButtonItem {
+        let enableSearchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: nil)
+        enableSearchButton.tintColor = .systemRed
+        
+        return enableSearchButton
+    }
+    
+    func addTargetToButton(boton: UIBarButtonItem, target: AnyObject?, action: Selector) {
+        boton.target = target
+        boton.action = action
     }
     
 

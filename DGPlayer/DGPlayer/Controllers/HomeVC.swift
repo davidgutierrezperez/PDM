@@ -16,31 +16,19 @@ class HomeVC: SongsVC {
         view.addSubview(tableView.tableView)
         configureTableView()
         
-        navigationItem.rightBarButtonItem = configureAddButton()
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
+        
+        addTargetToButton(boton: addButton, target: self, action: #selector(buttonTupped))
+        addTargetToButton(boton: enableSearchButton, target: self, action: #selector(enableSearchByButton))
+
+        navigationItem.searchController = nil
     }
     
     private func addSongToTableView(song: Song){
         tableView.addSong(song: song)
     }
     
-    private func configureAddButton() -> UIBarButtonItem {
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(buttonTupped))
-        addButton.tintColor = .systemRed
         
-        return addButton
-    }
-    
-    private func configureSearchController() -> UISearchController {
-        let searchController = UISearchController()
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search a song"
-        
-        return searchController
-    }
-    
     
      @objc func buttonTupped(){
         let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.mp3])
@@ -48,6 +36,17 @@ class HomeVC: SongsVC {
         
         present(documentPicker, animated: true)
     }
+    
+    @objc func enableSearchByButton(){
+        if (!isSearchEnable){
+            navigationItem.searchController = configureSearchController()
+            isSearchEnable = true
+        } else {
+            navigationItem.searchController?.dismiss(animated: true)
+            isSearchEnable = false
+        }
+    }
+
     
     
 }
