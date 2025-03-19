@@ -67,11 +67,7 @@ class SongsVC: UIViewController {
         tableView.tableView.reloadData()
     }
     
-    func deleteSong(at index: Int){
-        print("SongsVC: deleteSong")
-        let songToDelete = tableView.songs[index]
-        FileManagerHelper.deleteSong(song: songToDelete)
-    }
+    func deleteSong(at index: Int){}
     
     private func configureAddButton() -> UIBarButtonItem {
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: nil)

@@ -30,11 +30,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         navigationController?.navigationItem.backButtonTitle = "Home"
         navigationItem.largeTitleDisplayMode = .never
         
-        if (FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)){
-            changeAddToFavouriteButtonSymbol(systemName: DGSongControl.favouriteIcon)
-        } else {
-            changeAddToFavouriteButtonSymbol(systemName: DGSongControl.noFavouriteIcon)
-        }
+        updateFavoriteIcon()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        updateFavoriteIcon()
     }
     
     init(indexSelectedSong: Int, songs: [Song]) {
@@ -185,6 +185,14 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private func changeAddToFavouriteButtonSymbol(systemName: String){
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
         songControls.addToFavouriteButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
+    }
+    
+    private func updateFavoriteIcon(){
+        if (FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)){
+            changeAddToFavouriteButtonSymbol(systemName: DGSongControl.favouriteIcon)
+        } else {
+            changeAddToFavouriteButtonSymbol(systemName: DGSongControl.noFavouriteIcon)
+        }
     }
     
     

@@ -28,6 +28,10 @@ class HomeVC: SongsVC {
     
     override func deleteSong(at index: Int){
         let song = tableView.songs[index]
+        
+        tableView.songs.remove(at: index)
+        tableView.tableView.deleteRows(at: [IndexPath(item: index, section: 0)], with: .automatic)
+        
         FileManagerHelper.deleteSong(song: song)
     }
     

@@ -26,8 +26,9 @@ class FavoritesVC: SongsVC {
     
     override func deleteSong(at index: Int){
         let song = tableView.songs[index]
+        
         tableView.songs.remove(at: index)
-        tableView.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+        tableView.tableView.deleteRows(at: [IndexPath(item: index, section: 0)], with: .automatic)
         
         FileManagerHelper.addSongToFavourites(title: song.title!)
     }

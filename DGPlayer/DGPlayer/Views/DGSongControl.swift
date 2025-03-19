@@ -204,7 +204,7 @@ class DGSongControl: UIViewController {
             randomSongButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
 
             backwardButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -100),
-            backwardButton.topAnchor.constraint(equalTo: progressSlider.bottomAnchor, constant: 50),
+            backwardButton.topAnchor.constraint(equalTo: progressSlider.bottomAnchor, constant: 70),
 
             pauseButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             pauseButton.centerYAnchor.constraint(equalTo: backwardButton.centerYAnchor),
