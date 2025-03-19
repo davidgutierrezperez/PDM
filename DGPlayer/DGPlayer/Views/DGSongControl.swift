@@ -20,11 +20,8 @@ class DGSongControl: UIViewController {
     var repeatButton = UIButton()
     var randomSongButton = UIButton()
     var addToFavouriteButton = UIButton()
-    var noVolumeButton = UIButton()
-    var progressiveVolumeButton = UIButton()
     
     var progressSlider = UISlider()
-    var volumeSlider = UISlider()
     
     static var pauseIcon: String = "pause.fill"
     static var playIcon: String = "play.fill"
@@ -47,7 +44,6 @@ class DGSongControl: UIViewController {
         configureButtons()
         configureSongLabels()
         configureSlider()
-        configureVolumeSlider()
         configure()
     }
     
@@ -72,14 +68,10 @@ class DGSongControl: UIViewController {
         forwardButton.setImage(UIImage(systemName: DGSongControl.forwardIcon, withConfiguration: largeConfig), for: .normal)
         repeatButton.setImage(UIImage(systemName: DGSongControl.repeatIcon, withConfiguration: mediaumConfig), for: .normal)
         randomSongButton.setImage(UIImage(systemName: DGSongControl.randomSongIcon, withConfiguration: mediaumConfig), for: .normal)
-        progressiveVolumeButton.setImage(UIImage(systemName: "speaker.wave.2.fill", withConfiguration: largeConfig), for: .normal)
-        noVolumeButton.setImage(UIImage(systemName: "speaker.slash.fill", withConfiguration: largeConfig) ,for: .normal)
         
         pauseButton.tintColor = .black
         backwardButton.tintColor = .black
         forwardButton.tintColor = .black
-        noVolumeButton.tintColor = .black
-        progressiveVolumeButton.tintColor = .black
         repeatButton.tintColor = .black
         randomSongButton.tintColor = .black
         addToFavouriteButton.tintColor = .systemRed
@@ -90,8 +82,6 @@ class DGSongControl: UIViewController {
         repeatButton.translatesAutoresizingMaskIntoConstraints = false
         randomSongButton.translatesAutoresizingMaskIntoConstraints = false
         addToFavouriteButton.translatesAutoresizingMaskIntoConstraints = false
-        noVolumeButton.translatesAutoresizingMaskIntoConstraints = false
-        progressiveVolumeButton.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func configureSliderByDefault() -> UISlider {
@@ -117,16 +107,6 @@ class DGSongControl: UIViewController {
         progressSlider.addTarget(self, action: #selector(sliderChanged(_:)), for: .valueChanged)
     }
     
-    private func configureVolumeSlider(){
-        volumeSlider.minimumValue = 0
-        volumeSlider.maximumValue = 1
-        volumeSlider.value = 0.5
-        volumeSlider.tintColor = .systemRed
-        volumeSlider.isContinuous = true
-        volumeSlider.translatesAutoresizingMaskIntoConstraints = false
-        volumeSlider.addTarget(self, action: #selector(volumeSliderChanged(_:)), for: .valueChanged)
-    }
-    
     func changePauseButtonSymbol(systemName: String){
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
         pauseButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
@@ -145,21 +125,6 @@ class DGSongControl: UIViewController {
         delegate?.volumeSliderChanged(to: sender.value)
     }
     
-    func changeVolumeIcon(){
-        let icon : String
-        
-        if (volumeSlider.value == 0){
-            icon = "speaker.slash.fill"
-        } else if (volumeSlider.value > 0 && volumeSlider.value <= 0.33){
-            icon = "speaker.wave.1.fill"
-        } else if (volumeSlider.value >= 0.34 && volumeSlider.value <= 0.66){
-            icon = "speaker.wave.2.fill"
-        } else {
-            icon = "speaker.wave.3.fill"
-        }
-        
-        progressiveVolumeButton.setImage(UIImage(systemName: icon), for: .normal)
-    }
     
     private func formatTime(time: TimeInterval) -> String {
         let minutes = Int(time) / 60

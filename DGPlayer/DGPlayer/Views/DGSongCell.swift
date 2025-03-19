@@ -27,8 +27,6 @@ class DGSongCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    
     func configure(song: Song) {
         songTitle.text = song.title
         songImage.image = song.image

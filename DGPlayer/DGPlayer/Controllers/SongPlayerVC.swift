@@ -20,6 +20,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private var songControls = DGSongControl()
     private var isSongLooping = false
     
+    private var optionButton = UIBarButtonItem()
+    private var songOptions = SongOptionsVC()
+    
     private var audioPlayer: AVAudioPlayer?
     private var timerSong: Timer!
 
@@ -34,8 +37,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         updateFavoriteIcon()
+        updateOptions()
     }
+    
     
     init(indexSelectedSong: Int, songs: [Song]) {
         self.indexSelectedSong = indexSelectedSong
@@ -44,17 +50,15 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.songCurrentTimer = 0.0
         
         
-    
         super.init(nibName: nil, bundle: nil)
         
         
         configureSongTitle(title: song.title!)
         resetTimers()
         configureButtons()
-        configureVolumeButtons()
         configureImageSong()
         configureProgressSlider()
-        configureVolumeSlider()
+
         configure()
     }
     
@@ -85,16 +89,16 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             if player.isPlaying {
                 player.pause()
                 timerSong?.invalidate()
-                changePauseButtonSymbol(systemName: DGSongControl.playIcon)
+                songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
             } else {
                 player.play()
                 startProgressTime()
-                changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
+                songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
             }
         } else {
             playSong()
             startProgressTime()
-            changePauseButtonSymbol(systemName: DGSongControl.playIcon)
+            songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
         }
     }
     
@@ -117,19 +121,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.songCurrentLabel.text = formatTime(time: newTime)
     }
     
-    @objc private func volumeSliderChanged(_ send: UISlider){
-        guard let player = audioPlayer else { return }
-        
-        player.volume = songControls.volumeSlider.value
-        songControls.changeVolumeIcon()
-    }
-    
-    @objc private func noVolumeSong(){
-        guard let player = audioPlayer else { return }
-        
-        player.volume = 0
-        songControls.volumeSlider.value = 0
-    }
     
     @objc private func repeatSong(){
         guard let player = audioPlayer else { return }
@@ -160,6 +151,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         changeAddToFavouriteButtonSymbol(systemName: favouriteIcon)
     }
     
+    @objc private func showSongOptions(){
+        navigationController?.pushViewController(songOptions, animated: true)
+    }
+    
     func progressSliderChanged(to value: Float) {}
     func volumeSliderChanged(to value: Float){}
     
@@ -177,15 +172,13 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
 
-    private func changePauseButtonSymbol(systemName: String){
-        let largeConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
-        songControls.pauseButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
-    }
     
     private func changeAddToFavouriteButtonSymbol(systemName: String){
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
         songControls.addToFavouriteButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
     }
+    
+    
     
     private func updateFavoriteIcon(){
         if (FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)){
@@ -194,23 +187,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             changeAddToFavouriteButtonSymbol(systemName: DGSongControl.noFavouriteIcon)
         }
     }
-    
-    
-    
-    @objc private func progressiveVolumeButton(){
-        guard let player = audioPlayer else { return }
-        
-        let newVolume = (player.volume + 0.33 < 1) ? player.volume + 0.33 : 1
-        player.volume = newVolume
-        
-        songControls.volumeSlider.value = newVolume
-        songControls.changeVolumeIcon()
-    }
-    
-    private func configureVolumeButtons(){
-        songControls.noVolumeButton.addTarget(self, action: #selector(noVolumeSong), for: .touchUpInside)
-        songControls.progressiveVolumeButton.addTarget(self, action: #selector(progressiveVolumeButton), for: .touchUpInside)
-    }
+
     
     private func configureProgressSlider(){
         songControls.progressSlider.isUserInteractionEnabled = true
@@ -218,13 +195,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         songControls.progressSlider.addTarget(self, action: #selector(sliderChanged(_:)), for: .valueChanged)
     }
-    
-    private func configureVolumeSlider(){
-        songControls.volumeSlider.isUserInteractionEnabled = true
-        songControls.volumeSlider.isContinuous = true
-        
-        songControls.volumeSlider.addTarget(self, action: #selector(volumeSliderChanged(_:)), for: .valueChanged)
-    }
+
     
     private func configureButtons(){
         songControls.pauseButton.addTarget(self, action: #selector(playPauseSong), for: .touchUpInside)
@@ -237,6 +208,15 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         if (song.isFavourite){
             changeAddToFavouriteButtonSymbol(systemName: DGSongControl.favouriteIcon)
         }
+        
+        configureOptionButton()
+    }
+    
+    private func configureOptionButton(){
+        optionButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(showSongOptions))
+        optionButton.tintColor = .systemRed
+        
+        navigationItem.rightBarButtonItem = optionButton
     }
     
     private func configureImageSong(){
@@ -286,7 +266,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
 
         songControls.songCurrentLabel.text = "0:00"
         songControls.songDurationLabel.text = formatTime(time: player.duration)
-        songControls.volumeSlider.value = 0.5
 
         // 🔹 Iniciar el timer solo si el audio tiene duración válida
         if player.duration > 0 {
@@ -352,6 +331,18 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
+    func updateOptions(){
+        print("Ejecutando updateOptions")
+        if (songOptions.options[1].isOptionEnabled){
+            isSongLooping = true
+            audioPlayer?.numberOfLoops = Int.max
+            songControls.changeRepeatButtonSymbol(systemName: DGSongControl.isRepeatingIcon)
+        } else {
+            isSongLooping = false
+            songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
+        }
+    }
+    
     private func updateView(with song: Song){
         self.song = song
         
@@ -359,12 +350,13 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         resetTimers()
         
         albumArtImageView.image = song.image ?? UIImage(systemName: "music.note")
-        changePauseButtonSymbol(systemName: DGSongControl.playIcon)
+        songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
         updateSongTitle(with: song.title)
         
         let songIsFavourite = FileManagerHelper.isSongInFavourites(title: song.title!)
         let favouriteIcon = songIsFavourite ? DGSongControl.favouriteIcon : DGSongControl.noFavouriteIcon
         changeAddToFavouriteButtonSymbol(systemName: favouriteIcon)
+        updateOptions()
 
         view.setNeedsLayout()
         view.layoutIfNeeded()
@@ -377,6 +369,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
 
 extension SongPlayerVC: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        changePauseButtonSymbol(systemName: DGSongControl.playIcon)
+        songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
     }
 }
