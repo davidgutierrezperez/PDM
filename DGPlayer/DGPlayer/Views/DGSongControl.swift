@@ -19,6 +19,7 @@ class DGSongControl: UIViewController {
     var forwardButton = UIButton()
     var repeatButton = UIButton()
     var randomSongButton = UIButton()
+    var addToFavouriteButton = UIButton()
     var noVolumeButton = UIButton()
     var progressiveVolumeButton = UIButton()
     
@@ -32,7 +33,9 @@ class DGSongControl: UIViewController {
     static var repeatIcon: String = "repeat"
     static var isRepeatingIcon: String = "repeat.1"
     static var randomSongIcon: String = "shuffle"
-
+    static var noFavouriteIcon: String = "heart"
+    static var favouriteIcon: String = "heart.fill"
+    
     
     weak var delegate: DGSongControlDelegate? 
 
@@ -60,6 +63,7 @@ class DGSongControl: UIViewController {
     
     private func configureButtons() {
         let greateConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
+        let biggerCconfig = UIImage.SymbolConfiguration(pointSize: 50, weight: .bold)
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
         let mediaumConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
         
@@ -71,7 +75,6 @@ class DGSongControl: UIViewController {
         progressiveVolumeButton.setImage(UIImage(systemName: "speaker.wave.2.fill", withConfiguration: largeConfig), for: .normal)
         noVolumeButton.setImage(UIImage(systemName: "speaker.slash.fill", withConfiguration: largeConfig) ,for: .normal)
         
-        
         pauseButton.tintColor = .black
         backwardButton.tintColor = .black
         forwardButton.tintColor = .black
@@ -79,12 +82,14 @@ class DGSongControl: UIViewController {
         progressiveVolumeButton.tintColor = .black
         repeatButton.tintColor = .black
         randomSongButton.tintColor = .black
+        addToFavouriteButton.tintColor = .systemRed
         
         pauseButton.translatesAutoresizingMaskIntoConstraints = false
         backwardButton.translatesAutoresizingMaskIntoConstraints = false
         forwardButton.translatesAutoresizingMaskIntoConstraints = false
         repeatButton.translatesAutoresizingMaskIntoConstraints = false
         randomSongButton.translatesAutoresizingMaskIntoConstraints = false
+        addToFavouriteButton.translatesAutoresizingMaskIntoConstraints = false
         noVolumeButton.translatesAutoresizingMaskIntoConstraints = false
         progressiveVolumeButton.translatesAutoresizingMaskIntoConstraints = false
     }

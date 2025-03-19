@@ -14,6 +14,7 @@ struct Song {
     let band: String?
     let image: UIImage?
     let audio: URL?
+    var isFavourite: Bool
     
     init(){
         title = "Title"
@@ -21,14 +22,16 @@ struct Song {
         band = "Band"
         image = UIImage()
         audio = nil
+        isFavourite = false
     }
     
-    init(title: String?, artist: String?, band: String?, image: UIImage?, audio: URL?) {
+    init(title: String?, artist: String?, band: String?, image: UIImage?, audio: URL?, isFavourite: Bool) {
         self.title = title
         self.artist = artist ?? "Unknown"
         self.band = band ?? "Unknown"
         self.image = image
         self.audio = audio
+        self.isFavourite = isFavourite
     }
 }
 

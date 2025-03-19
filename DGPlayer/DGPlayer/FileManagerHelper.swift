@@ -74,7 +74,7 @@ class FileManagerHelper {
             
             return destinationPath
         } catch {
-            print("No se ha podido guardar el archivo en: ", url)
+            print("❌No se ha podido guardar el archivo en: ", url)
             return nil
         }
         
@@ -89,6 +89,7 @@ class FileManagerHelper {
         newSong.setValue(title, forKey: "title")
         newSong.setValue(artist, forKey: "artist")
         newSong.setValue(band, forKey: "band")
+        newSong.setValue(false, forKey: "isFavourite")
         
         if let image = image.pngData() {
             newSong.setValue(image, forKey: "image")
@@ -100,7 +101,7 @@ class FileManagerHelper {
             try context.save()
             print("✅Se ha podido guardar en CoreData en: \(audioPath.path)")
         } catch {
-            print("No se ha podido guardar la canción to CoreData")
+            print("❌No se ha podido guardar la canción to CoreData")
         }
     }
     
@@ -117,9 +118,9 @@ class FileManagerHelper {
         
         do {
             try fileManager.removeItem(at: fileURL)
-            print("Se ha eliminado la canción: ", song.title!)
+            print("✅Se ha eliminado la canción: ", song.title!)
         } catch {
-            print("No se ha podido eliminar la canción: ", song.title!)
+            print("❌No se ha podido eliminar la canción: ", song.title!)
         }
     }
     
@@ -135,11 +136,55 @@ class FileManagerHelper {
             if let songToDelete = results.first {
                 context.delete(songToDelete)
                 try context.save()
-                print("Se ha podido eliminar la canción: ", title)
+                print("✅Se ha podido eliminar la canción: ", title)
             }
         } catch {
-            print("No se ha podido eliminar la cancion: ", title)
+            print("❌No se ha podido eliminar la cancion: ", title)
         }
+    }
+    
+    static func addSongToFavourites(title: String){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest: NSFetchRequest<SongEntity> = SongEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let songToFavourites = results.first {
+                songToFavourites.isFavourite.toggle()
+                try context.save()
+                
+                if (songToFavourites.isFavourite) { print("✅Se ha AÑADIDO la siguiente canción a favoritos: ", title) }
+                else { print("✅Se ha ELIMINADO la siguiente canción de favoritos: ", title)}
+                
+            }
+        } catch {
+            print("❌No se ha podido añadir la siguiente canción a favoritos: ", title)
+        }
+    }
+    
+    static func isSongInFavourites(title: String) -> Bool {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return false }
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest: NSFetchRequest<SongEntity> = SongEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let song = results.first {
+                try context.save()
+                print("✅Se ha ha podido saber si la siguiente canción está en favoritos: ", title)
+                return song.isFavourite
+            }
+        } catch {
+            print("❌No se ha podido saber si la siguiente canción está en favoritos: ", title)
+        }
+        
+        
+        return false
     }
     
     static func loadSongsFromCoreData() -> [Song] {
@@ -152,8 +197,10 @@ class FileManagerHelper {
             let songs = try context.fetch(fetchContext)
             return songs.compactMap { song in
                 guard let title = song.value(forKey: "title") as? String,
-                let artist = song.value(forKey: "artist") as? String,
-                let band = song.value(forKey: "band") as? String else { return nil }
+                      let artist = song.value(forKey: "artist") as? String,
+                      let band = song.value(forKey: "band") as? String else { return nil }
+                
+                let isFavourite = song.value(forKey: "isFavourite") as? Bool ?? false
 
                 let imageData = song.value(forKey: "image") as? Data
                 let image = imageData != nil ? UIImage(data: imageData!) : nil
@@ -161,10 +208,40 @@ class FileManagerHelper {
                 let audioPath = song.value(forKey: "audio") as? String
                 let audio = audioPath != nil ? URL(fileURLWithPath: audioPath!) : nil
 
-                return Song(title: title, artist: artist, band: band, image: image, audio: audio)
+                return Song(title: title, artist: artist, band: band, image: image, audio: audio, isFavourite: isFavourite)
             }
         } catch {
-            print("No se ha podido cargar las canciones de CoreData")
+            print("❌No se ha podido cargar las canciones de CoreData")
+            return []
+        }
+    }
+    
+    static func loadFavouriteSongsFromCoreData() -> [Song] {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return [] }
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "SongEntity")
+            fetchRequest.predicate = NSPredicate(format: "isFavourite == %@", NSNumber(value: true))
+        
+        do {
+            let songs = try context.fetch(fetchRequest)
+            return songs.compactMap { song in
+                guard let title = song.value(forKey: "title") as? String,
+                      let artist = song.value(forKey: "artist") as? String,
+                      let band = song.value(forKey: "band") as? String else { return nil }
+                
+                let isFavourite = song.value(forKey: "isFavourite") as? Bool ?? false
+                
+                let imageData = song.value(forKey: "image") as? Data
+                let image = imageData != nil ? UIImage(data: imageData!) : nil
+                
+                let audioPath = song.value(forKey: "audio") as? String
+                let audio = audioPath != nil ? URL(fileURLWithPath: audioPath!) : nil
+                
+                return Song(title: title, artist: artist, band: band, image: image, audio: audio, isFavourite: isFavourite)
+            }
+        } catch {
+            print("❌No se ha podido cargar las canciones favoritas de CoreData")
             return []
         }
     }

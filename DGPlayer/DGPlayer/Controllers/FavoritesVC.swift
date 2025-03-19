@@ -11,7 +11,15 @@ class FavoritesVC: SongsVC {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
+        let songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
+        tableView.setSongs(songs: songs)
+        
+        view.addSubview(tableView.tableView)
+        configureTableView()
+        isSearchEnable = false
+        
+        navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
     }
     
 

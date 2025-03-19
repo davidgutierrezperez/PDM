@@ -29,6 +29,12 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         view.backgroundColor = .systemBackground
         navigationController?.navigationItem.backButtonTitle = "Home"
         navigationItem.largeTitleDisplayMode = .never
+        
+        if (FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)){
+            changeAddToFavouriteButtonSymbol(systemName: DGSongControl.favouriteIcon)
+        } else {
+            changeAddToFavouriteButtonSymbol(systemName: DGSongControl.noFavouriteIcon)
+        }
     }
     
     init(indexSelectedSong: Int, songs: [Song]) {
@@ -38,7 +44,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.songCurrentTimer = 0.0
         
         
-
     
         super.init(nibName: nil, bundle: nil)
         
@@ -148,6 +153,13 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         updateView(with: songs[randomNumber])
     }
     
+    @objc private func addSongToFavourites(){
+        FileManagerHelper.addSongToFavourites(title: song.title!)
+            
+        let favouriteIcon = FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!) ? DGSongControl.favouriteIcon : DGSongControl.noFavouriteIcon
+        changeAddToFavouriteButtonSymbol(systemName: favouriteIcon)
+    }
+    
     func progressSliderChanged(to value: Float) {}
     func volumeSliderChanged(to value: Float){}
     
@@ -168,6 +180,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private func changePauseButtonSymbol(systemName: String){
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold)
         songControls.pauseButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
+    }
+    
+    private func changeAddToFavouriteButtonSymbol(systemName: String){
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
+        songControls.addToFavouriteButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
     }
     
     
@@ -207,6 +224,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.forwardButton.addTarget(self, action: #selector(changeToNextSong), for: .touchUpInside)
         songControls.repeatButton.addTarget(self, action: #selector(repeatSong), for: .touchUpInside)
         songControls.randomSongButton.addTarget(self, action: #selector(randomSong), for: .touchUpInside)
+        songControls.addToFavouriteButton.addTarget(self, action: #selector(addSongToFavourites), for: .touchUpInside)
+        
+        if (song.isFavourite){
+            changeAddToFavouriteButtonSymbol(systemName: DGSongControl.favouriteIcon)
+        }
     }
     
     private func configureImageSong(){
@@ -267,6 +289,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private func configure(){
         view.addSubview(albumArtImageView)
         view.addSubview(songTitle)
+        view.addSubview(songControls.addToFavouriteButton)
         
         albumArtImageView.layer.cornerRadius = 10
 
@@ -282,22 +305,28 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songTitle.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-                //  Imagen del álbum (arriba, centrada)
-                albumArtImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-                albumArtImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                albumArtImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.95),
-                albumArtImageView.heightAnchor.constraint(equalTo: albumArtImageView.widthAnchor),
+            // 🔹 Imagen del álbum (arriba, centrada)
+            albumArtImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            albumArtImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            albumArtImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.95),
+            albumArtImageView.heightAnchor.constraint(equalTo: albumArtImageView.widthAnchor),
 
-                //  Título de la canción (debajo de la imagen, centrado)
-                songTitle.topAnchor.constraint(equalTo: albumArtImageView.bottomAnchor, constant: 15),
-                songTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            // 🔹 Título de la canción (debajo de la imagen, alineado a la izquierda)
+            songTitle.topAnchor.constraint(equalTo: albumArtImageView.bottomAnchor, constant: 15),
+            songTitle.leadingAnchor.constraint(equalTo: albumArtImageView.leadingAnchor),
 
-                //  Controles (debajo del título)
-                songControls.view.topAnchor.constraint(equalTo: songTitle.bottomAnchor, constant: 40),
-                songControls.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                songControls.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                songControls.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
-            ])
+            // 🔹 Botón de favorito (debajo de la imagen, alineado a la derecha)
+            songControls.addToFavouriteButton.topAnchor.constraint(equalTo: albumArtImageView.bottomAnchor, constant: 15),
+            songControls.addToFavouriteButton.trailingAnchor.constraint(equalTo: albumArtImageView.trailingAnchor),
+
+            // 🔹 Controles (debajo del título y botón)
+            songControls.view.topAnchor.constraint(equalTo: songTitle.bottomAnchor, constant: 40),
+            songControls.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            songControls.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            songControls.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+        ])
+
+
     }
     
     private func updateSongTitle(with title: String?) {
@@ -324,9 +353,14 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         albumArtImageView.image = song.image ?? UIImage(systemName: "music.note")
         changePauseButtonSymbol(systemName: DGSongControl.playIcon)
         updateSongTitle(with: song.title)
+        
+        let songIsFavourite = FileManagerHelper.isSongInFavourites(title: song.title!)
+        let favouriteIcon = songIsFavourite ? DGSongControl.favouriteIcon : DGSongControl.noFavouriteIcon
+        changeAddToFavouriteButtonSymbol(systemName: favouriteIcon)
 
         view.setNeedsLayout()
         view.layoutIfNeeded()
+        
         
         
         navigationController?.navigationBar.prefersLargeTitles = true

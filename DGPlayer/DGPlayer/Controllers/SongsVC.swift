@@ -18,8 +18,7 @@ class SongsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let songs = FileManagerHelper.loadSongsFromCoreData()
-        tableView = DGTableView(songs: songs)
+        tableView = DGTableView(songs: [])
         tableView.delegate = self
         tableView.tableView.delegate = tableView
         

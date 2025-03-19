@@ -5,6 +5,7 @@
         <attribute name="audio" optional="YES" attributeType="String"/>
         <attribute name="band" optional="YES" attributeType="String"/>
         <attribute name="image" optional="YES" attributeType="Binary"/>
+        <attribute name="isFavourite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="title" optional="YES" attributeType="String"/>
     </entity>
 </model>
