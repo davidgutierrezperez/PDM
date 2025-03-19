@@ -8,12 +8,14 @@
 import UIKit
 
 class FavoritesVC: SongsVC {
+    
+    private var songs: [Song] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
-        tableView.setSongs(songs: songs)
+        songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
+        tableView.setSongs(songs: self.songs)
         
         view.addSubview(tableView.tableView)
         configureTableView()
@@ -22,15 +24,19 @@ class FavoritesVC: SongsVC {
         navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func deleteSong(at index: Int){
+        let song = tableView.songs[index]
+        tableView.songs.remove(at: index)
+        tableView.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+        
+        FileManagerHelper.addSongToFavourites(title: song.title!)
     }
-    */
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
+        tableView.setSongs(songs: songs)
+    }
 
 }

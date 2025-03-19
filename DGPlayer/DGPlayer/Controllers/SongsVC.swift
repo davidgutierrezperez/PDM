@@ -68,6 +68,7 @@ class SongsVC: UIViewController {
     }
     
     func deleteSong(at index: Int){
+        print("SongsVC: deleteSong")
         let songToDelete = tableView.songs[index]
         FileManagerHelper.deleteSong(song: songToDelete)
     }
@@ -142,7 +143,8 @@ extension SongsVC: UICollectionViewDelegateFlowLayout {
 
 extension SongsVC: DGTableViewDelegate {
     func didDeleteSong(at index: Int){
+        print("SongsVC: didDeleteSong 1")
         deleteSong(at: index)
-        print("SongsVC: didDeleteSong")
+        print("SongsVC: didDeleteSong 2")
     }
 }

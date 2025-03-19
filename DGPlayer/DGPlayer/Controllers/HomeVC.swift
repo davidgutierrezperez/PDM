@@ -14,7 +14,7 @@ class HomeVC: SongsVC {
         super.viewDidLoad()
         
         let songs = FileManagerHelper.loadSongsFromCoreData()
-        tableView = DGTableView(songs: songs)
+        tableView.setSongs(songs: songs)
             
         view.addSubview(tableView.tableView)
         configureTableView()
@@ -24,6 +24,11 @@ class HomeVC: SongsVC {
         
         addTargetToButton(boton: addButton, target: self, action: #selector(buttonTupped))
         addTargetToButton(boton: enableSearchButton, target: self, action: #selector(enableSearchByButton))
+    }
+    
+    override func deleteSong(at index: Int){
+        let song = tableView.songs[index]
+        FileManagerHelper.deleteSong(song: song)
     }
     
     private func addSongToTableView(song: Song){

@@ -8,7 +8,7 @@
 import UIKit
 import CoreData
 
-struct Song {
+struct Song: Equatable, Hashable {
     let title: String?
     let artist: String?
     let band: String?
