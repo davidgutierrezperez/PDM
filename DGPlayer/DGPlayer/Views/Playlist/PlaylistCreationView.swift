@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 
 class PlaylistCreationView: UIViewController {
     
@@ -61,13 +62,12 @@ class PlaylistCreationView: UIViewController {
         playlistImage.backgroundColor = UIColor(white: 0.2, alpha: 1.0) // fondo oscuro
         playlistImage.layer.cornerRadius = 10
         playlistImage.clipsToBounds = true
-        
-        playlistImage.addSubview(imagePickerButton)
     }
     
     func configure(){
         view.addSubview(textfield)
         view.addSubview(playlistImage)
+        view.addSubview(imagePickerButton)
         
         playlistImage.translatesAutoresizingMaskIntoConstraints = false
         imagePickerButton.translatesAutoresizingMaskIntoConstraints = false

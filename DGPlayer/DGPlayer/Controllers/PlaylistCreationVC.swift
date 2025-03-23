@@ -8,13 +8,11 @@
 import UIKit
 
 class PlaylistCreationVC: PlaylistCreationView {
-    
-    private var selectImageButton = UIButton()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        configure()
+        
+        imagePickerButton.addTarget(self, action: #selector(pickImageForPlaylist), for: .touchUpInside)
     }
     
     
@@ -53,5 +51,34 @@ class PlaylistCreationVC: PlaylistCreationView {
     @objc private func checkIfTextfieldIsEmpty(){
         okButton.isEnabled = (!textfield.text!.isEmpty)
     }
+    
+    @objc private func pickImageForPlaylist(){
+        let imagePicker = UIDocumentPickerViewController(forOpeningContentTypes: [.png, .jpeg])
+        imagePicker.delegate = self
+        
+        present(imagePicker, animated: true)
+        
+    }
 
+}
+
+extension PlaylistCreationVC: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let selectedImage = urls.first else { return }
+        
+        if (selectedImage.startAccessingSecurityScopedResource()){
+            defer {
+                selectedImage.stopAccessingSecurityScopedResource()
+            }
+            
+            do {
+                let imageData = try Data(contentsOf: selectedImage)
+                if let image = UIImage(data: imageData){
+                    playlistImage.image = image
+                }
+            } catch {
+                print("❌ No se pudo cargar la imagen: \(selectedImage.lastPathComponent) ")
+            }
+        }
+    }
 }
