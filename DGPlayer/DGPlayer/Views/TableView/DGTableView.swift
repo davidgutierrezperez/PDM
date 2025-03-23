@@ -33,7 +33,7 @@ class DGTableView: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.register(DGSongCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.register(DGCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.rowHeight = 60
     }
     
@@ -68,9 +68,9 @@ class DGTableView: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! DGSongCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! DGCell
         let song = isFiltering ? filteredSongs[indexPath.row] : songs[indexPath.row]
-        cell.configure(song: song)
+        cell.configure(cellTitle: song.title!, cellImage: song.image)
     
         return cell
     }

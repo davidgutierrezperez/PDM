@@ -26,13 +26,17 @@ class SongsVC: UIViewController {
         scrollView.isScrollEnabled = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         
-        view.backgroundColor = .systemBackground
         navigationItem.hidesSearchBarWhenScrolling = false
 
         navigationItem.searchController = configureSearchController()
-        
+        view.backgroundColor = .systemBackground
         addButton = configureAddButton()
         enableSearchButton = configureSearchButton()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
     
     func configureSearchController() -> UISearchController {

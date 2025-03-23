@@ -31,17 +31,19 @@ class FileManagerHelper {
     }
     
     static func handleSelectedAudio(url: URL) -> Bool {
-        if (!checkIfAudioFileExist(from: url)){
+        
+
             guard let savedURL = FileManagerHelper.saveAudioFile(from: url) else { return false }
+        
+            print("Estamos aquí")
             
             let image = FileManagerHelper.getImageFromAudioFile(from: savedURL)
             
             saveSongToCoreData(title: savedURL.lastPathComponent, artist: "", band: "", image: image, audioPath: savedURL)
             
             return true
-        }
         
-        return false
+        
     }
 
     
@@ -65,19 +67,29 @@ class FileManagerHelper {
         let fileManager = FileManager.default
         let destinationPath = getDocumentsDirectory().appendingPathComponent(url.lastPathComponent)
         
-        do {
-            if fileManager.fileExists(atPath: destinationPath.path) {
-                try fileManager.removeItem(at: destinationPath)
-            }
-            
-            try fileManager.copyItem(at: url, to: destinationPath)
-            
-            return destinationPath
-        } catch {
-            print("❌No se ha podido guardar el archivo en: ", url)
-            return nil
-        }
+        print("Aquí")
         
+
+            
+            do {
+                if fileManager.fileExists(atPath: destinationPath.path) {
+                    try fileManager.removeItem(at: destinationPath)
+                }
+                
+                if fileManager.isUbiquitousItem(at: url) {
+                            try fileManager.startDownloadingUbiquitousItem(at: url)
+                        }
+
+                
+                try fileManager.copyItem(at: url, to: destinationPath)
+                
+                print("Se ha guarado correctamente en: ", destinationPath)
+                return destinationPath
+            } catch {
+                print("❌No se ha podido guardar el archivo en: ", url)
+                return nil
+            }
+
     }
     
     static func saveSongToCoreData(title: String, artist: String, band: String, image: UIImage, audioPath: URL){

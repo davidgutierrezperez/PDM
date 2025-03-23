@@ -39,13 +39,15 @@ class DGSongControl: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = nil
         
         configureButtons()
         configureSongLabels()
         configureSlider()
         configure()
     }
+    
+    
     
     private func configureSongLabels() {
         songCurrentLabel.text = "0:00"
@@ -69,11 +71,14 @@ class DGSongControl: UIViewController {
         repeatButton.setImage(UIImage(systemName: DGSongControl.repeatIcon, withConfiguration: mediaumConfig), for: .normal)
         randomSongButton.setImage(UIImage(systemName: DGSongControl.randomSongIcon, withConfiguration: mediaumConfig), for: .normal)
         
-        pauseButton.tintColor = .black
-        backwardButton.tintColor = .black
-        forwardButton.tintColor = .black
-        repeatButton.tintColor = .black
-        randomSongButton.tintColor = .black
+        let isDarkMode = traitCollection.userInterfaceStyle == .dark
+        let tintColor: UIColor = (isDarkMode) ? .white : .black
+        
+        pauseButton.tintColor = tintColor
+        backwardButton.tintColor = tintColor
+        forwardButton.tintColor = tintColor
+        repeatButton.tintColor = tintColor
+        randomSongButton.tintColor = tintColor
         addToFavouriteButton.tintColor = .systemRed
         
         pauseButton.translatesAutoresizingMaskIntoConstraints = false
@@ -96,7 +101,8 @@ class DGSongControl: UIViewController {
     }
     
     private func configureSlider() {
-        let smallThumb = UIImage(systemName: "circle.fill")?.resized(to:CGSize(width: 10, height: 10))
+        let smallThumb = UIImage(systemName: "circle.fill")?.resized(to:CGSize(width: 20, height: 20))
+        smallThumb?.withTintColor(UIColor.white)
         
         progressSlider.setThumbImage(smallThumb, for: .normal)
         progressSlider.minimumValue = 0

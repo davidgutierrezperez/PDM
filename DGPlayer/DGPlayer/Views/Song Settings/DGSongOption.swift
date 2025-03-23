@@ -14,6 +14,7 @@ class DGSongOption: UITableViewCell {
     var label = UILabel()
     var toggleSwitch = UISwitch()
     var isOptionEnabled: Bool = false
+    let songSetting: SongSetting = .Looping
     
     var switchAction: ((Bool) -> Void)?
         

@@ -10,11 +10,9 @@ import UIKit
 class SongOptionsVC: UIViewController {
     
     var tableView : DGSongOptionsTableView!
-    var options: [DGSongOption] = [
-        DGSongOption(), // 🔹 Se crea una celda por opción
-        DGSongOption()
+    var options: [DGSongOption] = []
     
-    ]
+    static let loopingSettingNumber:Int = 0
 
 
     override func viewDidLoad() {
@@ -28,8 +26,11 @@ class SongOptionsVC: UIViewController {
     }
     
     private func configureOptions(){
-        options[0].configure(text: "Autoplay", isEnabled: false)
-        options[1].configure(text: "Loop", isEnabled: false)
+        let loopingSetting = DGSongOption()
+        
+        loopingSetting.configure(text: "Loop", isEnabled: false)
+        
+        options.append(loopingSetting)
     }
 
     

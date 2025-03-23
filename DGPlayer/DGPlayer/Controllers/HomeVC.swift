@@ -15,6 +15,7 @@ class HomeVC: SongsVC {
         
         let songs = FileManagerHelper.loadSongsFromCoreData()
         tableView.setSongs(songs: songs)
+        view.backgroundColor = .systemBackground
             
         view.addSubview(tableView.tableView)
         configureTableView()
@@ -25,6 +26,12 @@ class HomeVC: SongsVC {
         addTargetToButton(boton: addButton, target: self, action: #selector(buttonTupped))
         addTargetToButton(boton: enableSearchButton, target: self, action: #selector(enableSearchByButton))
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = false
+    }
+    
     
     override func deleteSong(at index: Int){
         let song = tableView.songs[index]
@@ -65,11 +72,14 @@ extension HomeVC: UIDocumentPickerDelegate {
         guard let selectedFile = urls.first else { return }
         
         print("La ubicación del archivo guardado es: ", FileManagerHelper.getDocumentsDirectory())
-        
-        if (FileManagerHelper.handleSelectedAudio(url: selectedFile)){
-            let updatedSongs = FileManagerHelper.loadSongsFromCoreData()
-            if let newSong = updatedSongs.last {
-                addSongToTableView(song: newSong)
+        if selectedFile.startAccessingSecurityScopedResource() {
+            defer { selectedFile.stopAccessingSecurityScopedResource() }
+            
+            if (FileManagerHelper.handleSelectedAudio(url: selectedFile)){
+                let updatedSongs = FileManagerHelper.loadSongsFromCoreData()
+                if let newSong = updatedSongs.last {
+                    addSongToTableView(song: newSong)
+                }
             }
         }
     }

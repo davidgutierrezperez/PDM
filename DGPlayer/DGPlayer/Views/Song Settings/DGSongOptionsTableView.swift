@@ -52,8 +52,9 @@ class DGSongOptionsTableView: UITableViewController {
         cell.configure(text: option.label.text!, isEnabled: option.isOptionEnabled)
         
         cell.switchAction = { [weak self] isOn in
-                self?.options[indexPath.row].isOptionEnabled = isOn
+            self?.options[indexPath.row].isOptionEnabled = isOn
         }
+        
         return cell
     }
     

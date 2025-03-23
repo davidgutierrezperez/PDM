@@ -8,22 +8,26 @@
 import UIKit
 
 class PlaylistVC: SongsVC {
+    
+    private var playlists: [Playlist] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
+        addTargetToButton(boton: addButton, target: self, action: #selector(addPlaylist))
 
         view.backgroundColor = .systemBackground
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @objc private func addPlaylist(){
+        let addPlaylistVC = PlaylistCreationVC(placeholder: "Playlist title")
+        let navVC = UINavigationController(rootViewController: addPlaylistVC)
+        
+        self.present(navVC, animated: true)
     }
-    */
+    
+
+   
 
 }

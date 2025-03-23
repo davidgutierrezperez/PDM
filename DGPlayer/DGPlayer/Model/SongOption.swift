@@ -7,7 +7,6 @@
 
 import UIKit
 
-struct SongOption {
-    let label: String
-    var isEnabled: Bool
+enum SongSetting {
+    case Looping
 }
