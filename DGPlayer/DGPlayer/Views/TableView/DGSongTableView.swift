@@ -13,7 +13,7 @@ protocol DGTableViewDelegate: AnyObject {
     func didDeleteSong(at index: Int)
 }
 
-class DGTableView: UITableViewController {
+class DGSongTableView: UITableViewController {
     
     var songs: [Song] = []
     var filteredSongs: [Song] = []

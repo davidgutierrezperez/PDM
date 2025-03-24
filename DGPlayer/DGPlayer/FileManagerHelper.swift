@@ -66,29 +66,25 @@ class FileManagerHelper {
     static func saveAudioFile(from url: URL) -> URL? {
         let fileManager = FileManager.default
         let destinationPath = getDocumentsDirectory().appendingPathComponent(url.lastPathComponent)
-        
-        print("Aquí")
-        
 
-            
-            do {
-                if fileManager.fileExists(atPath: destinationPath.path) {
-                    try fileManager.removeItem(at: destinationPath)
-                }
-                
-                if fileManager.isUbiquitousItem(at: url) {
-                            try fileManager.startDownloadingUbiquitousItem(at: url)
-                        }
-
-                
-                try fileManager.copyItem(at: url, to: destinationPath)
-                
-                print("Se ha guarado correctamente en: ", destinationPath)
-                return destinationPath
-            } catch {
-                print("❌No se ha podido guardar el archivo en: ", url)
-                return nil
+        do {
+            if fileManager.fileExists(atPath: destinationPath.path) {
+                try fileManager.removeItem(at: destinationPath)
             }
+            
+            if fileManager.isUbiquitousItem(at: url) {
+                try fileManager.startDownloadingUbiquitousItem(at: url)
+            }
+            
+            try fileManager.copyItem(at: url, to: destinationPath)
+            
+            print("Se ha guarado correctamente en: ", destinationPath)
+            return destinationPath
+            
+        } catch {
+            print("❌No se ha podido guardar el archivo en: ", url)
+            return nil
+        }
 
     }
     
@@ -256,6 +252,53 @@ class FileManagerHelper {
             print("❌No se ha podido cargar las canciones favoritas de CoreData")
             return []
         }
+    }
+    
+    static func savePlaylistToCoreData(playlist: Playlist){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainerPlaylist.viewContext
+        
+        let newPlaylist = NSEntityDescription.insertNewObject(forEntityName: "PlaylistEntity", into: context)
+        
+        newPlaylist.setValue(playlist.name, forKey: "name")
+        newPlaylist.setValue([], forKey: "songs")
+        
+        if let image = playlist.image?.pngData() {
+            newPlaylist.setValue(image, forKey: "image")
+        }
+        
+        
+        do {
+            try context.save()
+            print("✅Se ha podido guardar la nueva Playlist en CoreData")
+        } catch {
+            print("❌No se ha podido guardar la Playlist en CoreData")
+        }
+        
+    }
+    
+    static func loadPlaylistsFromCoreData() -> [Playlist] {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return [] }
+        let context = appDelegate.persistentContainerPlaylist.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "PlaylistEntity")
+        
+        do {
+            let playlists = try context.fetch(fetchRequest)
+            print("Se ha podido obtener la playlist")
+            
+            return playlists.compactMap { playlist in
+                let playlistName = playlist.value(forKey: "name") as? String
+                let imageData = playlist.value(forKey: "image") as? Data
+                let image = imageData != nil ? UIImage(data: imageData!) : nil
+
+                return Playlist(name: playlistName!, image: image as UIImage?)
+            }
+        } catch {
+            print("ERROR AL OBTENER LAS PLAYLISTS")
+        }
+        
+        return []
     }
 }
 

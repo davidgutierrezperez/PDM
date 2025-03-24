@@ -19,21 +19,18 @@ class DGCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
+        setupViews()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(cellTitle: String, cellImage: UIImage?) {
-        title.text = cellTitle
-        image.image = (cellImage != nil) ? cellImage : UIImage(systemName: "music.note")
-        image.contentMode = (cellImage != nil) ? .scaleAspectFill : .scaleAspectFit
-
+    
+    
+    private func setupViews(){
         image.clipsToBounds = true
         image.layer.cornerRadius = 6
-        image.layer.masksToBounds = true
-
         // Configuración de estilos
         title.font = UIFont.boldSystemFont(ofSize: 16)
 
@@ -61,11 +58,41 @@ class DGCell: UITableViewCell {
             title.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -12)
         ])
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        image.image = nil
+        image.contentMode = .scaleAspectFit
+        image.tintColor = nil
+    }
+    
+    func configure(cellTitle: String, cellImage: UIImage?) {
+        title.text = cellTitle
+        
+        image.image = nil
+        image.tintColor = nil
+        image.contentMode = .scaleAspectFit
 
-    
+            if let cellImage = cellImage,
+               cellImage != UIImage(systemName: "music.note") {
+                image.image = cellImage
+                image.contentMode = .scaleAspectFill
+            } else {
+                let symbolImage = UIImage(systemName: "music.note")?
+                    .withRenderingMode(.alwaysTemplate)
+                image.image = symbolImage
+                image.tintColor = .systemBlue
+                image.contentMode = .scaleAspectFit
+            }
+        
+        if (image.contentMode == .scaleToFill){
+            print("scaleToFill")
+        } else if (image.contentMode == .scaleAspectFit){
+            print("scaleAspectFit")
+        } else {
+            print("scaleAspectFill")
+        }
 
-    
-    
-    
+    }
     
 }

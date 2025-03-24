@@ -16,9 +16,7 @@ class FavoritesVC: SongsVC {
         
         songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
         tableView.setSongs(songs: self.songs)
-        
-        view.addSubview(tableView.tableView)
-        configureTableView()
+
         isSearchEnable = false
         
         navigationItem.rightBarButtonItems = [addButton, enableSearchButton]

@@ -8,14 +8,14 @@
 import UIKit
 
 class PlaylistCreationVC: PlaylistCreationView {
+    
+    var onPlaylistCreated: (() -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         imagePickerButton.addTarget(self, action: #selector(pickImageForPlaylist), for: .touchUpInside)
     }
-    
-    
     
     override func configureButtons(){
         super.configureButtons()
@@ -41,7 +41,11 @@ class PlaylistCreationVC: PlaylistCreationView {
     }
     
     @objc private func createPlaylist(){
+
+        FileManagerHelper.savePlaylistToCoreData(playlist: Playlist(name: textfield.text!, image: playlistImage.image))
         
+        onPlaylistCreated?()
+        dismiss(animated: true)
     }
     
     @objc private func dismissVC(){
@@ -57,7 +61,6 @@ class PlaylistCreationVC: PlaylistCreationView {
         imagePicker.delegate = self
         
         present(imagePicker, animated: true)
-        
     }
 
 }

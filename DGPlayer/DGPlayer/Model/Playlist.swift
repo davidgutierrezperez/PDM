@@ -9,10 +9,10 @@ import UIKit
 
 struct Playlist {
     var name: String
-    var image: UIImage
+    var image: UIImage?
     var songs: [Song]
     
-    init(name: String, image: UIImage, songs: [Song]){
+    init(name: String, image: UIImage?, songs: [Song] = []){
         self.name = name
         self.image = image
         self.songs = songs

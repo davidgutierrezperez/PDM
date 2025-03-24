@@ -41,7 +41,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         return container
     }()
-
+    
+    lazy var persistentContainerPlaylist: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "PlayListModel") // Asegúrate de usar el mismo nombre que tu .xcdatamodeld
+        container.loadPersistentStores { (_, error) in
+            if let error = error as NSError? {
+                fatalError("❌ Error al cargar Core Data: \(error), \(error.userInfo)")
+            }
+        }
+        return container
+    }()
     func saveContext() {
         let context = persistentContainer.viewContext
         if context.hasChanges {

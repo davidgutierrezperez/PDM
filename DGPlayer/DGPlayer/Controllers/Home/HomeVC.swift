@@ -16,9 +16,7 @@ class HomeVC: SongsVC {
         let songs = FileManagerHelper.loadSongsFromCoreData()
         tableView.setSongs(songs: songs)
         view.backgroundColor = .systemBackground
-            
-        view.addSubview(tableView.tableView)
-        configureTableView()
+
         isSearchEnable = true
         
         navigationItem.rightBarButtonItems = [addButton, enableSearchButton]

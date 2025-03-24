@@ -7,20 +7,34 @@
 
 import UIKit
 
-class SongsVC: UIViewController {
+class SongsVC: MainViewsCommonVC {
     
-    var tableView: DGTableView!
-    let scrollView = UIScrollView()
-    var addButton = UIBarButtonItem()
-    var enableSearchButton = UIBarButtonItem()
-    var isSearchEnable: Bool = false
-
+    var tableView: DGSongTableView!
+    
+    override init(){
+        tableView = DGSongTableView(songs: [])
+        
+        super.init()
+    }
+    
+    init(songs: [Song]){
+        tableView = DGSongTableView(songs: songs)
+        
+        super.init()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init()
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView = DGTableView(songs: [])
         tableView.delegate = self
         tableView.tableView.delegate = tableView
+        
+        print("EL NÚMERO DE CANCIONES ES: ", tableView.songs.count)
         
         view.addSubview(scrollView)
         scrollView.isScrollEnabled = true
@@ -32,6 +46,8 @@ class SongsVC: UIViewController {
         view.backgroundColor = .systemBackground
         addButton = configureAddButton()
         enableSearchButton = configureSearchButton()
+        
+        configureTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -50,6 +66,7 @@ class SongsVC: UIViewController {
     }
     
     func configureTableView(){
+        view.addSubview(tableView.tableView)
         tableView.tableView.delegate = self
         tableView.tableView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -72,26 +89,6 @@ class SongsVC: UIViewController {
     }
     
     func deleteSong(at index: Int){}
-    
-    private func configureAddButton() -> UIBarButtonItem {
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: nil)
-        addButton.tintColor = .systemRed
-        
-        return addButton
-    }
-    
-    private func configureSearchButton() -> UIBarButtonItem {
-        let enableSearchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: nil)
-        enableSearchButton.tintColor = .systemRed
-        
-        return enableSearchButton
-    }
-    
-    func addTargetToButton(boton: UIBarButtonItem, target: AnyObject?, action: Selector) {
-        boton.target = target
-        boton.action = action
-    }
-    
 
 }
 
