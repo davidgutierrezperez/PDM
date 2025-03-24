@@ -20,6 +20,8 @@ class FavoritesVC: SongsVC {
         isSearchEnable = false
         
         navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
+        
+        configureTableView()
     }
     
     override func deleteSong(at index: Int){

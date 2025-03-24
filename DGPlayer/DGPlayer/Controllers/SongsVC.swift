@@ -46,8 +46,6 @@ class SongsVC: MainViewsCommonVC {
         view.backgroundColor = .systemBackground
         addButton = configureAddButton()
         enableSearchButton = configureSearchButton()
-        
-        configureTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {

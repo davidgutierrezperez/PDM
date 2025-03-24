@@ -74,10 +74,6 @@ class DGPlaylistTableView: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as? DGCell
         let playlist = isFiltering ? filteredPlaylist[indexPath.row] : playlists[indexPath.row]
-        
-        if (playlist.image == nil){
-            print("Son iguales")
-        }
         cell?.configure(cellTitle: playlist.name, cellImage: playlist.image)
 
         return cell!

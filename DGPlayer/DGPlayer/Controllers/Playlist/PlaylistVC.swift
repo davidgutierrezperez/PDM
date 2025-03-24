@@ -67,8 +67,9 @@ extension PlaylistVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         let playlist = self.tableView.playlists[indexPath.item]
         
-        let songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
-        let songVC = SongsVC(songs: songs)
+        let songs = FileManagerHelper.loadSongsFromCoreData()
+        
+        let songVC = PlaylistSongsVC(playlist: playlist, songs: songs)
         songVC.setSongs(songs: songs)
         
         print("EL NÚMERO DE CANCIONES es: ", songs.count)

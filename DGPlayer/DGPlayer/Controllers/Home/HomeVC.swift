@@ -23,6 +23,8 @@ class HomeVC: SongsVC {
         
         addTargetToButton(boton: addButton, target: self, action: #selector(buttonTupped))
         addTargetToButton(boton: enableSearchButton, target: self, action: #selector(enableSearchByButton))
+        
+        configureTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {

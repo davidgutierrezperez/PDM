@@ -81,7 +81,7 @@ class DGCell: UITableViewCell {
                 let symbolImage = UIImage(systemName: "music.note")?
                     .withRenderingMode(.alwaysTemplate)
                 image.image = symbolImage
-                image.tintColor = .systemBlue
+                image.tintColor = .systemGray
                 image.contentMode = .scaleAspectFit
             }
         
