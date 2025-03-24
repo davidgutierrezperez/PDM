@@ -73,7 +73,7 @@ extension PlaylistVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         let playlist = self.tableView.playlists[indexPath.item]
         
-        let songs = FileManagerHelper.loadSongsFromCoreData()
+        let songs = FileManagerHelper.loadSongsOfPlaylistFromCoreData(name: playlist.name)
         
         let songVC = PlaylistSongsVC(playlist: playlist, songs: songs)
         songVC.setSongs(songs: songs)

@@ -224,6 +224,37 @@ class FileManagerHelper {
         }
     }
     
+    static func loadSongFromCoreData(title: String) -> Song? {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return nil }
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "SongEntity")
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title)
+        
+        do {
+            let result = try context.fetch(fetchRequest)
+            if let song = result.first {
+                guard let title = song.value(forKey: "title") as? String,
+                      let artist = song.value(forKey: "artist") as? String,
+                      let band = song.value(forKey: "band") as? String else { return nil }
+                
+                let isFavourite = song.value(forKey: "isFavourite") as? Bool ?? false
+
+                let imageData = song.value(forKey: "image") as? Data
+                let image = imageData != nil ? UIImage(data: imageData!) : nil
+
+                let audioPath = song.value(forKey: "audio") as? String
+                let audio = audioPath != nil ? URL(fileURLWithPath: audioPath!) : nil
+
+                return Song(title: title, artist: artist, band: band, image: image, audio: audio, isFavourite: isFavourite)
+            }
+        } catch {
+            print("❌No se ha podido cargar la canción de CoreData")
+        }
+        
+        return nil
+    }
+    
     static func loadFavouriteSongsFromCoreData() -> [Song] {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return [] }
         let context = appDelegate.persistentContainer.viewContext
@@ -320,6 +351,62 @@ class FileManagerHelper {
         } catch {
             print("NO SE PUEDO BORRAR LA PLAYLIST: ", playlistTitle)
         }
+    }
+    
+    static func addSongToPlaylist(playlistTitle: String, song: Song){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainerPlaylist.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "PlaylistEntity")
+        fetchRequest.predicate = NSPredicate(format: "name == %@", playlistTitle)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let playlist = results.first {
+                var currentSongs = playlist.value(forKey: "songs") as? [String] ?? []
+                
+                if let title = song.title, !currentSongs.contains(title) {
+                    currentSongs.append(title)
+                }
+                
+                playlist.setValue(currentSongs, forKey: "songs")
+                
+                try context.save()
+                print("✅ Canción '\(song.title ?? "")' añadida a la playlist '\(playlistTitle)'")
+            } else {
+                print("⚠️ Playlist no encontrada con nombre: \(playlistTitle)")
+            }
+        } catch {
+            print("No se pudo guardar la canción \(song.title) en \(playlistTitle)")
+        }
+    }
+    
+    static func loadSongsOfPlaylistFromCoreData(name: String) -> [Song] {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return [] }
+        let context = appDelegate.persistentContainerPlaylist.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "PlaylistEntity")
+        fetchRequest.predicate = NSPredicate(format: "name == %@", name)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let playlist = results.first {
+                let songNames = playlist.value(forKey: "songs") as? [String]
+                
+                var songs: [Song] = []
+                
+                songNames?.forEach({ song in
+                    songs.append(loadSongFromCoreData(title: song)!)
+                })
+                
+                return songs
+            }
+        } catch {
+            print("No se pudo obtener las canciones de la playlist: ", name)
+            return []
+        }
+        
+        return []
     }
 }
 

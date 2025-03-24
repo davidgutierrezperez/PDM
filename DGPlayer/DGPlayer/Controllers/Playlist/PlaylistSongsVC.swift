@@ -10,8 +10,11 @@ import UIKit
 class PlaylistSongsVC: SongsVC {
     
     private let playlistSettingButton = UIBarButtonItem()
+    private var playlist: Playlist
     
     init(playlist: Playlist, songs: [Song]){
+        
+        self.playlist = playlist
         
         super.init(songs: songs)
         
@@ -30,6 +33,7 @@ class PlaylistSongsVC: SongsVC {
 
         navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = title
+        configureButtons()
         
         view.backgroundColor = .systemBackground
     }
@@ -37,6 +41,20 @@ class PlaylistSongsVC: SongsVC {
     private func configureButtons(){
         playlistSettingButton.image = UIImage(systemName: "ellipsis")
         playlistSettingButton.tintColor = .systemRed
+        
+        addTargetToButton(boton: addButton, target: self, action: #selector(addSongToPlaylist))
+    }
+    
+    @objc private func addSongToPlaylist(){
+        let songVC = SongSelectorVC(playlistTitle: playlist.name)
+        
+        songVC.onSongSelected = { [weak self] newSong in
+            guard let self = self else { return }
+            self.tableView.addSong(song: newSong)
+        }
+        
+        let nv = UINavigationController(rootViewController: songVC)
+        present(nv, animated: true)
     }
 
 }
