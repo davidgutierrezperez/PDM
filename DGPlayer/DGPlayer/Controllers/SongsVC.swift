@@ -101,7 +101,6 @@ extension SongsVC: UISearchResultsUpdating, UISearchBarDelegate {
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        print(tableView.songs.count)
         setSongs(songs: tableView.songs)
         reloadTableView()
     }

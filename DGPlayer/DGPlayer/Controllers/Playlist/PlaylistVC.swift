@@ -23,6 +23,9 @@ class PlaylistVC: MainViewsCommonVC {
         
         navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
         addTargetToButton(boton: addButton, target: self, action: #selector(addPlaylist))
+        
+        navigationItem.searchController = configureSearchController()
+        navigationItem.hidesSearchBarWhenScrolling = false
 
         view.backgroundColor = .systemBackground
         
@@ -60,6 +63,16 @@ class PlaylistVC: MainViewsCommonVC {
         ])
     }
     
+    private func configureSearchController() -> UISearchController {
+        let searchController = UISearchController()
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search a song"
+        
+        return searchController
+    }
+    
     private func deletePlaylistFromCoreData(at index: Int){
         let title = tableView.playlists[index].name
         FileManagerHelper.deletePlaylistFromCoreData(playlistTitle: title)
@@ -88,4 +101,22 @@ extension PlaylistVC: DGPlaylistTableViewDelegate {
         self.deletePlaylistFromCoreData(at: index)
     }
 }
+
+extension PlaylistVC: UISearchResultsUpdating, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let filter = searchController.searchBar.text?.lowercased(), !filter.isEmpty else {
+            tableView.tableView.reloadData()
+            return
+        }
+        
+        let filteredPlaylists = tableView.playlists.filter { $0.name.lowercased().contains(filter) }
+        tableView.setPlaylist(playlists: filteredPlaylists)
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        tableView.setPlaylist(playlists: tableView.playlists)
+        tableView.tableView.reloadData()
+    }
+}
+
 

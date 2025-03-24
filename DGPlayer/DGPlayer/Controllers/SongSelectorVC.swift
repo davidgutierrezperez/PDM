@@ -41,16 +41,18 @@ class SongSelectorVC: SongsVC {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let song = self.tableView.songs[indexPath.row]
+        let song = (!self.tableView.isFiltering) ?
+                    self.tableView.songs[indexPath.row] :
+                    self.tableView.filteredSongs[indexPath.row]
+        
         FileManagerHelper.addSongToPlaylist(playlistTitle: playlistTitle, song: song)
         
         onSongSelected?(song)
         
+        navigationItem.searchController?.isActive = false
         dismiss(animated: true)
     }
     
-    override func deleteSong(at index: Int) {
-        
-    }
+    override func deleteSong(at index: Int) {}
     
 }
