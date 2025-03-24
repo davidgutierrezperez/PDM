@@ -18,6 +18,7 @@ class PlaylistVC: MainViewsCommonVC {
         
         playlists = FileManagerHelper.loadPlaylistsFromCoreData()
         tableView = DGPlaylistTableView(playlists: playlists)
+        tableView.delegate = self
         tableView.tableView.delegate = self
         
         navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
@@ -58,9 +59,14 @@ class PlaylistVC: MainViewsCommonVC {
             tableView.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
-   
-
+    
+    private func deletePlaylistFromCoreData(at index: Int){
+        let title = tableView.playlists[index].name
+        FileManagerHelper.deletePlaylistFromCoreData(playlistTitle: title)
+        
+        tableView.playlists.remove(at: index)
+        tableView.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+    }
 }
 
 extension PlaylistVC: UITableViewDelegate {
@@ -72,11 +78,14 @@ extension PlaylistVC: UITableViewDelegate {
         let songVC = PlaylistSongsVC(playlist: playlist, songs: songs)
         songVC.setSongs(songs: songs)
         
-        print("EL NÚMERO DE CANCIONES es: ", songs.count)
-        
         songVC.title = playlist.name
-        print(songs)
-        
         navigationController?.pushViewController(songVC, animated: true)
     }
 }
+
+extension PlaylistVC: DGPlaylistTableViewDelegate {
+    func deletePlaylist(at index: Int) {
+        self.deletePlaylistFromCoreData(at: index)
+    }
+}
+

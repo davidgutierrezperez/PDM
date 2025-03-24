@@ -34,7 +34,6 @@ class SongsVC: MainViewsCommonVC {
         tableView.delegate = self
         tableView.tableView.delegate = tableView
         
-        print("EL NÚMERO DE CANCIONES ES: ", tableView.songs.count)
         
         view.addSubview(scrollView)
         scrollView.isScrollEnabled = true
@@ -136,10 +135,8 @@ extension SongsVC: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension SongsVC: DGTableViewDelegate {
+extension SongsVC: DGSongTableViewDelegate {
     func didDeleteSong(at index: Int){
-        print("SongsVC: didDeleteSong 1")
         deleteSong(at: index)
-        print("SongsVC: didDeleteSong 2")
     }
 }

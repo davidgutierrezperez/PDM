@@ -84,14 +84,6 @@ class DGCell: UITableViewCell {
                 image.tintColor = .systemGray
                 image.contentMode = .scaleAspectFit
             }
-        
-        if (image.contentMode == .scaleToFill){
-            print("scaleToFill")
-        } else if (image.contentMode == .scaleAspectFit){
-            print("scaleAspectFit")
-        } else {
-            print("scaleAspectFill")
-        }
 
     }
     

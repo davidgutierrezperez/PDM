@@ -9,7 +9,7 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
-protocol DGTableViewDelegate: AnyObject {
+protocol DGSongTableViewDelegate: AnyObject {
     func didDeleteSong(at index: Int)
 }
 
@@ -19,7 +19,7 @@ class DGSongTableView: UITableViewController {
     var filteredSongs: [Song] = []
     var isFiltering = false
     
-    weak var delegate: DGTableViewDelegate?
+    weak var delegate: DGSongTableViewDelegate?
 
     init(songs: [Song]) {
         self.songs = songs

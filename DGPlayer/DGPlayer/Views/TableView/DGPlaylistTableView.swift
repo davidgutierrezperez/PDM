@@ -9,11 +9,17 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
+protocol DGPlaylistTableViewDelegate: AnyObject {
+    func deletePlaylist(at index: Int)
+}
+
 class DGPlaylistTableView: UITableViewController {
     
     var playlists: [Playlist] = []
     var filteredPlaylist: [Playlist] = []
     var isFiltering: Bool = false
+    
+    weak var delegate: DGPlaylistTableViewDelegate?
     
     
     override func viewDidLoad() {
@@ -88,17 +94,14 @@ class DGPlaylistTableView: UITableViewController {
     }
     */
 
-    /*
+    
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+            delegate?.deletePlaylist(at: indexPath.row)
+        }
     }
-    */
+    
 
     /*
     // Override to support rearranging the table view.

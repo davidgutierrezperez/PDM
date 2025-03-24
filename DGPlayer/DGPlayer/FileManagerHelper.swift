@@ -300,6 +300,27 @@ class FileManagerHelper {
         
         return []
     }
+    
+    static func deletePlaylistFromCoreData(playlistTitle: String){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainerPlaylist.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "PlaylistEntity")
+        fetchRequest.predicate = NSPredicate(format: "name == %@", playlistTitle)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let playlistToDelete = results.first {
+                context.delete(playlistToDelete)
+                try context.save()
+                print("✅Se ha podido eliminar la playlist: ", playlistTitle)
+            } else {
+                print("⚠️ No se encontró la playlist con el nombre: \(playlistTitle)")
+            }
+        } catch {
+            print("NO SE PUEDO BORRAR LA PLAYLIST: ", playlistTitle)
+        }
+    }
 }
 
 

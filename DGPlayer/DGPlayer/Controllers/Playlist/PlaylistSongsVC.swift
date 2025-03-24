@@ -9,13 +9,14 @@ import UIKit
 
 class PlaylistSongsVC: SongsVC {
     
-    private var infoPlaylist: DGInfoCollection
+    private let playlistSettingButton = UIBarButtonItem()
     
     init(playlist: Playlist, songs: [Song]){
-        self.infoPlaylist = DGInfoCollection(image: playlist.image, title: playlist.name)
         
         super.init(songs: songs)
-        setupView()
+        
+        configureButtons()
+        configureTableView()
     }
     
     required init(coder: NSCoder) {
@@ -24,45 +25,20 @@ class PlaylistSongsVC: SongsVC {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.rightBarButtonItems = [playlistSettingButton, addButton]
+
+        navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationItem.title = title
+        
         view.backgroundColor = .systemBackground
     }
     
-    private func configureInfoPlaylist(){
-        addChild(infoPlaylist)
-        view.addSubview(infoPlaylist.view)
-        infoPlaylist.didMove(toParent: self)
-        
-        infoPlaylist.view.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    override func configureTableView(){
-        tableView.tableView.delegate = self
-        tableView.tableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(tableView.tableView)
-        tableView.tableView.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    private func setupView(){
-        configureInfoPlaylist()
-        configureTableView()
-        
-        NSLayoutConstraint.activate([
-                // 🔹 Info Playlist arriba
-                infoPlaylist.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-                infoPlaylist.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                infoPlaylist.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                infoPlaylist.view.heightAnchor.constraint(equalToConstant: 350),
-
-                // 🔹 Tabla justo debajo
-                tableView.tableView.topAnchor.constraint(equalTo: infoPlaylist.view.bottomAnchor, constant: 20),
-                tableView.tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                tableView.tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                tableView.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-            ])
+    private func configureButtons(){
+        playlistSettingButton.image = UIImage(systemName: "ellipsis")
+        playlistSettingButton.tintColor = .systemRed
     }
 
-    
 }
 
 
