@@ -49,5 +49,8 @@ class SongSelectorVC: SongsVC {
         dismiss(animated: true)
     }
     
+    override func deleteSong(at index: Int) {
+        
+    }
     
 }

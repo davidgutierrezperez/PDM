@@ -408,6 +408,31 @@ class FileManagerHelper {
         
         return []
     }
+    
+    static func deleteSongOfPlaylistFromCoreData(playlistTitle: String, songTitle: String){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistentContainerPlaylist.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "PlaylistEntity")
+        fetchRequest.predicate = NSPredicate(format: "name == %@", playlistTitle)
+        
+        do {
+            let result = try context.fetch(fetchRequest)
+            if let playlist = result.first {
+                var currentSongs = playlist.value(forKey: "songs") as? [String] ?? []
+                
+                if (currentSongs.contains(songTitle)){
+                    currentSongs.removeAll { $0 == songTitle }
+                }
+                
+                playlist.setValue(currentSongs, forKey: "songs")
+                
+                try context.save()
+            }
+        } catch {
+            print("No se pudo obtener las cancion de la playlist: ", playlistTitle)
+        }
+    }
 }
 
 

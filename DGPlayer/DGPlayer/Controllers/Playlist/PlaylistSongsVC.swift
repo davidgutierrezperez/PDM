@@ -49,12 +49,20 @@ class PlaylistSongsVC: SongsVC {
         let songVC = SongSelectorVC(playlistTitle: playlist.name)
         
         songVC.onSongSelected = { [weak self] newSong in
-            guard let self = self else { return }
+            guard let self = self else { return }
             self.tableView.addSong(song: newSong)
         }
         
         let nv = UINavigationController(rootViewController: songVC)
         present(nv, animated: true)
+    }
+    
+    override func deleteSong(at index: Int) {
+        let song = tableView.songs[index] as Song
+        
+        FileManagerHelper.deleteSongOfPlaylistFromCoreData(playlistTitle: playlist.name, songTitle: song.title!)
+        tableView.songs.remove(at: index)
+        tableView.tableView.reloadData()
     }
 
 }
