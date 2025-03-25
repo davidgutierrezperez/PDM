@@ -110,7 +110,7 @@ extension PlaylistVC: UISearchResultsUpdating, UISearchBarDelegate {
         }
         
         let filteredPlaylists = tableView.playlists.filter { $0.name.lowercased().contains(filter) }
-        tableView.setPlaylist(playlists: filteredPlaylists)
+        tableView.setFilteredPlaylists(playlists: filteredPlaylists)
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
