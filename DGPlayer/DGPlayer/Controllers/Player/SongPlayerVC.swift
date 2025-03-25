@@ -25,7 +25,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private var optionButton = UIBarButtonItem()
     private var songOptions = SongOptionsVC()
     
-    private var audioPlayer: AVAudioPlayer?
     private var timerSong: Timer!
     
     // CONSTRUCTORS
@@ -91,20 +90,17 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         super.viewWillAppear(animated)
         updateFavoriteIcon()
         updateOptions()
+        
         tabBarController?.tabBar.isHidden = true
         
-        if let player = audioPlayer {
-            if !player.isPlaying {
-                songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
-            }
+        if let player = SongPlayerManager.shared.player, !player.isPlaying {
+            songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        if let player = audioPlayer {
-            player.stop()
-            songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
-        }
+        SongPlayerManager.shared.player?.stop()
+        songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
     }
     
     private func activateAudioPlayer(){
@@ -112,34 +108,30 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         let audioURL = FileManagerHelper.getFilePath(from: audioPath)
         
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf: audioURL!)
-            songControls.songDurationTimer = audioPlayer?.duration ?? 0.0
-            audioPlayer?.delegate = self
-            audioPlayer?.volume = 0.3
+            SongPlayerManager.shared.loadPlayer(with: audioURL!, delegate: self)
+            SongPlayerManager.shared.player?.delegate = self
+            SongPlayerManager.shared.player?.volume = 0.3
+            songControls.songDurationTimer = SongPlayerManager.shared.player?.duration ?? 0.0
         } catch {
             print("No se pudo activar el reproductor de audio")
         }
     }
     
     @objc private func playSong(){
-        audioPlayer?.play()
+        SongPlayerManager.shared.player?.play()
     }
     
     @objc private func playPauseSong(){
-        if let player = audioPlayer {
-            if player.isPlaying {
-                player.pause()
-                timerSong?.invalidate()
-                songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
-            } else {
-                player.play()
-                startProgressTime()
-                songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
-            }
-        } else {
-            playSong()
-            startProgressTime()
+        guard let player = SongPlayerManager.shared.player else { return }
+
+        if player.isPlaying {
+            player.pause()
+            timerSong?.invalidate()
             songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
+        } else {
+            player.play()
+            startProgressTime()
+            songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
         }
     }
     
@@ -154,7 +146,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
     
     @objc private func sliderChanged(_ sender: UISlider){
-        guard let player = audioPlayer else { return }
+        guard let player = SongPlayerManager.shared.player else { return }
         
         let newTime = TimeInterval(sender.value) * player.duration
         player.currentTime = newTime
@@ -164,7 +156,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     
     @objc private func repeatSong(){
-        guard let player = audioPlayer else { return }
+        guard let player = SongPlayerManager.shared.player else { return }
         
         if (!isSongLooping){
             isSongLooping = true
@@ -174,13 +166,12 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             isSongLooping = false
             player.numberOfLoops = 0
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
-            //songOptions.options[SongOptionsVC.loopingSettingNumber].isOptionEnabled = false
         }
         
     }
     
     @objc private func randomSong(){
-        guard let _ = audioPlayer else { return }
+        guard let _ = SongPlayerManager.shared.player else { return }
         
         let randomNumber = Int.random(in: 0...(songs.count - 1))
         updateView(with: songs[randomNumber])
@@ -214,7 +205,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private func startProgressTime(){
         timerSong?.invalidate()
         timerSong = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self = self, let player = self.audioPlayer else { return }
+            guard let self = self, let player = SongPlayerManager.shared.player else { return }
 
             // Si el usuario está moviendo el slider, no sobrescribir su valor
             if self.songControls.progressSlider.isTracking { return }
@@ -310,7 +301,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private func resetTimers(){
         activateAudioPlayer()
 
-        guard let player = audioPlayer else {
+        guard let player = SongPlayerManager.shared.player else {
             print("Error: audioPlayer no está inicializado aún")
             return
         }
@@ -373,7 +364,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     private func updateSongTitle(with title: String?) {
         guard let title = title, !title.isEmpty else {
-            songTitle?.text = "Unknown Title" 
+            songTitle?.text = "Unknown Title"
             return
         }
 
@@ -386,7 +377,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
-    func updateOptions(){        
+    func updateOptions(){
         for setting in songOptions.options {
             switch (setting.songSetting){
             case .Looping:
@@ -404,14 +395,14 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         let numberOfLoops = (isLoopingEnableBySettings) ? Int.max : 0
         let repeatIcon = (isLoopingEnableBySettings) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
         
-        audioPlayer?.numberOfLoops = numberOfLoops
+        SongPlayerManager.shared.player?.numberOfLoops = numberOfLoops
         songControls.changeRepeatButtonSymbol(systemName: repeatIcon)
     }
     
     private func updateView(with song: Song){
         self.song = song
         
-        audioPlayer?.stop()
+        SongPlayerManager.shared.player?.stop()
         resetTimers()
         
         let activateBackground = (song.image != nil)
