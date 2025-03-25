@@ -9,20 +9,24 @@ import UIKit
 import AVFoundation
 
 class HomeVC: SongsVC {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    
+    override init() {
+        super.init()
         
         let songs = FileManagerHelper.loadSongsFromCoreData()
         tableView.setSongs(songs: songs)
-        view.backgroundColor = .systemBackground
-
+        
         isSearchEnable = true
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
-        
-        addTargetToButton(boton: addButton, target: self, action: #selector(buttonTupped))
-        addTargetToButton(boton: enableSearchButton, target: self, action: #selector(enableSearchByButton))
+        configureButtons()
         
         configureTableView()
     }
@@ -44,6 +48,13 @@ class HomeVC: SongsVC {
     
     private func addSongToTableView(song: Song){
         tableView.addSong(song: song)
+    }
+    
+    private func configureButtons(){
+        addTargetToButton(boton: addButton, target: self, action: #selector(buttonTupped))
+        addTargetToButton(boton: enableSearchButton, target: self, action: #selector(enableSearchByButton))
+        
+        navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
     }
     
      @objc func buttonTupped(){
