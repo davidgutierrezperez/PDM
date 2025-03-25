@@ -187,9 +187,19 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
     
     @objc private func addSongToFavourites(){
+        let isSongInFavourites = FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)
+        
+        let favouriteIcon: String
+        
+        if (isSongInFavourites){
+            FavoritesVC.songs.removeAll(where: {$0.title == songs[indexSelectedSong].title!})
+            favouriteIcon = DGSongControl.noFavouriteIcon
+        } else {
+            FavoritesVC.songs.append(songs[indexSelectedSong])
+            favouriteIcon = DGSongControl.favouriteIcon
+        }
+        
         FileManagerHelper.addSongToFavourites(title: song.title!)
-            
-        let favouriteIcon = FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!) ? DGSongControl.favouriteIcon : DGSongControl.noFavouriteIcon
         changeAddToFavouriteButtonSymbol(systemName: favouriteIcon)
     }
     

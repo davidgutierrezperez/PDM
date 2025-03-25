@@ -9,13 +9,21 @@ import UIKit
 
 class FavoritesVC: SongsVC {
     
-    private var songs: [Song] = []
-
+    static var songs: [Song] = []
+    
+    override init(){
+        super.init()
+        
+        FavoritesVC.songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
+        tableView.setSongs(songs: FavoritesVC.songs)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
-        tableView.setSongs(songs: self.songs)
 
         isSearchEnable = false
         
@@ -36,8 +44,11 @@ class FavoritesVC: SongsVC {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
-        tableView.setSongs(songs: songs)
+        if (tableView.songs != FavoritesVC.songs){
+            tableView.setSongs(songs: FavoritesVC.songs)
+            tableView.tableView.reloadData()
+        }
+ 
     }
 
 }
