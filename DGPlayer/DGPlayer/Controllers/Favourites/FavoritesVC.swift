@@ -9,13 +9,13 @@ import UIKit
 
 class FavoritesVC: SongsVC {
     
-    static var songs: [Song] = []
+    var songs: [Song] = FavoritesManager.shared.songs
+    
     
     override init(){
         super.init()
         
-        FavoritesVC.songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
-        tableView.setSongs(songs: FavoritesVC.songs)
+        tableView.setSongs(songs: songs)
     }
     
     required init?(coder: NSCoder) {
@@ -44,8 +44,10 @@ class FavoritesVC: SongsVC {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if (tableView.songs != FavoritesVC.songs){
-            tableView.setSongs(songs: FavoritesVC.songs)
+        songs = FavoritesManager.shared.songs
+        
+        if (tableView.songs != songs){
+            tableView.setSongs(songs: songs)
             tableView.tableView.reloadData()
         }
  

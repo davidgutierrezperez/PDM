@@ -192,10 +192,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         let favouriteIcon: String
         
         if (isSongInFavourites){
-            FavoritesVC.songs.removeAll(where: {$0.title == songs[indexSelectedSong].title!})
+            FavoritesManager.shared.deleteSong(song: songs[indexSelectedSong])
             favouriteIcon = DGSongControl.noFavouriteIcon
         } else {
-            FavoritesVC.songs.append(songs[indexSelectedSong])
+            FavoritesManager.shared.addSong(song: songs[indexSelectedSong])
             favouriteIcon = DGSongControl.favouriteIcon
         }
         
