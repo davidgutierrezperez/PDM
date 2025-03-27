@@ -399,8 +399,10 @@ class FileManagerHelper {
                 
                 var songs: [Song] = []
                 
-                songNames?.forEach({ song in
-                    songs.append(loadSongFromCoreData(title: song)!)
+                songNames?.forEach({ songTitle in
+                    if let loadedSong = loadSongFromCoreData(title: songTitle) {
+                        songs.append(loadedSong)
+                    }
                 })
                 
                 return songs

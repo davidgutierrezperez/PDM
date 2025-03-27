@@ -18,6 +18,8 @@ class PlaylistSongsVC: SongsVC {
         
         super.init(songs: songs)
         
+        self.navigationItem.title = title
+        
         configureButtons()
         configureTableView()
     }
