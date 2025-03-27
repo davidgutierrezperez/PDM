@@ -38,6 +38,8 @@ class PlaylistSongsVC: SongsVC {
         configureButtons()
         
         view.backgroundColor = .systemBackground
+        
+        setupHeader()
     }
     
     private func configureButtons(){
@@ -66,6 +68,12 @@ class PlaylistSongsVC: SongsVC {
         tableView.songs.remove(at: index)
         tableView.tableView.reloadData()
     }
+    
+    private func setupHeader() {
+        let infoHeader = DGInfoCollection(image: playlist.image, title: playlist.name)
+        tableView.setHeaderView(infoHeader)
+    }
+
 
 }
 

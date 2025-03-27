@@ -85,5 +85,18 @@ class DGSongTableView: UITableViewController {
         }
     }
     
+    func setHeaderView(_ header: UIView) {
+        // Importante: necesitamos calcular el tamaño correcto
+        header.setNeedsLayout()
+        header.layoutIfNeeded()
+
+        let height = header.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        var frame = header.frame
+        frame.size.height = height
+        header.frame = frame
+
+        tableView.tableHeaderView = header
+    }
+    
     
 }
