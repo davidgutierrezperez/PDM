@@ -28,6 +28,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private var optionButton = UIBarButtonItem()
     private var songOptions = SongOptionsVC()
     
+    private var enableProgressSlider = true
+    
     private var timerSong: Timer!
     
     // CONSTRUCTORS
@@ -90,6 +92,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             activateAudioPlayer()
         }
         setupRemoteCommandCenter()
+        
     }
     
     private func fondo(){
@@ -119,11 +122,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         updateOptions()
         
         tabBarController?.tabBar.isHidden = true
-        
-        if let player = SongPlayerManager.shared.player, !player.isPlaying {
-            songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
-        }
-        
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -250,24 +249,25 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private func startProgressTime(){
         let manager = SongPlayerManager.shared
         
-        if manager.song?.audio?.lastPathComponent != song.audio?.lastPathComponent {
+        if (enableProgressSlider){
+            timerSong?.invalidate()
+            timerSong = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+                guard let self = self, let player = SongPlayerManager.shared.player else { return }
+
+                // Si el usuario está moviendo el slider, no sobrescribir su valor
+                if self.songControls.progressSlider.isTracking { return }
+
+                self.songControls.progressSlider.value = Float(player.currentTime / player.duration)
+                self.songControls.songCurrentLabel.text = self.formatTime(time: player.currentTime)
+                
+                self.mediaPlayerInfo()
+            }
+        } else {
             self.songControls.progressSlider.value = 0
             self.songControls.songCurrentLabel.text = "0:00"
-            return
         }
         
-        timerSong?.invalidate()
-        timerSong = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self = self, let player = SongPlayerManager.shared.player else { return }
-
-            // Si el usuario está moviendo el slider, no sobrescribir su valor
-            if self.songControls.progressSlider.isTracking { return }
-
-            self.songControls.progressSlider.value = Float(player.currentTime / player.duration)
-            self.songControls.songCurrentLabel.text = self.formatTime(time: player.currentTime)
-            
-            self.mediaPlayerInfo()
-        }
+        
     }
 
     
@@ -353,21 +353,26 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         return String(format: "%d:%02d", minutes, seconds)
     }
     
-    private func resetTimers(){
-
+    private func resetTimers() {
+        timerSong?.invalidate()
         guard let player = SongPlayerManager.shared.player else {
-            print("Error: audioPlayer no está inicializado aún")
+            print("⚠️ Error: AVAudioPlayer no está inicializado aún.")
             return
         }
 
-        songControls.songCurrentLabel.text = "0:00"
-        songControls.songDurationLabel.text = song.duration
-
-        // 🔹 Iniciar el timer solo si el audio tiene duración válida
-        if player.duration > 0 {
+        if enableProgressSlider {
+            songControls.songCurrentLabel.text = formatTime(time: player.currentTime)
+            songControls.progressSlider.value = Float(player.currentTime / player.duration)
+            songControls.songDurationLabel.text = formatTime(time: player.duration)
+            
             startProgressTime()
+        } else {
+            songControls.songCurrentLabel.text = "0:00"
+            songControls.progressSlider.value = 0
+            songControls.songDurationLabel.text = song.duration
         }
     }
+
     
     private func configure() {
         // Añadir el controlador hijo
@@ -503,6 +508,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
     
     private func updateView(with song: Song){
+        enableProgressSlider = (SongPlayerManager.shared.song?.title == song.title)
         self.song = song
         
         resetTimers()
