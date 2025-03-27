@@ -61,7 +61,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     static func present(from parent: UIViewController, with song: Song, songs: [Song], selectedSong: Int){
         if let existingVC = SongPlayerVC.shared {
-            existingVC.updateView(with: songs[selectedSong])
+            existingVC.updateView(with: songs[selectedSong], songs: songs, selectedIndex: selectedSong)
             parent.navigationController?.pushViewController(existingVC, animated: true)
         } else {
             let vc = SongPlayerVC(indexSelectedSong: selectedSong, songs: songs)
@@ -120,6 +120,12 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         super.viewWillAppear(animated)
         updateFavoriteIcon()
         updateOptions()
+        
+        print(songs.count)
+        
+        if (songs.count == 1){
+            disableButtonsWhenSearching()
+        }
         
         tabBarController?.tabBar.isHidden = true
 
@@ -182,12 +188,12 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     @objc private func changeToNextSong(){
         indexSelectedSong = (indexSelectedSong == songs.count - 1) ? 0 : (indexSelectedSong + 1)
-        updateView(with: songs[indexSelectedSong])
+        updateView(with: songs[indexSelectedSong], songs: songs, selectedIndex: indexSelectedSong)
     }
     
     @objc private func changeToPreviousSong(){
         indexSelectedSong = (indexSelectedSong == 0) ? (songs.count - 1) : (indexSelectedSong - 1)
-        updateView(with: songs[indexSelectedSong])
+        updateView(with: songs[indexSelectedSong], songs: songs, selectedIndex: indexSelectedSong)
     }
     
     @objc private func sliderChanged(_ sender: UISlider){
@@ -219,7 +225,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         guard let _ = SongPlayerManager.shared.player else { return }
         
         let randomNumber = Int.random(in: 0...(songs.count - 1))
-        updateView(with: songs[randomNumber])
+        updateView(with: songs[randomNumber], songs: songs, selectedIndex: randomNumber)
     }
     
     @objc private func addSongToFavourites(){
@@ -348,6 +354,12 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.randomSongButton.isEnabled = false
     }
     
+    private func enableButtonsWhenBrowsing() {
+        songControls.backwardButton.isEnabled = true
+        songControls.forwardButton.isEnabled = true
+        songControls.randomSongButton.isEnabled = true
+    }
+    
     private func formatTime(time: TimeInterval) -> String {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
@@ -388,10 +400,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         addChild(songControls)
         view.addSubview(songControls.view)
         songControls.didMove(toParent: self)
-
-        if songs.count == 1 {
-            disableButtonsWhenSearching()
-        }
 
         // IMPORTANTE: desactivar autoresizing
         albumArtImageView.view.translatesAutoresizingMaskIntoConstraints = false
@@ -508,11 +516,19 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         SongPlayerManager.shared.remoteCommandsConfigured = true
     }
     
-    private func updateView(with song: Song){
+    private func updateView(with song: Song, songs: [Song], selectedIndex: Int){
         enableProgressSlider = (SongPlayerManager.shared.song?.title == song.title)
         self.song = song
+        self.songs = songs
+        self.indexSelectedSong = selectedIndex
         
         resetTimers()
+        
+        if (songs.count > 1){
+            enableButtonsWhenBrowsing()
+        } else {
+            disableButtonsWhenSearching()
+        }
         
         let activateBackground = (song.image != nil)
         albumArtImageView.updateImage(image: (song.image ?? UIImage(systemName: "music.note"))!, activateBackground: activateBackground)
