@@ -163,6 +163,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             activateAudioPlayer()
             player = SongPlayerManager.shared.player!
             player.prepareToPlay()
+            enableProgressSlider = true
         }
     
 
