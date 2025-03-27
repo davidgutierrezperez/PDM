@@ -15,6 +15,7 @@ struct Song: Equatable, Hashable {
     let image: UIImage?
     let audio: URL?
     var isFavourite: Bool
+    let duration: String?
     
     init(){
         title = "Title"
@@ -23,15 +24,17 @@ struct Song: Equatable, Hashable {
         image = UIImage()
         audio = nil
         isFavourite = false
+        duration = "00:00"
     }
     
-    init(title: String?, artist: String?, band: String?, image: UIImage?, audio: URL?, isFavourite: Bool) {
+    init(title: String?, artist: String?, band: String?, image: UIImage?, audio: URL?, isFavourite: Bool, duration: String?) {
         self.title = title
         self.artist = artist ?? "Unknown"
         self.band = band ?? "Unknown"
         self.image = image
         self.audio = audio
         self.isFavourite = isFavourite
+        self.duration = duration
     }
 }
 

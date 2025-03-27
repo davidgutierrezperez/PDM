@@ -27,7 +27,7 @@ class FavoritesVC: SongsVC {
 
         isSearchEnable = false
         
-        navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
+        navigationItem.rightBarButtonItems = [addButton]
         
         configureTableView()
     }

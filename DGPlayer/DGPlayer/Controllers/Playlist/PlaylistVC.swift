@@ -21,7 +21,7 @@ class PlaylistVC: MainViewsCommonVC {
         tableView.delegate = self
         tableView.tableView.delegate = self
         
-        navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
+        navigationItem.rightBarButtonItems = [addButton]
         addTargetToButton(boton: addButton, target: self, action: #selector(addPlaylist))
         
         navigationItem.searchController = configureSearchController()

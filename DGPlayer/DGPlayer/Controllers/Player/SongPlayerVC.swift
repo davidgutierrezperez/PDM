@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import MediaPlayer
 
 class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
@@ -34,6 +35,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         self.songs = songs
         self.song = self.songs[self.indexSelectedSong]
         songControls.songCurrentTimer = 0.0
+        songControls.songDurationLabel.text = song.duration
         
         
         super.init(nibName: nil, bundle: nil)
@@ -45,6 +47,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         configureProgressSlider()
 
         configure()
+        
+        SongPlayerManager.shared.setSong(song: song)
     }
     
     required init?(coder: NSCoder) {
@@ -63,6 +67,12 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         tabBarController?.tabBar.isHidden = true
         fondo()
         updateFavoriteIcon()
+        
+        if (!SongPlayerManager.shared.isSongPlayerConfigured){
+            SongPlayerManager.shared.configureAudioSession()
+            activateAudioPlayer()
+        }
+        setupRemoteCommandCenter()
     }
     
     private func fondo(){
@@ -96,10 +106,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         if let player = SongPlayerManager.shared.player, !player.isPlaying {
             songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
         }
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        SongPlayerManager.shared.player?.stop()
         songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
     }
     
@@ -108,10 +118,16 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         let audioURL = FileManagerHelper.getFilePath(from: audioPath)
         
         do {
+            
             SongPlayerManager.shared.loadPlayer(with: audioURL!, delegate: self)
             SongPlayerManager.shared.player?.delegate = self
             SongPlayerManager.shared.player?.volume = 0.3
-            songControls.songDurationTimer = SongPlayerManager.shared.player?.duration ?? 0.0
+            
+            SongPlayerManager.shared.player?.prepareToPlay()
+            SongPlayerManager.shared.isSongPlayerConfigured = true
+            SongPlayerManager.shared.setSong(song: song)
+            
+            mediaPlayerInfo()
         } catch {
             print("No se pudo activar el reproductor de audio")
         }
@@ -119,10 +135,20 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     @objc private func playSong(){
         SongPlayerManager.shared.player?.play()
+        mediaPlayerInfo()
     }
     
     @objc private func playPauseSong(){
-        guard let player = SongPlayerManager.shared.player else { return }
+        guard var player = SongPlayerManager.shared.player else { return }
+        
+        if (SongPlayerManager.shared.song?.audio?.lastPathComponent != song.audio?.lastPathComponent){
+            player.stop()
+            activateAudioPlayer()
+            SongPlayerManager.shared.setSong(song: song)
+            player.prepareToPlay()
+        }
+        
+        player = SongPlayerManager.shared.player!
 
         if player.isPlaying {
             player.pause()
@@ -133,6 +159,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             startProgressTime()
             songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
         }
+        
+        mediaPlayerInfo()
     }
     
     @objc private func changeToNextSong(){
@@ -203,7 +231,16 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     
     private func startProgressTime(){
+        let manager = SongPlayerManager.shared
+        
+        if manager.song?.audio?.lastPathComponent != song.audio?.lastPathComponent {
+            self.songControls.progressSlider.value = 0
+            self.songControls.songCurrentLabel.text = "0:00"
+            return
+        }
+        
         timerSong?.invalidate()
+        
         timerSong = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self, let player = SongPlayerManager.shared.player else { return }
 
@@ -212,6 +249,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
 
             self.songControls.progressSlider.value = Float(player.currentTime / player.duration)
             self.songControls.songCurrentLabel.text = self.formatTime(time: player.currentTime)
+            
+            self.mediaPlayerInfo()
         }
     }
 
@@ -299,7 +338,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
     
     private func resetTimers(){
-        activateAudioPlayer()
 
         guard let player = SongPlayerManager.shared.player else {
             print("Error: audioPlayer no está inicializado aún")
@@ -307,7 +345,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
 
         songControls.songCurrentLabel.text = "0:00"
-        songControls.songDurationLabel.text = formatTime(time: player.duration)
+        songControls.songDurationLabel.text = song.duration
 
         // 🔹 Iniciar el timer solo si el audio tiene duración válida
         if player.duration > 0 {
@@ -399,10 +437,58 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.changeRepeatButtonSymbol(systemName: repeatIcon)
     }
     
+    private func mediaPlayerInfo(){
+        guard let player = SongPlayerManager.shared.player else { return }
+        
+        var nowPlayingInfo: [String: Any] = [
+            MPMediaItemPropertyTitle: song.title ?? "Unknown song",
+            MPMediaItemPropertyPlaybackDuration: player.duration,
+            MPNowPlayingInfoPropertyElapsedPlaybackTime: player.currentTime,
+            MPNowPlayingInfoPropertyPlaybackRate: (player.isPlaying) ? 1.0: 0.0
+        ]
+        
+        if let image = song.image {
+            let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image}
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+        }
+        
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    
+    private func setupRemoteCommandCenter(){
+        guard !SongPlayerManager.shared.remoteCommandsConfigured else { return }
+        let commandCenter = MPRemoteCommandCenter.shared()
+        
+        commandCenter.playCommand.addTarget { [unowned self] _ in
+            self.playPauseSong()
+            mediaPlayerInfo()
+            return .success
+        }
+        
+        commandCenter.pauseCommand.addTarget { [unowned self] _ in
+            self.playPauseSong()
+            mediaPlayerInfo()
+            return .success
+        }
+        
+        commandCenter.nextTrackCommand.addTarget { [unowned self] _ in
+            self.changeToNextSong()
+            mediaPlayerInfo()
+            return .success
+        }
+        
+        commandCenter.previousTrackCommand.addTarget { [unowned self] _ in
+            self.changeToPreviousSong()
+            mediaPlayerInfo()
+            return .success
+        }
+        
+        SongPlayerManager.shared.remoteCommandsConfigured = true
+    }
+    
     private func updateView(with song: Song){
         self.song = song
         
-        SongPlayerManager.shared.player?.stop()
         resetTimers()
         
         let activateBackground = (song.image != nil)
