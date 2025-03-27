@@ -140,15 +140,15 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     @objc private func playPauseSong(){
         guard var player = SongPlayerManager.shared.player else { return }
+
         
         if (SongPlayerManager.shared.song?.audio?.lastPathComponent != song.audio?.lastPathComponent){
             player.stop()
             activateAudioPlayer()
-            SongPlayerManager.shared.setSong(song: song)
+            player = SongPlayerManager.shared.player!
             player.prepareToPlay()
         }
-        
-        player = SongPlayerManager.shared.player!
+    
 
         if player.isPlaying {
             player.pause()
@@ -240,7 +240,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
         
         timerSong?.invalidate()
-        
         timerSong = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self, let player = SongPlayerManager.shared.player else { return }
 
@@ -493,8 +492,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         let activateBackground = (song.image != nil)
         albumArtImageView.updateImage(image: (song.image ?? UIImage(systemName: "music.note"))!, activateBackground: activateBackground)
-        songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
         updateSongTitle(with: song.title)
+        
+        let icon = (SongPlayerManager.shared.song?.title == self.song.title) ? DGSongControl.pauseIcon : DGSongControl.playIcon
+        
+        songControls.changePauseButtonSymbol(systemName: icon)
         
         let songIsFavourite = FileManagerHelper.isSongInFavourites(title: song.title!)
         let favouriteIcon = songIsFavourite ? DGSongControl.favouriteIcon : DGSongControl.noFavouriteIcon
