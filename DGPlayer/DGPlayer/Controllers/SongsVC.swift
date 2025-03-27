@@ -120,10 +120,7 @@ extension SongsVC: UITableViewDelegate {
             indexCurrentSong = indexPath.item
         }
         
-        let songVC = SongPlayerVC(indexSelectedSong: indexCurrentSong, songs: songsCollection)
-        songVC.navigationController?.navigationBar.prefersLargeTitles = false
-        
-        navigationController?.pushViewController(songVC, animated: true)
+        SongPlayerVC.present(from: self, with: songsCollection[indexCurrentSong], songs: songsCollection, selectedSong: indexCurrentSong)
     }
 
 }

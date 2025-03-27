@@ -13,6 +13,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     // VARIABLES
     
+    static var shared: SongPlayerVC?
+    
     private var song: Song
     private var songs: [Song]
     private var indexSelectedSong: Int
@@ -53,6 +55,21 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    static func present(from parent: UIViewController, with song: Song, songs: [Song], selectedSong: Int){
+        if let existingVC = SongPlayerVC.shared {
+            existingVC.updateView(with: songs[selectedSong])
+            parent.navigationController?.pushViewController(existingVC, animated: true)
+        } else {
+            let vc = SongPlayerVC(indexSelectedSong: selectedSong, songs: songs)
+            SongPlayerVC.shared = vc
+            parent.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    deinit {
+        SongPlayerVC.shared = nil
     }
     
     
