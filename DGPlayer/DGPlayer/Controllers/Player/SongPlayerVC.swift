@@ -518,7 +518,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         albumArtImageView.updateImage(image: (song.image ?? UIImage(systemName: "music.note"))!, activateBackground: activateBackground)
         updateSongTitle(with: song.title)
         
-        let icon = (SongPlayerManager.shared.song?.title == self.song.title) ? DGSongControl.pauseIcon : DGSongControl.playIcon
+        let icon = (SongPlayerManager.shared.song?.title == self.song.title && ((SongPlayerManager.shared.player!.isPlaying))) ? DGSongControl.pauseIcon : DGSongControl.playIcon
         
         songControls.changePauseButtonSymbol(systemName: icon)
         
