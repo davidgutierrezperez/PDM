@@ -37,21 +37,21 @@ class SongPlayerFooterVC: UIViewController {
         footerView.updateView(with: song)
     }
     
-    func show(in parent: UIViewController) {
-        guard self.view.superview == nil else { return }
+    func show(in container: UIView?) {
+        guard let container = container else { return }
 
-        parent.addChild(self)
-        parent.view.addSubview(self.view)
-        self.didMove(toParent: parent)
+        view.removeFromSuperview()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(view)
 
-        self.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            self.view.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor),
-            self.view.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor),
-            self.view.bottomAnchor.constraint(equalTo: parent.view.safeAreaLayoutGuide.bottomAnchor),
-            self.view.heightAnchor.constraint(equalToConstant: 60) // ajusta según diseño
+            view.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: container.safeAreaLayoutGuide.bottomAnchor),
+            view.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
+
 
     func hide() {
         self.willMove(toParent: nil)

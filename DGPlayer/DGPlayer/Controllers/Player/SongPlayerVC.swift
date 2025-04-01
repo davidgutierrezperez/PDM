@@ -166,6 +166,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         if (SongPlayerManager.shared.song?.audio?.lastPathComponent != song.audio?.lastPathComponent){
             resetAudioPlayer()
+            player = SongPlayerManager.shared.player!
         }
     
 

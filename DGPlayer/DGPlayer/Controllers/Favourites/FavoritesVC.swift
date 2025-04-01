@@ -27,7 +27,6 @@ class FavoritesVC: SongsVC {
 
         isSearchEnable = false
         
-        
         configureTableView()
     }
     
