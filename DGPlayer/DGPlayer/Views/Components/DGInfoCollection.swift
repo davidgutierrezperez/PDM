@@ -29,7 +29,7 @@ class DGInfoCollection: UIView {
     
 
     private func configureButtons(){
-        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)
         setImageToButton(button: addToCollectionButton, systemName: "plus.circle", buttonConfig: buttonConfig)
         setImageToButton(button: settingCollectionButton, systemName: "ellipsis", buttonConfig: buttonConfig)
         setImageToButton(button: randomSongButton, systemName: "shuffle", buttonConfig: buttonConfig)
@@ -39,13 +39,11 @@ class DGInfoCollection: UIView {
         settingCollectionButton.tintColor = .systemRed
         randomSongButton.tintColor = .systemRed
         playFirstSongCollection.tintColor = .systemRed
-        
-        addToCollectionButton.translatesAutoresizingMaskIntoConstraints = false
+
         settingCollectionButton.translatesAutoresizingMaskIntoConstraints = false
         randomSongButton.translatesAutoresizingMaskIntoConstraints = false
         playFirstSongCollection.translatesAutoresizingMaskIntoConstraints = false
         
-        addSubview(addToCollectionButton)
         addSubview(settingCollectionButton)
         addSubview(randomSongButton)
         addSubview(playFirstSongCollection)
@@ -61,35 +59,32 @@ class DGInfoCollection: UIView {
         
         addSubview(image)
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
 
         NSLayoutConstraint.activate([
-                // 🔹 Imagen arriba del todo
+            // 🔹 Imagen arriba del todo
             image.topAnchor.constraint(equalTo: topAnchor, constant: 20),
             image.centerXAnchor.constraint(equalTo: centerXAnchor),
             image.widthAnchor.constraint(equalToConstant: 200),
             image.heightAnchor.constraint(equalToConstant: 200),
 
             // 🔹 Botón izquierda (debajo de imagen)
-            addToCollectionButton.topAnchor.constraint(equalTo: image.bottomAnchor, constant: 20),
-            addToCollectionButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 30),
+            playFirstSongCollection.topAnchor.constraint(equalTo: image.bottomAnchor, constant: 20),
+            playFirstSongCollection.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 30),
 
-            // 🔹 Botón central
-            settingCollectionButton.centerYAnchor.constraint(equalTo: addToCollectionButton.centerYAnchor),
+            // 🔹 Botón central (alineado con el primero)
+            settingCollectionButton.centerYAnchor.constraint(equalTo: playFirstSongCollection.centerYAnchor),
             settingCollectionButton.centerXAnchor.constraint(equalTo: centerXAnchor),
 
-            // 🔹 Botón derecha
-            randomSongButton.centerYAnchor.constraint(equalTo: addToCollectionButton.centerYAnchor),
+            // 🔹 Botón derecha (alineado también)
+            randomSongButton.centerYAnchor.constraint(equalTo: playFirstSongCollection.centerYAnchor),
             randomSongButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -30),
 
-            // 🔹 Botón play debajo de todos
-            playFirstSongCollection.topAnchor.constraint(equalTo: addToCollectionButton.bottomAnchor, constant: 20),
-            playFirstSongCollection.centerXAnchor.constraint(equalTo: centerXAnchor),
-
-            // 🔹 Fondo mínimo del header
-            playFirstSongCollection.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
+            // 🔹 (Opcional) margen inferior si necesitas que el header se mida bien
+            randomSongButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
         ])
+
 
     }
 

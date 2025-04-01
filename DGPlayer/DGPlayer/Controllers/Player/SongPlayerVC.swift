@@ -41,7 +41,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.songCurrentTimer = 0.0
         songControls.songDurationLabel.text = song.duration
         
-        
         super.init(nibName: nil, bundle: nil)
         
         configureSongTitle(title: song.title!)
@@ -148,6 +147,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             SongPlayerManager.shared.player?.prepareToPlay()
             SongPlayerManager.shared.isSongPlayerConfigured = true
             SongPlayerManager.shared.setSong(song: song)
+            SongPlayerManager.shared.setSongs(songs: songs, selectedIndex: indexSelectedSong)
             
             mediaPlayerInfo()
         } catch {
@@ -165,11 +165,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
 
         
         if (SongPlayerManager.shared.song?.audio?.lastPathComponent != song.audio?.lastPathComponent){
-            player.stop()
-            activateAudioPlayer()
-            player = SongPlayerManager.shared.player!
-            player.prepareToPlay()
-            enableProgressSlider = true
+            resetAudioPlayer()
         }
     
 
@@ -213,10 +209,12 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             isSongLooping = true
             player.numberOfLoops = Int.max
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.isRepeatingIcon)
+            songControls.repeatButton.tintColor = .systemRed
         } else {
             isSongLooping = false
             player.numberOfLoops = 0
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
+            songControls.repeatButton.tintColor = .black
         }
         
     }
@@ -385,6 +383,19 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             songControls.songDurationLabel.text = song.duration
         }
     }
+    
+    private func resetAudioPlayer(){
+        guard var player = SongPlayerManager.shared.player else { return }
+        
+        player.stop()
+        activateAudioPlayer()
+        player = SongPlayerManager.shared.player!
+        player.prepareToPlay()
+        enableProgressSlider = true
+        
+        isSongLooping = false
+        player.numberOfLoops = 0
+    }
 
     
     private func configure() {
@@ -534,9 +545,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         albumArtImageView.updateImage(image: (song.image ?? UIImage(systemName: "music.note"))!, activateBackground: activateBackground)
         updateSongTitle(with: song.title)
         
-        let icon = (SongPlayerManager.shared.song?.title == self.song.title && ((SongPlayerManager.shared.player!.isPlaying))) ? DGSongControl.pauseIcon : DGSongControl.playIcon
+        let pauseIcon = (SongPlayerManager.shared.song?.title == self.song.title && ((SongPlayerManager.shared.player!.isPlaying))) ? DGSongControl.pauseIcon : DGSongControl.playIcon
+        let loopingIcon = (SongPlayerManager.shared.song?.title == self.song.title && isSongLooping) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
         
-        songControls.changePauseButtonSymbol(systemName: icon)
+        songControls.changePauseButtonSymbol(systemName: pauseIcon)
+        songControls.changeRepeatButtonSymbol(systemName: loopingIcon)
         
         let songIsFavourite = FileManagerHelper.isSongInFavourites(title: song.title!)
         let favouriteIcon = songIsFavourite ? DGSongControl.favouriteIcon : DGSongControl.noFavouriteIcon

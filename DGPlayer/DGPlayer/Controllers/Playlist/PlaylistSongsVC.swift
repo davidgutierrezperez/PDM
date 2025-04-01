@@ -11,14 +11,17 @@ class PlaylistSongsVC: SongsVC {
     
     private let playlistSettingButton = UIBarButtonItem()
     private var playlist: Playlist
+    private var infoPlaylist: DGInfoCollection
     
     init(playlist: Playlist, songs: [Song]){
         
         self.playlist = playlist
+        infoPlaylist = DGInfoCollection(image: playlist.image, title: playlist.name)
         
         super.init(songs: songs)
         
         self.navigationItem.title = title
+        
         
         configureButtons()
         configureTableView()
@@ -31,7 +34,8 @@ class PlaylistSongsVC: SongsVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.rightBarButtonItems = [playlistSettingButton, addButton]
+        
+        navigationItem.rightBarButtonItems = [playlistSettingButton, addButton, enableSearchButton]
 
         navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = title
@@ -46,7 +50,8 @@ class PlaylistSongsVC: SongsVC {
         playlistSettingButton.image = UIImage(systemName: "ellipsis")
         playlistSettingButton.tintColor = .systemRed
         
-        addTargetToButton(boton: addButton, target: self, action: #selector(addSongToPlaylist))
+        addTargetToBarButton(boton: addButton, target: self, action: #selector(addSongToPlaylist))
+        infoPlaylist.playFirstSongCollection.addTarget(self, action: #selector(playFirstSong), for: .touchUpInside)
     }
     
     @objc private func addSongToPlaylist(){
@@ -61,6 +66,10 @@ class PlaylistSongsVC: SongsVC {
         present(nv, animated: true)
     }
     
+    @objc private func playFirstSong(){
+        SongPlayerVC.present(from: self, with: playlist.songs[0], songs: playlist.songs, selectedSong: 0)
+    }
+    
     override func deleteSong(at index: Int) {
         let song = tableView.songs[index] as Song
         
@@ -70,7 +79,7 @@ class PlaylistSongsVC: SongsVC {
     }
     
     private func setupHeader() {
-        let infoHeader = DGInfoCollection(image: playlist.image, title: playlist.name)
+        let infoHeader = infoPlaylist
         tableView.setHeaderView(infoHeader)
     }
 

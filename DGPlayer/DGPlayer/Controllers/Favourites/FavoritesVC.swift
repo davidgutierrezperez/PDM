@@ -31,15 +31,6 @@ class FavoritesVC: SongsVC {
         configureTableView()
     }
     
-    override func deleteSong(at index: Int){
-        let song = tableView.songs[index]
-        
-        tableView.songs.remove(at: index)
-        tableView.tableView.deleteRows(at: [IndexPath(item: index, section: 0)], with: .automatic)
-        
-        FileManagerHelper.addSongToFavourites(title: song.title!)
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -49,7 +40,17 @@ class FavoritesVC: SongsVC {
             tableView.setSongs(songs: songs)
             tableView.tableView.reloadData()
         }
- 
     }
+    
+    
+    override func deleteSong(at index: Int){
+        let song = tableView.songs[index]
+        
+        tableView.songs.remove(at: index)
+        tableView.tableView.deleteRows(at: [IndexPath(item: index, section: 0)], with: .automatic)
+        
+        FileManagerHelper.addSongToFavourites(title: song.title!)
+    }
+    
 
 }

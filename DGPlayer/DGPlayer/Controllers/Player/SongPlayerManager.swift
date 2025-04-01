@@ -11,7 +11,11 @@ import AVFoundation
 class SongPlayerManager {
     static let shared = SongPlayerManager()
     private(set) var player: AVAudioPlayer?
+    
     private(set) var song: Song?
+    private(set) var songs: [Song] = []
+    private(set) var selectedIndex: Int = 0
+    
     var remoteCommandsConfigured = false
     var isSongPlayerConfigured = false
     
@@ -33,6 +37,12 @@ class SongPlayerManager {
     
     func setSong(song: Song){
         self.song = song
+    }
+    
+    func setSongs(songs: [Song], selectedIndex: Int){
+        self.songs = songs
+        self.selectedIndex = selectedIndex
+        self.song = songs[selectedIndex]
     }
     
     func configureAudioSession(){

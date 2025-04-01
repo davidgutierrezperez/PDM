@@ -43,10 +43,13 @@ class MainViewsCommonVC: UIViewController {
         return enableSearchButton
     }
     
-    func addTargetToButton(boton: UIBarButtonItem, target: AnyObject?, action: Selector) {
+    func addTargetToBarButton(boton: UIBarButtonItem, target: AnyObject?, action: Selector) {
         boton.target = target
         boton.action = action
     }
+    
+    
+    
     
 
     /*

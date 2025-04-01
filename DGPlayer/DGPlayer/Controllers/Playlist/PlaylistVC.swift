@@ -22,7 +22,7 @@ class PlaylistVC: MainViewsCommonVC {
         tableView.tableView.delegate = self
         
         navigationItem.rightBarButtonItems = [addButton]
-        addTargetToButton(boton: addButton, target: self, action: #selector(addPlaylist))
+        addTargetToBarButton(boton: addButton, target: self, action: #selector(addPlaylist))
         
         navigationItem.searchController = configureSearchController()
         navigationItem.hidesSearchBarWhenScrolling = false
