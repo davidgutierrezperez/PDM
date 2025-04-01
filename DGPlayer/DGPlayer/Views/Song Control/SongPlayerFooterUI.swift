@@ -11,7 +11,7 @@ class SongPlayerFooterUI: UIView {
     
     private var imageSong = UIImageView()
     private var titleSong = UILabel()
-    var playIcon = UIButton()
+    var playIcon = TouchableButton()
 
     init(){
         super.init(frame: .zero)

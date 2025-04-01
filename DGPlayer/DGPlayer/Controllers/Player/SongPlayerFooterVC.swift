@@ -19,6 +19,8 @@ class SongPlayerFooterVC: UIViewController {
         footerView.playIcon.addTarget(self, action: #selector(playPauseSongPlayer), for: .touchUpInside)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(openPlayer))
+        tap.cancelsTouchesInView = false
+        footerView.isUserInteractionEnabled = true
         footerView.addGestureRecognizer(tap)
     }
     
@@ -37,19 +39,26 @@ class SongPlayerFooterVC: UIViewController {
         footerView.updateView(with: song)
     }
     
-    func show(in container: UIView?) {
-        guard let container = container else { return }
+    func show(in parent: UIViewController) {
+        guard self.parent !== parent else { return } // Evitar añadirlo múltiples veces
+        
+        // Quitar de otro padre si lo tuviera
+        self.willMove(toParent: nil)
+        self.view.removeFromSuperview()
+        self.removeFromParent()
 
-        view.removeFromSuperview()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(view)
+        parent.addChild(self)
+        self.view.translatesAutoresizingMaskIntoConstraints = false
+        parent.view.addSubview(self.view)
 
         NSLayoutConstraint.activate([
-            view.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: container.safeAreaLayoutGuide.bottomAnchor),
-            view.heightAnchor.constraint(equalToConstant: 60)
+            self.view.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor),
+            self.view.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor),
+            self.view.bottomAnchor.constraint(equalTo: parent.view.safeAreaLayoutGuide.bottomAnchor),
+            self.view.heightAnchor.constraint(equalToConstant: 60)
         ])
+
+        self.didMove(toParent: parent)
     }
 
 

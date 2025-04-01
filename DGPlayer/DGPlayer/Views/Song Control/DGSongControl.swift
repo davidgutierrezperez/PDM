@@ -14,12 +14,12 @@ class DGSongControl: UIViewController {
     var songDurationTimer: TimeInterval = 0.0
     var songCurrentTimer: TimeInterval = 0.0
 
-    var pauseButton = UIButton()
-    var backwardButton = UIButton()
-    var forwardButton = UIButton()
-    var repeatButton = UIButton()
-    var randomSongButton = UIButton()
-    var addToFavouriteButton = UIButton()
+    var pauseButton = TouchableButton()
+    var backwardButton = TouchableButton()
+    var forwardButton = TouchableButton()
+    var repeatButton = TouchableButton()
+    var randomSongButton = TouchableButton()
+    var addToFavouriteButton = TouchableButton()
     
     var progressSlider = UISlider()
     
@@ -203,6 +203,14 @@ class DGSongControl: UIViewController {
              */
 
 
+    }
+}
+
+class TouchableButton: UIButton {
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let margin: CGFloat = -15 // Aumenta el área 15pt por lado
+        let area = bounds.insetBy(dx: margin, dy: margin)
+        return area.contains(point)
     }
 }
 

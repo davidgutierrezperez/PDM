@@ -54,7 +54,7 @@ class SongsVC: MainViewsCommonVC {
         let currentSong = SongPlayerManager.shared.song
         if (currentSong != nil){
             SongPlayerFooterVC.shared.updateView(with: currentSong!)
-            SongPlayerFooterVC.shared.show(in: self.view)
+            SongPlayerFooterVC.shared.show(in: self)
         }
     }
     
