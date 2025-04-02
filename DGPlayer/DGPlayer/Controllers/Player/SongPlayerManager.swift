@@ -18,7 +18,10 @@ class SongPlayerManager {
     
     var remoteCommandsConfigured = false
     var isSongPlayerConfigured = false
-    var isRandomSongConfigured = false
+    var reproduceRandomSongAsNext = false
+    var reproduceAllPlaylist = false
+    var isLoopingSong = false
+    var simpleReproduction = true
     
     private init(){
         player = AVAudioPlayer()
@@ -53,6 +56,39 @@ class SongPlayerManager {
         } catch {
             print("No se ha podido establacer una sesión")
         }
+    }
+    
+    func configureReproduceRandomSongAsNext(activated: Bool){
+        reproduceRandomSongAsNext = activated
+        
+        simpleReproduction = (!activated)
+        reproduceAllPlaylist = (!activated)
+        isLoopingSong = (!activated)
+        
+    }
+    
+    func configureReproduceAllPlaylist(activated: Bool){
+        reproduceAllPlaylist = activated
+        
+        simpleReproduction = (!activated)
+        reproduceRandomSongAsNext = (!activated)
+        isLoopingSong = (!activated)
+    }
+    
+    func configureLoopingSong(activated: Bool){
+        isLoopingSong = activated
+        
+        reproduceRandomSongAsNext = (!activated)
+        simpleReproduction = (!activated)
+        reproduceAllPlaylist = (!activated)
+    }
+    
+    func configureSimpleReproduction(activated: Bool){
+        simpleReproduction = activated
+        
+        reproduceRandomSongAsNext = (!activated)
+        reproduceAllPlaylist = (!activated)
+        isLoopingSong = (!activated)
     }
 
 }

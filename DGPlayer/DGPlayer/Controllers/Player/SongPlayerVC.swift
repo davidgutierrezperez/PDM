@@ -197,29 +197,43 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     
     @objc private func repeatSong(){
-        guard let player = SongPlayerManager.shared.player else { return }
+        let manager = SongPlayerManager.shared
         
-        if (!isSongLooping){
-            isSongLooping = true
-            player.numberOfLoops = Int.max
+        let isSimpleReproductionActivated = manager.simpleReproduction
+        let isReproduceAllPlaylistActivated = manager.reproduceAllPlaylist
+        let isLoopingSong = manager.isLoopingSong
+        
+        if (isSimpleReproductionActivated){
+            manager.configureReproduceAllPlaylist(activated: true)
+            songControls.repeatButton.tintColor = .systemRed
+            
+            return
+        } else if (isReproduceAllPlaylistActivated){
+            manager.configureLoopingSong(activated: true)
+            
+            SongPlayerManager.shared.player?.numberOfLoops = Int.max
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.isRepeatingIcon)
             songControls.repeatButton.tintColor = .systemRed
-        } else {
-            isSongLooping = false
-            player.numberOfLoops = 0
+            
+            return
+        } else if (isLoopingSong){
+            manager.configureSimpleReproduction(activated: true)
+            
+            SongPlayerManager.shared.player?.numberOfLoops = 0
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
             songControls.repeatButton.tintColor = .black
+            
+            return
         }
+
         
     }
     
     @objc private func randomSong(){
-        guard let _ = SongPlayerManager.shared.player else { return }
+        let activated = !SongPlayerManager.shared.reproduceRandomSongAsNext
         
-        
-        
-        let randomNumber = Int.random(in: 0...(songs.count - 1))
-        updateView(with: songs[randomNumber], songs: songs, selectedIndex: randomNumber)
+        SongPlayerManager.shared.configureReproduceRandomSongAsNext(activated: !activated)
+        songControls.changeRandomSongTint(activated: activated)
     }
     
     @objc private func addSongToFavourites(){
@@ -248,7 +262,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     
     private func startProgressTime(){
-        
         if (enableProgressSlider){
             timerSong?.invalidate()
             timerSong = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
@@ -266,8 +279,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             self.songControls.progressSlider.value = 0
             self.songControls.songCurrentLabel.text = "0:00"
         }
-        
-        
     }
 
     
@@ -390,6 +401,12 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         isSongLooping = false
         player.numberOfLoops = 0
+    }
+    
+    private func resetEverythingAndPlay(){
+        resetAudioPlayer()
+        resetTimers()
+        SongPlayerManager.shared.player?.play()
     }
 
     
@@ -528,10 +545,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         self.songs = songs
         self.indexSelectedSong = selectedIndex
         
-        if (SongPlayerManager.shared.song?.title != song.title){
-            resetAudioPlayer()
-            resetTimers()
-            SongPlayerManager.shared.player?.play()
+        if (SongPlayerManager.shared.song?.title != song.title || SongPlayerManager.shared.reproduceAllPlaylist || SongPlayerManager.shared.reproduceRandomSongAsNext){
+            resetEverythingAndPlay()
         }
         
         if (songs.count > 1){
@@ -545,8 +560,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         updateSongTitle(with: song.title)
         
         let loopingIcon = (SongPlayerManager.shared.song?.title == self.song.title && isSongLooping) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
+        let playIcon = (SongPlayerManager.shared.player?.isPlaying == true) ? DGSongControl.pauseIcon : DGSongControl.playIcon
         
-        songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
+        songControls.changePauseButtonSymbol(systemName: playIcon)
         songControls.changeRepeatButtonSymbol(systemName: loopingIcon)
         
         let songIsFavourite = FileManagerHelper.isSongInFavourites(title: song.title!)
@@ -557,14 +573,21 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         view.setNeedsLayout()
         view.layoutIfNeeded()
         
-        
-        
         navigationController?.navigationBar.prefersLargeTitles = true
     }
 }
 
 extension SongPlayerVC: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
+        if (SongPlayerManager.shared.reproduceAllPlaylist){
+            indexSelectedSong = (indexSelectedSong == songs.count - 1) ? 0 : (indexSelectedSong + 1)
+        } else if (SongPlayerManager.shared.reproduceRandomSongAsNext){
+            indexSelectedSong = Int.random(in: 0...songs.count - 1)
+        } else if (SongPlayerManager.shared.simpleReproduction){
+            songControls.changePauseButtonSymbol(systemName: DGSongControl.playIcon)
+        }
+        
+        song = songs[indexSelectedSong]
+        updateView(with: song, songs: songs, selectedIndex: indexSelectedSong)
     }
 }

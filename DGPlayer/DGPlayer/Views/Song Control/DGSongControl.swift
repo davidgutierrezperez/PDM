@@ -123,6 +123,10 @@ class DGSongControl: UIViewController {
         repeatButton.setImage(UIImage(systemName: systemName, withConfiguration: mediaumConfig), for: .normal)
     }
     
+    func changeRandomSongTint(activated: Bool){
+        randomSongButton.tintColor = (activated) ? .systemRed : .black
+    }
+    
     @objc private func sliderChanged(_ sender: UISlider) {
         delegate?.progressSliderChanged(to: sender.value)
     }
