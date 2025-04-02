@@ -163,13 +163,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     @objc private func playPauseSong(){
         guard var player = SongPlayerManager.shared.player else { return }
 
-        
-        if (SongPlayerManager.shared.song?.audio?.lastPathComponent != song.audio?.lastPathComponent){
-            resetAudioPlayer()
-            player = SongPlayerManager.shared.player!
-        }
-    
-
         if player.isPlaying {
             player.pause()
             timerSong?.invalidate()
@@ -534,7 +527,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         self.songs = songs
         self.indexSelectedSong = selectedIndex
         
+        resetAudioPlayer()
         resetTimers()
+        SongPlayerManager.shared.player?.play()
         
         if (songs.count > 1){
             enableButtonsWhenBrowsing()
@@ -546,10 +541,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         albumArtImageView.updateImage(image: (song.image ?? UIImage(systemName: "music.note"))!, activateBackground: activateBackground)
         updateSongTitle(with: song.title)
         
-        let pauseIcon = (SongPlayerManager.shared.song?.title == self.song.title && ((SongPlayerManager.shared.player!.isPlaying))) ? DGSongControl.pauseIcon : DGSongControl.playIcon
         let loopingIcon = (SongPlayerManager.shared.song?.title == self.song.title && isSongLooping) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
         
-        songControls.changePauseButtonSymbol(systemName: pauseIcon)
+        songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
         songControls.changeRepeatButtonSymbol(systemName: loopingIcon)
         
         let songIsFavourite = FileManagerHelper.isSongInFavourites(title: song.title!)
