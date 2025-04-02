@@ -216,6 +216,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     @objc private func randomSong(){
         guard let _ = SongPlayerManager.shared.player else { return }
         
+        
+        
         let randomNumber = Int.random(in: 0...(songs.count - 1))
         updateView(with: songs[randomNumber], songs: songs, selectedIndex: randomNumber)
     }
@@ -246,7 +248,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     
     private func startProgressTime(){
-        let manager = SongPlayerManager.shared
         
         if (enableProgressSlider){
             timerSong?.invalidate()
@@ -527,9 +528,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         self.songs = songs
         self.indexSelectedSong = selectedIndex
         
-        resetAudioPlayer()
-        resetTimers()
-        SongPlayerManager.shared.player?.play()
+        if (SongPlayerManager.shared.song?.title != song.title){
+            resetAudioPlayer()
+            resetTimers()
+            SongPlayerManager.shared.player?.play()
+        }
         
         if (songs.count > 1){
             enableButtonsWhenBrowsing()

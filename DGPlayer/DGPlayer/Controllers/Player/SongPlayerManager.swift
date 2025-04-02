@@ -18,6 +18,7 @@ class SongPlayerManager {
     
     var remoteCommandsConfigured = false
     var isSongPlayerConfigured = false
+    var isRandomSongConfigured = false
     
     private init(){
         player = AVAudioPlayer()
