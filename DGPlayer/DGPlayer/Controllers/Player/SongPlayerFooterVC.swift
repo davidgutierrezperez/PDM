@@ -40,26 +40,29 @@ class SongPlayerFooterVC: UIViewController {
     }
     
     func show(in parent: UIViewController) {
-        guard self.parent !== parent else { return } // Evitar añadirlo múltiples veces
-        
-        // Quitar de otro padre si lo tuviera
-        self.willMove(toParent: nil)
-        self.view.removeFromSuperview()
-        self.removeFromParent()
+        guard view.superview == nil else { return }
 
-        parent.addChild(self)
-        self.view.translatesAutoresizingMaskIntoConstraints = false
-        parent.view.addSubview(self.view)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        parent.view.addSubview(view)
 
-        NSLayoutConstraint.activate([
-            self.view.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor),
-            self.view.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor),
-            self.view.bottomAnchor.constraint(equalTo: parent.view.safeAreaLayoutGuide.bottomAnchor),
-            self.view.heightAnchor.constraint(equalToConstant: 60)
-        ])
-
-        self.didMove(toParent: parent)
+        if let tabBar = (parent as? UITabBarController)?.tabBar {
+            NSLayoutConstraint.activate([
+                view.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor),
+                view.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor),
+                view.bottomAnchor.constraint(equalTo: tabBar.topAnchor),
+                view.heightAnchor.constraint(equalToConstant: 60)
+            ])
+        } else {
+            // fallback
+            NSLayoutConstraint.activate([
+                view.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor),
+                view.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor),
+                view.bottomAnchor.constraint(equalTo: parent.view.safeAreaLayoutGuide.bottomAnchor),
+                view.heightAnchor.constraint(equalToConstant: 60)
+            ])
+        }
     }
+
 
 
     func hide() {

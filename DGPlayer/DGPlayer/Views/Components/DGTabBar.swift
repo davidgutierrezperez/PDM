@@ -15,6 +15,15 @@ class DGTabBar: UITabBarController {
         configure()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard let song = SongPlayerManager.shared.song else { return }
+
+        SongPlayerFooterVC.shared.updateView(with: song)
+        SongPlayerFooterVC.shared.show(in: self)
+    }
+    
 
     private func configure(){
         tabBar.backgroundColor = .systemFill

@@ -50,12 +50,6 @@ class SongsVC: MainViewsCommonVC {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = false
-        
-        let currentSong = SongPlayerManager.shared.song
-        if (currentSong != nil){
-            SongPlayerFooterVC.shared.updateView(with: currentSong!)
-            SongPlayerFooterVC.shared.show(in: self)
-        }
     }
     
     func configureSearchController() -> UISearchController {

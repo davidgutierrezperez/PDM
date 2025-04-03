@@ -172,7 +172,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             startProgressTime()
             songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
         }
-        
+        if let tabBar = self.tabBarController {
+            SongPlayerFooterVC.shared.show(in: tabBar)
+        }
         mediaPlayerInfo()
     }
     
@@ -202,6 +204,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         let isSimpleReproductionActivated = manager.simpleReproduction
         let isReproduceAllPlaylistActivated = manager.reproduceAllPlaylist
         let isLoopingSong = manager.isLoopingSong
+        
+        songControls.changeRandomSongTint(activated: false)
         
         if (isSimpleReproductionActivated){
             manager.configureReproduceAllPlaylist(activated: true)
