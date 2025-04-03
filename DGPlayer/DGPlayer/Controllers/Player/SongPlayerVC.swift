@@ -117,6 +117,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        SongPlayerFooterVC.shared.hide()
+        
         updateFavoriteIcon()
         updateOptions()
         
@@ -127,11 +130,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
         
         tabBarController?.tabBar.isHidden = true
-
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
+        SongPlayerFooterVC.shared.setAlpha(value: 1)
     }
     
     private func activateAudioPlayer(){

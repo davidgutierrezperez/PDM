@@ -41,7 +41,7 @@ class SongPlayerFooterVC: UIViewController {
     
     func show(in parent: UIViewController) {
         guard view.superview == nil else { return }
-
+        
         view.translatesAutoresizingMaskIntoConstraints = false
         parent.view.addSubview(view)
 
@@ -53,7 +53,6 @@ class SongPlayerFooterVC: UIViewController {
                 view.heightAnchor.constraint(equalToConstant: 60)
             ])
         } else {
-            // fallback
             NSLayoutConstraint.activate([
                 view.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor),
                 view.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor),
@@ -63,10 +62,12 @@ class SongPlayerFooterVC: UIViewController {
         }
     }
 
-
+    func setAlpha(value: CGFloat){
+        view.alpha = value
+    }
 
     func hide() {
-        self.willMove(toParent: nil)
+        setAlpha(value: 0)
         self.view.removeFromSuperview()
         self.removeFromParent()
     }
