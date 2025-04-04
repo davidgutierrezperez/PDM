@@ -52,9 +52,8 @@ class HomeVC: SongsVC {
     
     private func configureButtons(){
         addTargetToBarButton(boton: addButton, target: self, action: #selector(buttonTupped))
-        addTargetToBarButton(boton: enableSearchButton, target: self, action: #selector(enableSearchByButton))
         
-        navigationItem.rightBarButtonItems = [addButton, enableSearchButton]
+        navigationItem.rightBarButtonItems = [addButton]
     }
     
      @objc func buttonTupped(){

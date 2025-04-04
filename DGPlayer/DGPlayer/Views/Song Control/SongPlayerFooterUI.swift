@@ -19,6 +19,13 @@ class SongPlayerFooterUI: UIView {
         setupView()
     }
     
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let hitView = super.hitTest(point, with: event)
+        print("👉 Tocado: \(String(describing: hitView))")
+        return hitView
+    }
+
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

@@ -35,7 +35,7 @@ class PlaylistSongsVC: SongsVC {
         super.viewDidLoad()
         
         
-        navigationItem.rightBarButtonItems = [playlistSettingButton, addButton, enableSearchButton]
+        navigationItem.rightBarButtonItems = [playlistSettingButton, addButton]
 
         navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = title

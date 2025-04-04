@@ -14,14 +14,23 @@ class SongPlayerFooterVC: UIViewController {
     
     private init(){
         super.init(nibName: nil, bundle: nil)
-        self.view = footerView
+        view.addSubview(footerView)
+                footerView.translatesAutoresizingMaskIntoConstraints = false
+
+                NSLayoutConstraint.activate([
+                    footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                    footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                    footerView.topAnchor.constraint(equalTo: view.topAnchor),
+                    footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                ])
+
         
         footerView.playIcon.addTarget(self, action: #selector(playPauseSongPlayer), for: .touchUpInside)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(openPlayer))
         tap.cancelsTouchesInView = false
-        footerView.isUserInteractionEnabled = true
-        footerView.addGestureRecognizer(tap)
+        tap.delegate = self
+        view.addGestureRecognizer(tap)
     }
     
     required init?(coder: NSCoder) {
@@ -33,6 +42,25 @@ class SongPlayerFooterVC: UIViewController {
         
         let playPauseIcon = (SongPlayerManager.shared.player?.isPlaying == true) ? DGSongControl.pauseIcon : DGSongControl.playIcon
         footerView.changePlaySongIcon(systemName: playPauseIcon)
+    }
+    
+    private func setFooterViewAsView(){
+        view.addSubview(footerView)
+        footerView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            footerView.topAnchor.constraint(equalTo: view.topAnchor),
+            footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        footerView.playIcon.addTarget(self, action: #selector(playPauseSongPlayer), for: .touchUpInside)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(openPlayer))
+        tap.cancelsTouchesInView = false
+        tap.delegate = self
+        view.addGestureRecognizer(tap)
     }
     
     func updateView(with song: Song){
@@ -84,14 +112,33 @@ class SongPlayerFooterVC: UIViewController {
         }
     }
     
-    @objc private func openPlayer(){
-        guard let _ = SongPlayerManager.shared.player else { return }
-        
+    @objc private func openPlayer() {
+        print("🔥 openPlayer tapped")
+
+        guard let topVC = UIApplication.topMostViewController() else {
+            print("❌ No se pudo obtener el VC superior")
+            return
+        }
+
         let song = SongPlayerManager.shared.song!
         let songs = SongPlayerManager.shared.songs
         let index = SongPlayerManager.shared.selectedIndex
 
-        SongPlayerVC.present(from: self, with: song, songs: songs, selectedSong: index)
+        SongPlayerVC.present(from: topVC, with: song, songs: songs, selectedSong: index)
+    }
+
+
+}
+
+extension SongPlayerFooterVC: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view is UIButton {
+            return false
+        }
+
+        return true
     }
 
 }
+
+
