@@ -7,15 +7,32 @@
 
 import UIKit
 
+enum ADD_ACTION {
+    case ADD_TO_FAVORITES
+    case ADD_TO_PLAYIST
+}
+
 class SongSelectorVC: SongsVC {
     
     private let cancelButton = UIBarButtonItem()
     private let playlistTitle: String
+    private let addAction: ADD_ACTION
     
     var onSongSelected: ((Song) -> Void)?
     
     init(playlistTitle: String){
         self.playlistTitle = playlistTitle
+        addAction = ADD_ACTION.ADD_TO_PLAYIST
+        
+        super.init()
+        
+        let songsToSelect = FileManagerHelper.loadSongsFromCoreData()
+        tableView = DGSongTableView(songs: songsToSelect)
+    }
+    
+    override init(){
+        playlistTitle = ""
+        addAction = ADD_ACTION.ADD_TO_FAVORITES
         
         super.init()
         
@@ -45,7 +62,11 @@ class SongSelectorVC: SongsVC {
                     self.tableView.songs[indexPath.row] :
                     self.tableView.filteredSongs[indexPath.row]
         
-        FileManagerHelper.addSongToPlaylist(playlistTitle: playlistTitle, song: song)
+        if (addAction == ADD_ACTION.ADD_TO_PLAYIST){
+            FileManagerHelper.addSongToPlaylist(playlistTitle: playlistTitle, song: song)
+        } else {
+            FileManagerHelper.addSongToFavourites(title: song.title!)
+        }
         
         onSongSelected?(song)
         

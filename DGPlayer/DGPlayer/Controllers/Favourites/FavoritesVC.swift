@@ -25,7 +25,7 @@ class FavoritesVC: SongsVC {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        isSearchEnable = false
+        configureButtons()
         
         configureTableView()
     }
@@ -49,6 +49,24 @@ class FavoritesVC: SongsVC {
         tableView.tableView.deleteRows(at: [IndexPath(item: index, section: 0)], with: .automatic)
         
         FileManagerHelper.addSongToFavourites(title: song.title!)
+    }
+    
+    private func configureButtons(){
+        navigationItem.rightBarButtonItem = addButton
+        
+        addTargetToBarButton(boton: addButton, target: self, action: #selector(addSongToFavorites))
+    }
+    
+    @objc private func addSongToFavorites(){
+        let songSelectorVC = SongSelectorVC()
+        
+        songSelectorVC.onSongSelected = { [weak self] newSong in
+            guard let self = self else { return }
+            tableView.addSong(song: newSong)
+        }
+        
+        let nv = UINavigationController(rootViewController: songSelectorVC)
+        present(nv, animated: true)
     }
     
 

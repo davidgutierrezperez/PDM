@@ -68,7 +68,7 @@ class PlaylistVC: MainViewsCommonVC {
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search a song"
+        searchController.searchBar.placeholder = "Search a playlist"
         
         return searchController
     }
