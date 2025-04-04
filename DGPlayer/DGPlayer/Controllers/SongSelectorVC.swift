@@ -48,6 +48,7 @@ class SongSelectorVC: SongsVC {
         super.viewDidLoad()
 
         navigationItem.title = nil
+        configureButtons()
         
         configureTableView()
     }
@@ -55,6 +56,14 @@ class SongSelectorVC: SongsVC {
     private func configureButtons(){
         cancelButton.title = "Cancel"
         cancelButton.tintColor = .systemRed
+        
+        navigationItem.leftBarButtonItem = cancelButton
+        
+        addTargetToBarButton(boton: cancelButton, target: self, action: #selector(dismissVC))
+    }
+    
+    @objc private func dismissVC(){
+        dismiss(animated: true)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
