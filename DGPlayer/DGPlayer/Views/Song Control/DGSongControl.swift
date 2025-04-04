@@ -20,6 +20,7 @@ class DGSongControl: UIViewController {
     var repeatButton = TouchableButton()
     var randomSongButton = TouchableButton()
     var addToFavouriteButton = TouchableButton()
+    var addToPlaylistButton = TouchableButton()
     
     var progressSlider = UISlider()
     
@@ -32,7 +33,7 @@ class DGSongControl: UIViewController {
     static var randomSongIcon: String = "shuffle"
     static var noFavouriteIcon: String = "heart"
     static var favouriteIcon: String = "heart.fill"
-    
+    static var addIcon: String = "plus.circle"
     
     weak var delegate: DGSongControlDelegate? 
 
@@ -70,6 +71,7 @@ class DGSongControl: UIViewController {
         forwardButton.setImage(UIImage(systemName: DGSongControl.forwardIcon, withConfiguration: largeConfig), for: .normal)
         repeatButton.setImage(UIImage(systemName: DGSongControl.repeatIcon, withConfiguration: mediaumConfig), for: .normal)
         randomSongButton.setImage(UIImage(systemName: DGSongControl.randomSongIcon, withConfiguration: mediaumConfig), for: .normal)
+        addToPlaylistButton.setImage(UIImage(systemName: DGSongControl.addIcon, withConfiguration: largeConfig), for: .normal)
         
         let isDarkMode = traitCollection.userInterfaceStyle == .dark
         let tintColor: UIColor = (isDarkMode) ? .white : .black
@@ -80,6 +82,7 @@ class DGSongControl: UIViewController {
         repeatButton.tintColor = tintColor
         randomSongButton.tintColor = tintColor
         addToFavouriteButton.tintColor = .systemRed
+        addToPlaylistButton.tintColor = .white
         
         pauseButton.translatesAutoresizingMaskIntoConstraints = false
         backwardButton.translatesAutoresizingMaskIntoConstraints = false
@@ -87,6 +90,8 @@ class DGSongControl: UIViewController {
         repeatButton.translatesAutoresizingMaskIntoConstraints = false
         randomSongButton.translatesAutoresizingMaskIntoConstraints = false
         addToFavouriteButton.translatesAutoresizingMaskIntoConstraints = false
+        addToPlaylistButton.translatesAutoresizingMaskIntoConstraints = false
+        
     }
     
     private func configureSliderByDefault() -> UISlider {
@@ -190,21 +195,7 @@ class DGSongControl: UIViewController {
             repeatButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 180), // 🔹 A la derecha de forwardButton
             repeatButton.centerYAnchor.constraint(equalTo: forwardButton.centerYAnchor)
         ])
-            /*
-            // 🔹 Volume Slider (dejado como estaba)
-            volumeSlider.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            volumeSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            volumeSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            volumeSlider.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
 
-            // 🔹 Botón de volumen mínimo (izquierda del slider)
-            noVolumeButton.trailingAnchor.constraint(equalTo: volumeSlider.leadingAnchor, constant: -10),
-            noVolumeButton.centerYAnchor.constraint(equalTo: volumeSlider.centerYAnchor),
-
-            // 🔹 Botón de volumen máximo (derecha del slider)
-            progressiveVolumeButton.leadingAnchor.constraint(equalTo: volumeSlider.trailingAnchor, constant: 10),
-            progressiveVolumeButton.centerYAnchor.constraint(equalTo: volumeSlider.centerYAnchor)
-             */
 
 
     }

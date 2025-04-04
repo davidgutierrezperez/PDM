@@ -9,8 +9,8 @@ import UIKit
 
 class PlaylistVC: MainViewsCommonVC {
     
-    private var playlists: [Playlist] = []
-    private var tableView: DGPlaylistTableView!
+    var playlists: [Playlist] = []
+    var tableView: DGPlaylistTableView!
     
 
     override func viewDidLoad() {

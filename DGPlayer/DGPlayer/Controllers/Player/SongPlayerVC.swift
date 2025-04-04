@@ -264,6 +264,17 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         navigationController?.pushViewController(songOptions, animated: true)
     }
     
+    @objc private func addSongToPlaylist(){
+        let playlistSelector = PlaylistSelectorVC(song: song)
+        
+        playlistSelector.onSelectedPlaylist = { [weak self] newSong in
+            guard let self = self else { return }
+        }
+        
+        let nv = UINavigationController(rootViewController: playlistSelector)
+        present(nv, animated: true)
+    }
+    
     func progressSliderChanged(to value: Float) {}
     func volumeSliderChanged(to value: Float){}
     
@@ -320,6 +331,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.repeatButton.addTarget(self, action: #selector(repeatSong), for: .touchUpInside)
         songControls.randomSongButton.addTarget(self, action: #selector(randomSong), for: .touchUpInside)
         songControls.addToFavouriteButton.addTarget(self, action: #selector(addSongToFavourites), for: .touchUpInside)
+        songControls.addToPlaylistButton.addTarget(self, action: #selector(addSongToPlaylist), for: .touchUpInside)
         
         if (song.isFavourite){
             changeAddToFavouriteButtonSymbol(systemName: DGSongControl.favouriteIcon)
@@ -344,7 +356,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     private func configureSongTitle(title: String){
         let newSongTitle = UILabel()
-        let maxCharacters = 40
+        let maxCharacters = 35
         if title.count > maxCharacters {
             let index = song.title!.index(title.startIndex, offsetBy: maxCharacters)
             newSongTitle.text = String(title[..<index]) + "..."
@@ -426,6 +438,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         // Resto de vistas
         view.addSubview(songTitle)
         view.addSubview(songControls.addToFavouriteButton)
+        view.addSubview(songControls.addToPlaylistButton)
 
         addChild(songControls)
         view.addSubview(songControls.view)
@@ -437,21 +450,23 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.view.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            // 🔹 Imagen del álbum (centrada)
+
             albumArtImageView.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             albumArtImageView.view.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -100),
             albumArtImageView.view.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.95),
             albumArtImageView.view.heightAnchor.constraint(equalTo: albumArtImageView.view.widthAnchor),
 
-            // 🔹 Título de la canción (debajo de la imagen, alineado a la izquierda)
             songTitle.topAnchor.constraint(equalTo: albumArtImageView.view.bottomAnchor, constant: 15),
             songTitle.leadingAnchor.constraint(equalTo: albumArtImageView.view.leadingAnchor),
 
-            // 🔹 Botón de favorito (alineado a la derecha del álbum)
             songControls.addToFavouriteButton.centerYAnchor.constraint(equalTo: songTitle.centerYAnchor),
             songControls.addToFavouriteButton.trailingAnchor.constraint(equalTo: albumArtImageView.view.trailingAnchor),
 
-            // 🔹 Controles (debajo del título)
+            // 🔹 Botón de añadir a playlist (izquierda del de favoritos)
+            songControls.addToPlaylistButton.centerYAnchor.constraint(equalTo: songControls.addToFavouriteButton.centerYAnchor),
+            songControls.addToPlaylistButton.trailingAnchor.constraint(equalTo: songControls.addToFavouriteButton.leadingAnchor, constant: -15),
+
+            // 🔹 Controles de la canción
             songControls.view.topAnchor.constraint(equalTo: songTitle.bottomAnchor, constant: 40),
             songControls.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             songControls.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -466,7 +481,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             return
         }
 
-        let maxCharacters = 40
+        let maxCharacters = 35
         if title.count > maxCharacters {
             let index = title.index(title.startIndex, offsetBy: maxCharacters)
             songTitle?.text = String(title[..<index]) + "..."
