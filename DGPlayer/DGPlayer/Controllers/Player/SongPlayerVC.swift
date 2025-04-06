@@ -270,7 +270,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         if (isSimpleReproductionActivated){
             manager.configureReproduceAllPlaylist(activated: true)
-            songControls.repeatButton.tintColor = .systemRed
+            songControls.repeatButton.tintColor = .white
+            songControls.randomSongButton.tintColor = .white
             
             return
         } else if (isReproduceAllPlaylistActivated){
@@ -280,13 +281,14 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.isRepeatingIcon)
             songControls.repeatButton.tintColor = .systemRed
             
+            
             return
         } else if (isLoopingSong){
             manager.configureSimpleReproduction(activated: true)
             
             SongPlayerManager.shared.player?.numberOfLoops = 0
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
-            songControls.repeatButton.tintColor = .black
+            songControls.repeatButton.tintColor = .white
             
             return
         }
@@ -307,7 +309,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     /// Añade una canción a favoritos.
     @objc private func addSongToFavourites(){
         let isSongInFavourites = FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)
-        let favoriteIconTintColor: UIColor = (isSongInFavourites) ? .white : .systemRed
+        let favoriteIconTintColor: UIColor = (isSongInFavourites) ? .systemRed : .white
         
         let favouriteIcon: String
         

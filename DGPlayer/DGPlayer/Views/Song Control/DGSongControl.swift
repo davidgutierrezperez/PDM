@@ -123,7 +123,7 @@ class DGSongControl: UIViewController {
         forwardButton.tintColor = tintColor
         repeatButton.tintColor = tintColor
         randomSongButton.tintColor = tintColor
-        addToFavouriteButton.tintColor = tintColor
+        addToFavouriteButton.tintColor = .systemRed
         addToPlaylistButton.tintColor = tintColor
         
         pauseButton.translatesAutoresizingMaskIntoConstraints = false
@@ -181,7 +181,7 @@ class DGSongControl: UIViewController {
     /// Permite cambiar el color del botón de reproducción aleatoria en función de su estado.
     /// - Parameter activated: indica si la opción de reproducción aleatoria está activada.
     func changeRandomSongTint(activated: Bool){
-        randomSongButton.tintColor = (activated) ? .systemRed : .black
+        randomSongButton.tintColor = (activated) ? .white : .systemRed
     }
     
     /// Permite cambiar el valor del slider en función de su estado.

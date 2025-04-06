@@ -13,9 +13,7 @@ class PlaylistSongsVC: SongsVC {
     
     /// *Playlist* asociada al controlador
     private var playlist: Playlist
-    
-    /// Controles para las distintas opciones de reproducción de la *playlist*
-    private var infoPlaylist: DGInfoPlaylist
+
     
     /// Constructor por defecto de *PlaylistSongsVC*. Establece la playlist a mostrar y
     /// sus canciones.
@@ -23,10 +21,9 @@ class PlaylistSongsVC: SongsVC {
     ///   - playlist: *playlist* seleccionada.
     ///   - songs: canciones de la *playlist* seleccionada.
     init(playlist: Playlist){
-        
         self.playlist = playlist
-        infoPlaylist = DGInfoPlaylist(image: playlist.image, title: playlist.name)
         let songs = FileManagerHelper.loadSongsOfPlaylistFromCoreData(name: playlist.name)
+        
         super.init(songs: songs)
         
         self.navigationItem.title = title
@@ -59,7 +56,6 @@ class PlaylistSongsVC: SongsVC {
         view.backgroundColor = .systemBackground
         
         configureButtons()
-        setupHeader()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -74,8 +70,6 @@ class PlaylistSongsVC: SongsVC {
     /// Configura los botones de la vista y establece los botones asociados.
     private func configureButtons(){
         addTargetToBarButton(boton: addButton, target: self, action: #selector(addSongToPlaylist))
-        
-        infoPlaylist.playFirstSongCollection.addTarget(self, action: #selector(playFirstSong), for: .touchUpInside)
     }
     
     /// Muestra el controlador de selección de canciones el cual permite
@@ -92,13 +86,6 @@ class PlaylistSongsVC: SongsVC {
         present(nv, animated: true)
     }
     
-    
-    /// Reproduce la primera canción de la *playlist*.
-    @objc private func playFirstSong(){
-        print(playlist.songs.count)
-        SongPlayerVC.present(from: self, with: tableView.songs[0], songs: tableView.songs, selectedSong: 0)
-    }
-    
     /// Elimina una canción de una *playlist*.
     /// - Parameter index: indice de la canción a eliminar en la tabla de canciones.
     override func deleteSong(at index: Int) {
@@ -108,13 +95,6 @@ class PlaylistSongsVC: SongsVC {
         tableView.songs.remove(at: index)
         tableView.tableView.reloadData()
     }
-    
-    /// Establece el *header* con la información de la playlist.
-    private func setupHeader() {
-        let infoHeader = infoPlaylist
-        tableView.setHeaderView(infoHeader)
-    }
-
 
 }
 
