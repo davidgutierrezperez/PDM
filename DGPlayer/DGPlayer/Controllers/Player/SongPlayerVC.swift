@@ -270,7 +270,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         if (isSimpleReproductionActivated){
             manager.configureReproduceAllPlaylist(activated: true)
-            songControls.repeatButton.tintColor = .white
+            songControls.repeatButton.tintColor = .systemRed
             songControls.randomSongButton.tintColor = .white
             
             return
@@ -280,6 +280,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             SongPlayerManager.shared.player?.numberOfLoops = Int.max
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.isRepeatingIcon)
             songControls.repeatButton.tintColor = .systemRed
+            songControls.randomSongButton.tintColor = .white
             
             
             return
@@ -289,6 +290,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             SongPlayerManager.shared.player?.numberOfLoops = 0
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
             songControls.repeatButton.tintColor = .white
+            songControls.randomSongButton.tintColor = .white
             
             return
         }
@@ -299,10 +301,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     /// Establece que la siguiente canción a reproducir deberá ser aleatoria.
     @objc private func randomSong(){
-        let activated = !SongPlayerManager.shared.reproduceRandomSongAsNext
+        let activated = SongPlayerManager.shared.reproduceRandomSongAsNext
         
         SongPlayerManager.shared.configureReproduceRandomSongAsNext(activated: !activated)
-        songControls.changeRandomSongTint(activated: activated)
+        songControls.changeRandomSongTint(activated: !activated)
     }
     
     
@@ -612,8 +614,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         let numberOfLoops = (isLoopingEnableBySettings) ? Int.max : 0
         let repeatIcon = (isLoopingEnableBySettings) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
+        songControls.repeatButton.tintColor = (isLoopingEnableBySettings) ? .systemRed : .white
         
-        SongPlayerManager.shared.player?.numberOfLoops = numberOfLoops
+        SongPlayerManager.shared.configureLoopingSong(activated: true)
         songControls.changeRepeatButtonSymbol(systemName: repeatIcon)
     }
     

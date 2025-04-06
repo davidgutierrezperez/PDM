@@ -181,7 +181,7 @@ class DGSongControl: UIViewController {
     /// Permite cambiar el color del botón de reproducción aleatoria en función de su estado.
     /// - Parameter activated: indica si la opción de reproducción aleatoria está activada.
     func changeRandomSongTint(activated: Bool){
-        randomSongButton.tintColor = (activated) ? .white : .systemRed
+        randomSongButton.tintColor = (activated) ? .systemRed : .white
     }
     
     /// Permite cambiar el valor del slider en función de su estado.
