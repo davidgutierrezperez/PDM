@@ -262,6 +262,14 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     @objc private func repeatSong(){
         let manager = SongPlayerManager.shared
         
+        if manager.reproduceRandomSongAsNext {
+            manager.configureSimpleReproduction(activated: true)
+            songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
+            songControls.repeatButton.tintColor = .white
+            songControls.randomSongButton.tintColor = .white
+            return
+        }
+        
         let isSimpleReproductionActivated = manager.simpleReproduction
         let isReproduceAllPlaylistActivated = manager.reproduceAllPlaylist
         let isLoopingSong = manager.isLoopingSong
@@ -301,11 +309,21 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     /// Establece que la siguiente canción a reproducir deberá ser aleatoria.
     @objc private func randomSong(){
-        let activated = SongPlayerManager.shared.reproduceRandomSongAsNext
-        
-        SongPlayerManager.shared.configureReproduceRandomSongAsNext(activated: !activated)
-        songControls.changeRandomSongTint(activated: !activated)
+        let manager = SongPlayerManager.shared
+
+        if manager.reproduceRandomSongAsNext {
+            manager.configureSimpleReproduction(activated: true)
+            songControls.changeRandomSongTint(activated: false)
+            songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
+            songControls.repeatButton.tintColor = .white
+        } else {
+            manager.configureReproduceRandomSongAsNext(activated: true)
+            songControls.changeRandomSongTint(activated: true)
+            songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
+            songControls.repeatButton.tintColor = .white
+        }
     }
+
     
     
     /// Añade una canción a favoritos.
@@ -427,7 +445,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     /// Configura el boton de configuración de opciones.
     private func configureOptionButton(){
         optionButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(showSongOptions))
-        optionButton.tintColor = .systemRed
+        optionButton.tintColor = .white
         
         navigationItem.rightBarButtonItem = optionButton
     }
@@ -572,7 +590,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.view.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-
             albumArtImageView.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             albumArtImageView.view.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -100),
             albumArtImageView.view.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.95),
@@ -584,11 +601,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             songControls.addToFavouriteButton.centerYAnchor.constraint(equalTo: songTitle.centerYAnchor),
             songControls.addToFavouriteButton.trailingAnchor.constraint(equalTo: albumArtImageView.view.trailingAnchor),
 
-            // 🔹 Botón de añadir a playlist (izquierda del de favoritos)
             songControls.addToPlaylistButton.centerYAnchor.constraint(equalTo: songControls.addToFavouriteButton.centerYAnchor),
             songControls.addToPlaylistButton.trailingAnchor.constraint(equalTo: songControls.addToFavouriteButton.leadingAnchor, constant: -15),
 
-            // 🔹 Controles de la canción
             songControls.view.topAnchor.constraint(equalTo: songTitle.bottomAnchor, constant: 40),
             songControls.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             songControls.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -618,6 +633,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         SongPlayerManager.shared.configureLoopingSong(activated: true)
         songControls.changeRepeatButtonSymbol(systemName: repeatIcon)
+        
+        if (!SongPlayerManager.shared.player!.isPlaying && SongPlayerManager.shared.isLoopingSong){
+            SongPlayerManager.shared.player?.play()
+        }
     }
     
     
@@ -688,8 +707,16 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         self.songs = songs
         self.indexSelectedSong = selectedIndex
         
-        if (SongPlayerManager.shared.song?.title != song.title || SongPlayerManager.shared.reproduceAllPlaylist || SongPlayerManager.shared.reproduceRandomSongAsNext){
+        let isSameSong = SongPlayerManager.shared.song?.title == song.title
+        let isReproducingRandomOrAll = SongPlayerManager.shared.reproduceAllPlaylist ||
+                                       SongPlayerManager.shared.reproduceRandomSongAsNext
+
+        if !isSameSong || (isReproducingRandomOrAll && !SongPlayerManager.shared.isLoopingSong) {
             resetEverythingAndPlay()
+        } else {
+            if !SongPlayerManager.shared.player!.isPlaying {
+                SongPlayerManager.shared.player?.stop()
+            }
         }
         
         if (songs.count > 1){

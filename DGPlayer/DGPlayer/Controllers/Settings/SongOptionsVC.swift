@@ -20,6 +20,8 @@ class SongOptionsVC: UIViewController {
 
         view.backgroundColor = .systemBackground
         
+        SongPlayerFooterVC.shared.hide()
+        
         configureOptions()
         tableView = DGSongOptionsTableView(options: options)
         configure()
