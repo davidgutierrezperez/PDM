@@ -7,49 +7,61 @@
 
 import UIKit
 
+/// Controlador que maneja la lista de *playlists* y sus eventos asociados.
 class PlaylistVC: MainViewsCommonVC {
     
-    var playlists: [Playlist] = []
+    /// Tabla con la lista de *playlists* almacenadas
     var tableView: DGPlaylistTableView!
     
-
+    
+    /// Eventos a ocurrir cuando la vista carga por primera vez
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        playlists = FileManagerHelper.loadPlaylistsFromCoreData()
+        let playlists = FileManagerHelper.loadPlaylistsFromCoreData()
+        
         tableView = DGPlaylistTableView(playlists: playlists)
         tableView.delegate = self
         tableView.tableView.delegate = self
         
-        navigationItem.rightBarButtonItems = [addButton]
-        addTargetToBarButton(boton: addButton, target: self, action: #selector(addPlaylist))
-        
-        navigationItem.searchController = configureSearchController()
-        navigationItem.hidesSearchBarWhenScrolling = false
+        configureNavigationItems()
 
         view.backgroundColor = .systemBackground
         
         configure()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
+    /// Muestra el controlador de creación de playlists para poder añadir una *playlist*.
     @objc private func addPlaylist(){
         let addPlaylistVC = PlaylistCreationVC(placeholder: "Playlist title")
         let navVC = UINavigationController(rootViewController: addPlaylistVC)
         
         addPlaylistVC.onPlaylistCreated = { [weak self] in
             guard let self = self else { return }
-            self.playlists = FileManagerHelper.loadPlaylistsFromCoreData()
-            self.tableView.setPlaylist(playlists: self.playlists)
+            let playlists = FileManagerHelper.loadPlaylistsFromCoreData()
+            self.tableView.setPlaylist(playlists: playlists)
             self.tableView.tableView.reloadData()
         }
         
         self.present(navVC, animated: true)
     }
     
+    /// Configura los botones que se muestran en la vista a excepción de los
+    /// incluidos en el TabBar.
+    private func configureButtons(){
+        navigationItem.rightBarButtonItems = [addButton]
+        addTargetToBarButton(boton: addButton, target: self, action: #selector(addPlaylist))
+    }
+    
+    /// Configura los elementos de navigación de la vista.
+    private func configureNavigationItems(){
+        configureButtons()
+        
+        navigationItem.searchController = configureSearchController()
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
+    
+    /// Configura la vista asociada en el controlador.
     private func configure(){
         view.addSubview(tableView.tableView)
         
@@ -63,6 +75,8 @@ class PlaylistVC: MainViewsCommonVC {
         ])
     }
     
+    /// Configura el controlador de búsqueda.
+    /// - Returns: devuelve un controlador de búsqueda previamente configurado.
     private func configureSearchController() -> UISearchController {
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self
@@ -73,6 +87,8 @@ class PlaylistVC: MainViewsCommonVC {
         return searchController
     }
     
+    /// Elimina una *playlist* de *Core Data*.
+    /// - Parameter index: índice de la *playlist* a eliminar en la tabla de *playlists*.
     private func deletePlaylistFromCoreData(at index: Int){
         let title = tableView.playlists[index].name
         FileManagerHelper.deletePlaylistFromCoreData(playlistTitle: title)
@@ -83,13 +99,15 @@ class PlaylistVC: MainViewsCommonVC {
 }
 
 extension PlaylistVC: UITableViewDelegate {
+    
+    /// Permite abrir el controlador asociado a una *playist* seleccionada.
+    /// - Parameters:
+    ///   - tableView: tabla con la lista de *playlists* almacenadas en la aplicación.
+    ///   - indexPath: índice de la *playlist* seleccionada.
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         let playlist = self.tableView.playlists[indexPath.item]
         
-        let songs = FileManagerHelper.loadSongsOfPlaylistFromCoreData(name: playlist.name)
-        
-        let songVC = PlaylistSongsVC(playlist: playlist, songs: songs)
-        songVC.setSongs(songs: songs)
+        let songVC = PlaylistSongsVC(playlist: playlist)
         
         songVC.title = playlist.name
         navigationController?.pushViewController(songVC, animated: true)
@@ -97,12 +115,17 @@ extension PlaylistVC: UITableViewDelegate {
 }
 
 extension PlaylistVC: DGPlaylistTableViewDelegate {
+    /// Elimina una *playlist* seleccionada.
+    /// - Parameter index: índice de la *playlist* a eliminar en la tabla de *playlists*.
     func deletePlaylist(at index: Int) {
         self.deletePlaylistFromCoreData(at: index)
     }
 }
 
 extension PlaylistVC: UISearchResultsUpdating, UISearchBarDelegate {
+    /// Actualiza los resultados en la tabla de *playlists* en función de la búsqueda realizada mediante
+    /// el controlador de búsqueda.
+    /// - Parameter searchController: controlador de búsqueda utilizado.
     func updateSearchResults(for searchController: UISearchController) {
         guard let filter = searchController.searchBar.text?.lowercased(), !filter.isEmpty else {
             tableView.tableView.reloadData()
@@ -112,7 +135,10 @@ extension PlaylistVC: UISearchResultsUpdating, UISearchBarDelegate {
         let filteredPlaylists = tableView.playlists.filter { $0.name.lowercased().contains(filter) }
         tableView.setFilteredPlaylists(playlists: filteredPlaylists)
     }
-
+    
+    /// Reestablece la tabla de *playlists* cuando se cancela la búsqueda en el
+    /// controlador de búsqueda.
+    /// - Parameter searchBar: controlador de búsqueda utilizado.
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         tableView.setPlaylist(playlists: tableView.playlists)
         tableView.tableView.reloadData()

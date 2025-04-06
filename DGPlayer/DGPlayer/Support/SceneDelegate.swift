@@ -8,10 +8,15 @@
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+    
+    /// Ventana principal de la aplicación.
     var window: UIWindow?
-
-
+    
+    /// Configura la escena principal de la aplicación.
+    /// - Parameters:
+    ///   - scene: escena principal de la aplicación.
+    ///   - session: sesión de la escena principal de la aplicación.
+    ///   - connectionOptions: opciones de conectividad de la escena.
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.

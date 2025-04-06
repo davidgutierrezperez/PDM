@@ -8,6 +8,9 @@
 import UIKit
 import AVFoundation
 
+/// Permite obtener la duración total de una canción como un *String*.
+/// - Parameter audio: ruta del archivo de audio.
+/// - Returns: cadena de texto con la duración de una canción.
 func getDurationFromSong(of audio: URL) -> String? {
     do {
         let player = try AVAudioPlayer(contentsOf: audio)
@@ -21,6 +24,10 @@ func getDurationFromSong(of audio: URL) -> String? {
     return nil
 }
 
+/// Permite obtener una cadena de texto equivalente a un tiempo representado
+/// mediante un objeto de tipo *TimeInterval*.
+/// - Parameter time: tiempo a pasar a texto.
+/// - Returns:cadena de texto equivalente al tiempo pasado como argumento.
 func formatTime(time: TimeInterval) -> String {
     let minutes = Int(time) / 60
     let seconds = Int(time) % 60

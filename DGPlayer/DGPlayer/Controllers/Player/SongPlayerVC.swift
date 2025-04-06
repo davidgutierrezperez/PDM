@@ -9,31 +9,49 @@ import UIKit
 import AVFoundation
 import MediaPlayer
 
+
+/// Clase que gestiona la reproducción de una canción
 class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
-    // VARIABLES
-    
+    /// Instancia de la clase para ser llamada de forma externa
     static var shared: SongPlayerVC?
     
+    /// Canción actualmente en reproducción
     private var song: Song
+    
+    /// Conjunto de canciones cargadas por el reproductor
     private var songs: [Song]
+    
+    /// Indice la canción actualmente en reproduccción
     private var indexSelectedSong: Int
     
+    /// Imagen de la canción actualmente en reproducción
     private var albumArtImageView: DGSongImagePlayer!
+    
+    /// Título de la canción actualmente en reproducción
     private var songTitle: UILabel!
     
+    /// Interfaz de los simbolos de control de canción
     private var songControls = DGSongControl()
-    private var isSongLooping = false
     
+    /// Boton de configuración de opciones de la canción
     private var optionButton = UIBarButtonItem()
+    
+    
     private var songOptions = SongOptionsVC()
     
+    /// Indica si el slider debe activarse
     private var enableProgressSlider = true
     
+    /// Indica si el temporizador de la canción ha sido activado
     private var timerSong: Timer!
     
-    // CONSTRUCTORS
-    
+    /// Contructor por defecto de la clase SongPlayerVC. Se inicializan la canciones
+    /// a cargar por el reproductor de música y se indica la canción actual a reproducir. Además,
+    /// se configuran los botones, el título de la canción, el slider y el resto de la interfaz de la vista.
+    /// - Parameters:
+    ///   - indexSelectedSong: indice de la canción a reproducir.
+    ///   - songs: canciones a cargar por el reproductor de música.
     init(indexSelectedSong: Int, songs: [Song]) {
         self.indexSelectedSong = indexSelectedSong
         self.songs = songs
@@ -54,10 +72,26 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         SongPlayerManager.shared.setSong(song: song)
     }
     
+    /// Inicializador requerido para cargar la vista desde un archivo storyboard o nib.
+    ///
+    /// Este inicializador es necesario cuando se utiliza Interface Builder para crear
+    /// instancias del controlador. En este caso particular, como el controlador se
+    /// configura completamente de forma programática, el uso de storyboards no está soportado,
+    /// por lo que se lanza un `fatalError` si se intenta usar.
+    ///
+    /// - Parameter coder: Objeto utilizado para decodificar la vista desde un archivo nib o storyboard.
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    /// Presenta el reproductor de música desde una vista padre y se configuran las canciones a cargar por
+    /// el reproductor y la canción actual a reproducir.
+    /// - Parameters:
+    ///   - parent: vista padre desde la que se presenta el reproductor.
+    ///   - song: canción actual a reproducir.
+    ///   - songs: canciones a cargar por el reproductor.
+    ///   - selectedSong: indice de la canción actual a reproducir.
     static func present(from parent: UIViewController, with song: Song, songs: [Song], selectedSong: Int){
         if let existingVC = SongPlayerVC.shared {
             existingVC.updateView(with: songs[selectedSong], songs: songs, selectedIndex: selectedSong)
@@ -69,20 +103,22 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
+    /// Destructor por defecto. Se elimina la instancia del reproductor de música
+    /// para liberar recursos.
     deinit {
         SongPlayerVC.shared = nil
     }
-    
-    
-    // OVERLOADING FUNCTIONS
 
+    /// Eventos a ocurrir cuando se carga la vista por primera vez. Se configuran los elementos
+    /// de navegación, el reproductor de música y la sesión de audio en segundo plano.
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .red
         navigationController?.navigationItem.backBarButtonItem?.tintColor = .systemRed
         navigationItem.largeTitleDisplayMode = .never
         tabBarController?.tabBar.isHidden = true
+        navigationController?.navigationItem.backButtonTitle = nil
+        
         fondo()
         updateFavoriteIcon()
         
@@ -91,30 +127,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             activateAudioPlayer()
         }
         setupRemoteCommandCenter()
-        
     }
     
-    private func fondo(){
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [UIColor.darkGray.cgColor, UIColor.lightGray.cgColor]
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0) // Degradado vertical
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
-        gradientLayer.frame = view.bounds
-            
-        let gradientView = UIView(frame: view.bounds)
-        gradientView.layer.insertSublayer(gradientLayer, at: 0)
-
-        // 🔹 2. Aplica desenfoque (Blur Effect)
-        let blurEffect = UIBlurEffect(style: .systemThinMaterialDark)
-        let blurView = UIVisualEffectView(effect: blurEffect)
-        blurView.frame = view.bounds
-
-        // 🔹 3. Añadir al ViewController
-        view.addSubview(gradientView)
-        view.addSubview(blurView)
-        view.sendSubviewToBack(blurView)
-    }
     
+    /// Eventos a ocurrir cuando la vista se carga de nuevo.
+    /// - Parameter animated: indica si se debe animar la aparición de la vista.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -123,8 +140,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         updateFavoriteIcon()
         updateOptions()
         
-        print(songs.count)
-        
+        // En caso de que solo haya una canción disponible,
+        // desabilita los botones para pasar de canción.
         if (songs.count == 1){
             disableButtonsWhenSearching()
         }
@@ -132,11 +149,45 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         tabBarController?.tabBar.isHidden = true
     }
     
+    
+    /// Eventos a ocurrir cuando la vista desaparece.
+    /// - Parameter animated: indica si se debe animar la desaparación de la vista.
     override func viewWillDisappear(_ animated: Bool) {
         songControls.changePauseButtonSymbol(systemName: DGSongControl.pauseIcon)
         SongPlayerFooterVC.shared.setAlpha(value: 1)
     }
     
+    /// Configura el fondo de la vista en forma de degradado.
+    private func fondo() {
+        let gradientLayer = CAGradientLayer()
+        
+        // Naranja arriba, oscuro abajo
+        gradientLayer.colors = [
+            UIColor(red: 240/255, green: 153/255, blue: 102/255, alpha: 1).cgColor,   // Naranja suave
+            UIColor(red: 102/255, green: 51/255, blue: 0/255, alpha: 1).cgColor        // Marrón oscuro
+        ]
+        
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0) // De arriba
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)   // Hacia abajo
+        gradientLayer.frame = view.bounds
+
+        let gradientView = UIView(frame: view.bounds)
+        gradientView.layer.insertSublayer(gradientLayer, at: 0)
+
+        // Efecto blur sutil
+        let blurEffect = UIBlurEffect(style: .systemThinMaterialDark)
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.frame = view.bounds
+
+        view.addSubview(gradientView)
+        view.addSubview(blurView)
+        view.sendSubviewToBack(blurView)
+    }
+    
+    
+    /// Activa el reproductor de audio con la canción a reproducir y le indica las canciones a cargar
+    /// para su posible reproducción. También inicializa los controles de la canción para su manejo
+    /// en segundo plano de forma externa a la aplicación.
     private func activateAudioPlayer(){
         guard let audioPath = song.audio?.lastPathComponent else { return }
         let audioURL = FileManagerHelper.getFilePath(from: audioPath)
@@ -158,11 +209,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
-    @objc private func playSong(){
-        SongPlayerManager.shared.player?.play()
-        mediaPlayerInfo()
-    }
     
+    /// Inicia, continua o pausa la canción en función de su estado actual. Además, actualiza el símbolo
+    /// de reproducción de canción.
     @objc private func playPauseSong(){
         guard var player = SongPlayerManager.shared.player else { return }
 
@@ -181,16 +230,24 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         mediaPlayerInfo()
     }
     
+    
+    /// Cambia a la siguiente canción de la lista de canciones disponibles.
     @objc private func changeToNextSong(){
         indexSelectedSong = (indexSelectedSong == songs.count - 1) ? 0 : (indexSelectedSong + 1)
         updateView(with: songs[indexSelectedSong], songs: songs, selectedIndex: indexSelectedSong)
     }
     
+    
+    /// Cambia a la anterior canción de la lista de canciones disponibles.
     @objc private func changeToPreviousSong(){
         indexSelectedSong = (indexSelectedSong == 0) ? (songs.count - 1) : (indexSelectedSong - 1)
         updateView(with: songs[indexSelectedSong], songs: songs, selectedIndex: indexSelectedSong)
     }
     
+    
+    /// Permite modificar el valor del slider de forma interactiva y actualiza la reproducción
+    /// de la canción para que coincida con el valor del slider.
+    /// - Parameter sender: slider cuyo valor ha sido modificado interactívamente.
     @objc private func sliderChanged(_ sender: UISlider){
         guard let player = SongPlayerManager.shared.player else { return }
         
@@ -201,6 +258,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
     
     
+    /// Activa la reproducción en bucle de una canción.
     @objc private func repeatSong(){
         let manager = SongPlayerManager.shared
         
@@ -236,6 +294,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
     }
     
+    
+    /// Establece que la siguiente canción a reproducir deberá ser aleatoria.
     @objc private func randomSong(){
         let activated = !SongPlayerManager.shared.reproduceRandomSongAsNext
         
@@ -243,8 +303,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.changeRandomSongTint(activated: activated)
     }
     
+    
+    /// Añade una canción a favoritos.
     @objc private func addSongToFavourites(){
         let isSongInFavourites = FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)
+        let favoriteIconTintColor: UIColor = (isSongInFavourites) ? .white : .systemRed
         
         let favouriteIcon: String
         
@@ -258,12 +321,17 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         
         FileManagerHelper.addSongToFavourites(title: song.title!)
         changeAddToFavouriteButtonSymbol(systemName: favouriteIcon)
+        songControls.addToFavouriteButton.tintColor = favoriteIconTintColor
     }
     
+    
+    /// Muestra la vista de opciones de configuración de la canción.
     @objc private func showSongOptions(){
         navigationController?.pushViewController(songOptions, animated: true)
     }
     
+    
+    /// Muestra la vista de selección de playlists para añadir una canción a la playlist seleccionada.
     @objc private func addSongToPlaylist(){
         let playlistSelector = PlaylistSelectorVC(song: song)
         
@@ -275,10 +343,19 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         present(nv, animated: true)
     }
     
+    
+    /// Modifica el valor del slider que muestra el tiempo de reproducción de la canción.
+    /// - Parameter value: nuevo valor del slider.
     func progressSliderChanged(to value: Float) {}
+    
+    
+    /// Modifica el valor del slider que muestra el volumen de la canción que se está reproduciendo.
+    /// - Parameter value: nuevo valor del slider.
     func volumeSliderChanged(to value: Float){}
     
     
+    /// Activa el temporizador para la reproducción de la canción y actualiza el valor del slider
+    /// en función del tiempo que lleve la canción reproduciéndose.
     private func startProgressTime(){
         if (enableProgressSlider){
             timerSong?.invalidate()
@@ -300,13 +377,15 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
 
     
+    /// Actualiza el símbolo del boton de favoritos en función de su estado actual.
+    /// - Parameter systemName: nuevo símbolo que tendrá el boton de favoritos.
     private func changeAddToFavouriteButtonSymbol(systemName: String){
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
         songControls.addToFavouriteButton.setImage(UIImage(systemName: systemName, withConfiguration: largeConfig), for: .normal)
     }
     
     
-    
+    /// Actualiza el boton de favoritos en función de si la canción está catalogada como favorita.
     private func updateFavoriteIcon(){
         if (FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)){
             changeAddToFavouriteButtonSymbol(systemName: DGSongControl.favouriteIcon)
@@ -315,7 +394,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
 
-    
+    /// Configura el slider y establece sus funciones asociadas.
     private func configureProgressSlider(){
         songControls.progressSlider.isUserInteractionEnabled = true
         songControls.progressSlider.isContinuous = true
@@ -324,6 +403,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
 
     
+    /// Configura los botones de la vista y establece sus funciones asociadas.
     private func configureButtons(){
         songControls.pauseButton.addTarget(self, action: #selector(playPauseSong), for: .touchUpInside)
         songControls.backwardButton.addTarget(self, action: #selector(changeToPreviousSong), for: .touchUpInside)
@@ -340,6 +420,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         configureOptionButton()
     }
     
+    /// Configura el boton de configuración de opciones.
     private func configureOptionButton(){
         optionButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(showSongOptions))
         optionButton.tintColor = .systemRed
@@ -347,6 +428,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         navigationItem.rightBarButtonItem = optionButton
     }
     
+    /// Configura la imagen asociada a la canción que se mostrará en la vista.
     private func configureImageSong(){
         let activateBackground = (song.image == nil)
         let image = song.image ?? UIImage(systemName: "music.note")
@@ -354,6 +436,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         albumArtImageView = DGSongImagePlayer(imageSong: image!, activateBackground: activateBackground)
     }
     
+    
+    /// Configura el título de la canción y el número de caracteres que puede mostrar.
+    /// - Parameter title: titulo de la canción.
     private func configureSongTitle(title: String){
         let newSongTitle = UILabel()
         let maxCharacters = 35
@@ -364,6 +449,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             newSongTitle.text = title
         }
         newSongTitle.font = UIFont.boldSystemFont(ofSize: 16)
+        newSongTitle.textColor = .white
         
         
         newSongTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -371,24 +457,51 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songTitle = newSongTitle
     }
     
+    
+    /// Actualiza el titulo de la canción y establece el número de caracteres que puede mostrar.
+    /// - Parameter title: título de la canción.
+    private func updateSongTitle(with title: String?) {
+        guard let title = title, !title.isEmpty else {
+            songTitle?.text = "Unknown Title"
+            return
+        }
+        
+
+        let maxCharacters = 35
+        if title.count > maxCharacters {
+            let index = title.index(title.startIndex, offsetBy: maxCharacters)
+            songTitle?.text = String(title[..<index]) + "..."
+        } else {
+            songTitle?.text = title
+        }
+    }
+    
+    
+    /// Desabilida los botones de paso de canciones.
     private func disableButtonsWhenSearching(){
         songControls.backwardButton.isEnabled = false
         songControls.forwardButton.isEnabled = false
         songControls.randomSongButton.isEnabled = false
     }
     
+    /// Habilita los botones de paso de canciones.
     private func enableButtonsWhenBrowsing() {
         songControls.backwardButton.isEnabled = true
         songControls.forwardButton.isEnabled = true
         songControls.randomSongButton.isEnabled = true
     }
     
+    
+    /// Proporciona un *string* a partir de un valor de entrada en formato *TimeInterval*.
+    /// - Parameter time: tiempo en formato *TimeInterval*
+    /// - Returns: devuelve un *string* equivalente al tiempo proporcionada.
     private func formatTime(time: TimeInterval) -> String {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
         return String(format: "%d:%02d", minutes, seconds)
     }
     
+    /// Resetea los temporizadores asociados a la canción y el progreso del slider.
     private func resetTimers() {
         timerSong?.invalidate()
         guard let player = SongPlayerManager.shared.player else {
@@ -409,6 +522,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
+    /// Resetea el reproductor de música y detiene la reproducción de audio.
     private func resetAudioPlayer(){
         guard var player = SongPlayerManager.shared.player else { return }
         
@@ -418,10 +532,13 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         player.prepareToPlay()
         enableProgressSlider = true
         
-        isSongLooping = false
         player.numberOfLoops = 0
     }
     
+    
+    /// Resetea el reproductor de audio, los temporizadores asociados y
+    /// detiene la reproducción de música. Además, prepara al reproductor
+    /// para la siguiente reproducción de audio.
     private func resetEverythingAndPlay(){
         resetAudioPlayer()
         resetTimers()
@@ -429,6 +546,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
 
     
+    /// Configura la interfaz de la vista.
     private func configure() {
         // Añadir el controlador hijo
         addChild(albumArtImageView)
@@ -473,23 +591,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             songControls.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
     }
-
     
-    private func updateSongTitle(with title: String?) {
-        guard let title = title, !title.isEmpty else {
-            songTitle?.text = "Unknown Title"
-            return
-        }
-
-        let maxCharacters = 35
-        if title.count > maxCharacters {
-            let index = title.index(title.startIndex, offsetBy: maxCharacters)
-            songTitle?.text = String(title[..<index]) + "..."
-        } else {
-            songTitle?.text = title
-        }
-    }
-    
+    /// Actualiza las opciones de la canción.
     func updateOptions(){
         for setting in songOptions.options {
             switch (setting.songSetting){
@@ -500,10 +603,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
+    /// Actualiza las opciones de reproducción en bucle del reproductor de música.
     private func updateLoopingOptions(){
         let isLoopingEnableBySettings = songOptions.options[SongOptionsVC.loopingSettingNumber].isOptionEnabled
         
-        isSongLooping = isLoopingEnableBySettings
         
         let numberOfLoops = (isLoopingEnableBySettings) ? Int.max : 0
         let repeatIcon = (isLoopingEnableBySettings) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
@@ -512,6 +615,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.changeRepeatButtonSymbol(systemName: repeatIcon)
     }
     
+    
+    /// Establece la información de la canción que se mostrará en el reproductor de música a
+    /// utilizar de forma externa a la aplicación, es decir, la información que se mostrará en el
+    /// reproductor a emplear cuando se reproduce música en segundo plano.
     private func mediaPlayerInfo(){
         guard let player = SongPlayerManager.shared.player else { return }
         
@@ -530,6 +637,8 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
+    /// Establece los controles del reproductor de música para su uso de forma externa a la aplicación, es decir,
+    /// para su uso en segundo plano.
     private func setupRemoteCommandCenter(){
         guard !SongPlayerManager.shared.remoteCommandsConfigured else { return }
         let commandCenter = MPRemoteCommandCenter.shared()
@@ -561,6 +670,13 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         SongPlayerManager.shared.remoteCommandsConfigured = true
     }
     
+    
+    /// Actualiza la vista del reproductor con una nueva canción a reproducir. Además, establece las canciones
+    /// que el reproductor podrá reproducir.
+    /// - Parameters:
+    ///   - song: nueva canción a reproducir.
+    ///   - songs: canciones a cargar en el reproductor de música.
+    ///   - selectedIndex: índice de la canción actual a reproducir.
     private func updateView(with song: Song, songs: [Song], selectedIndex: Int){
         enableProgressSlider = (SongPlayerManager.shared.song?.title == song.title)
         self.song = song
@@ -581,7 +697,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         albumArtImageView.updateImage(image: (song.image ?? UIImage(systemName: "music.note"))!, activateBackground: activateBackground)
         updateSongTitle(with: song.title)
         
-        let loopingIcon = (SongPlayerManager.shared.song?.title == self.song.title && isSongLooping) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
+        let loopingIcon = (SongPlayerManager.shared.song?.title == self.song.title && SongPlayerManager.shared.isLoopingSong) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
         let playIcon = (SongPlayerManager.shared.player?.isPlaying == true) ? DGSongControl.pauseIcon : DGSongControl.playIcon
         
         songControls.changePauseButtonSymbol(systemName: playIcon)
@@ -596,10 +712,17 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         view.layoutIfNeeded()
         
         navigationController?.navigationBar.prefersLargeTitles = true
+        UIView.transition(with: albumArtImageView.view, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
     }
 }
 
 extension SongPlayerVC: AVAudioPlayerDelegate {
+    
+    /// Establece la siguiente canción a reproducir en función de la configuración
+    /// del reproductor de música una vez que la canción actual ha terminado.
+    /// - Parameters:
+    ///   - player: reproductor de música a utilizar.
+    ///   - flag: indica si el resultado de la ejecución de la aplicación ha sido exitoso.
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if (SongPlayerManager.shared.reproduceAllPlaylist){
             indexSelectedSong = (indexSelectedSong == songs.count - 1) ? 0 : (indexSelectedSong + 1)
@@ -612,4 +735,7 @@ extension SongPlayerVC: AVAudioPlayerDelegate {
         song = songs[indexSelectedSong]
         updateView(with: song, songs: songs, selectedIndex: indexSelectedSong)
     }
+
 }
+
+

@@ -7,14 +7,22 @@
 
 import UIKit
 
+/// Objecto que representa una celda un vista representada por una tabla.
 class DGCell: UITableViewCell {
     
+    /// Identificador de la tabla.
     static let reusableIdentifier = "DGCell"
     
+    /// Título o texto de la celda.
     private let title = UILabel()
+    
+    /// Imagen a mostrar en la celda.
     private let image = UIImageView()
 
-    
+    /// Constructor por defecto de la celda.
+    /// - Parameters:
+    ///   - style: estilo a mostrar en la celda.
+    ///   - reuseIdentifier: identificador de la celda.
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -22,31 +30,33 @@ class DGCell: UITableViewCell {
         setupViews()
     }
     
+    /// Inicializador requerido para cargar la vista desde un archivo storyboard o nib.
+    ///
+    /// Este inicializador es necesario cuando se utiliza Interface Builder para crear
+    /// instancias del controlador. En este caso particular, como el controlador se
+    /// configura completamente de forma programática, el uso de storyboards no está soportado,
+    /// por lo que se lanza un `fatalError` si se intenta usar.
+    ///
+    /// - Parameter coder: Objeto utilizado para decodificar la vista desde un archivo nib o storyboard.
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    
+    /// Configura la vista y añade sus elementos.
     private func setupViews(){
         image.clipsToBounds = true
         image.layer.cornerRadius = 6
-        // Configuración de estilos
         title.font = UIFont.boldSystemFont(ofSize: 16)
 
-        // Fondo gris claro con bordes redondeados
         contentView.layer.cornerRadius = 10
         contentView.layer.masksToBounds = true
 
-        // Agregar subviews
         contentView.addSubview(image)
         contentView.addSubview(title)
 
-        // Desactivar AutoResizingMask
         image.translatesAutoresizingMaskIntoConstraints = false
         title.translatesAutoresizingMaskIntoConstraints = false
 
-        // Constraints
         NSLayoutConstraint.activate([
             image.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             image.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),

@@ -1,5 +1,5 @@
 //
-//  DGInfoCollection.swift
+//  DGInfoPlaylist.swift
 //  DGPlayer
 //
 //  Created by David Gutierrez on 24/3/25.
@@ -7,10 +7,12 @@
 
 import UIKit
 
-class DGInfoCollection: UIView {
+/// Interfaz asociada a la información de una *playlist*.
+class DGInfoPlaylist: UIView {
     
+    /// Imagen asociada a una *playlist*
     let image = UIImageView()
-    let addToCollectionButton = UIButton()
+    
     let settingCollectionButton = UIButton()
     let randomSongButton = UIButton()
     let playFirstSongCollection = UIButton()
@@ -30,12 +32,10 @@ class DGInfoCollection: UIView {
 
     private func configureButtons(){
         let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)
-        setImageToButton(button: addToCollectionButton, systemName: "plus.circle", buttonConfig: buttonConfig)
         setImageToButton(button: settingCollectionButton, systemName: "ellipsis", buttonConfig: buttonConfig)
         setImageToButton(button: randomSongButton, systemName: "shuffle", buttonConfig: buttonConfig)
         setImageToButton(button: playFirstSongCollection, systemName: "play.fill", buttonConfig: buttonConfig)
         
-        addToCollectionButton.tintColor = .systemRed
         settingCollectionButton.tintColor = .systemRed
         randomSongButton.tintColor = .systemRed
         playFirstSongCollection.tintColor = .systemRed

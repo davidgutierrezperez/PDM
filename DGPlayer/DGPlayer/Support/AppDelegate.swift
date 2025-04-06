@@ -12,7 +12,6 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         return true
@@ -32,8 +31,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 
+    /// Contenedor asociado al modelo *SongModel* almacenado en *Core Data*.
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "SongModel") // Asegúrate de usar el mismo nombre que tu .xcdatamodeld
+        let container = NSPersistentContainer(name: "SongModel")
         container.loadPersistentStores { (_, error) in
             if let error = error as NSError? {
                 fatalError("❌ Error al cargar Core Data: \(error), \(error.userInfo)")
@@ -42,8 +42,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return container
     }()
     
+    /// Contenedor asociado al modelo *PlayListModel* almacenado en *Core Data*.
     lazy var persistentContainerPlaylist: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "PlayListModel") // Asegúrate de usar el mismo nombre que tu .xcdatamodeld
+        let container = NSPersistentContainer(name: "PlayListModel")
         container.loadPersistentStores { (_, error) in
             if let error = error as NSError? {
                 fatalError("❌ Error al cargar Core Data: \(error), \(error.userInfo)")
@@ -66,6 +67,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 extension UIApplication {
+    /// Permite obtener la vista superior en la jerarquía de vistas a partir de una vista base.
+    /// - Parameter base: vista base desde la que se quiere obtener la vista superior.
+    /// - Returns: devuelve el controlador asociado a la vista superior.
     static func topMostViewController(base: UIViewController? = UIApplication.shared.connectedScenes
                                         .compactMap { ($0 as? UIWindowScene)?.keyWindow }
                                         .first?.rootViewController) -> UIViewController? {

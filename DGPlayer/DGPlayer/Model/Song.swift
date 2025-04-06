@@ -8,6 +8,7 @@
 import UIKit
 import CoreData
 
+/// Modelo que representa una canción.
 struct Song: Equatable, Hashable {
     let title: String?
     let artist: String?
@@ -17,6 +18,7 @@ struct Song: Equatable, Hashable {
     var isFavourite: Bool
     let duration: String?
     
+    /// Constructor vacio de una canción. No dispone de audio ni información asociada.
     init(){
         title = "Title"
         artist = "Artists"
@@ -27,6 +29,15 @@ struct Song: Equatable, Hashable {
         duration = "00:00"
     }
     
+    /// Constructor por defecto de una canción.
+    /// - Parameters:
+    ///   - title: título de la canción.
+    ///   - artist: artista asociado a la canción.
+    ///   - band: banda asociada a la canción.
+    ///   - image: imagen asociada a la canción.
+    ///   - audio: audio de la canción.
+    ///   - isFavourite: índice si la canción está catalogada como favorita.
+    ///   - duration: duración de la canción.
     init(title: String?, artist: String?, band: String?, image: UIImage?, audio: URL?, isFavourite: Bool, duration: String?) {
         self.title = title
         self.artist = artist ?? "Unknown"

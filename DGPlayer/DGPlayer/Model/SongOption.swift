@@ -7,6 +7,8 @@
 
 import UIKit
 
+/// Enumerado que representa las distintas
+/// opciones de reproducción de canciones.
 enum SongSetting {
     case Looping
 }
