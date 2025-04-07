@@ -94,8 +94,10 @@ class DGSongControl: UIViewController {
     private func configureSongLabels() {
         songCurrentLabel.text = "0:00"
         songCurrentLabel.font = UIFont.systemFont(ofSize: 14)
+        songCurrentLabel.textColor = .white
         
         songDurationLabel.font = UIFont.systemFont(ofSize: 14)
+        songDurationLabel.textColor = .white
         
         songDurationLabel.translatesAutoresizingMaskIntoConstraints = false
         songCurrentLabel.translatesAutoresizingMaskIntoConstraints = false
