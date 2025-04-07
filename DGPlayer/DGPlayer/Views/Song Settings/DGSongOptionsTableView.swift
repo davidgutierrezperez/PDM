@@ -7,16 +7,29 @@
 
 import UIKit
 
+/// Identificador de las diferentes celdas de la tabla.
 private let reuseIdentifier = "Cell"
 
+/// Controlador que maneja las celdas de configuración.
 class DGSongOptionsTableView: UITableViewController {
     
+    /// Ajustes en forma de botones.
     var toggleOptions: [SettingItem] = []
+    
+    /// Ajstes en forma de *sliders*.
     var sliderOptions: [SettingItem] = []
     
+    /// Closure que permite acceder a los valores de configuración
+    /// en forma de *slider* desde una vista padre.
     var onToggleChanged: ((Int, Bool) -> Void)?
+    
+    /// Closure que permite acceder a los valores de configuración
+    /// en forma de botón desde una vista padre.
     var onSliderChanged: ((Int, Float) -> Void)?
     
+    /// Constructor por defecto del controlador. Establece las
+    /// distintas opciones de configuración.
+    /// - Parameter options: opciones de configuración.
     init(options: [SettingItem]){
         super.init(style: .plain)
         
@@ -32,10 +45,20 @@ class DGSongOptionsTableView: UITableViewController {
         }
     }
     
+    /// Inicializador requerido para cargar la vista desde un archivo storyboard o nib.
+    ///
+    /// Este inicializador es necesario cuando se utiliza Interface Builder para crear
+    /// instancias del controlador. En este caso particular, como el controlador se
+    /// configura completamente de forma programática, el uso de storyboards no está soportado,
+    /// por lo que se lanza un `fatalError` si se intenta usar.
+    ///
+    /// - Parameter coder: Objeto utilizado para decodificar la vista desde un archivo nib o storyboard.
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Eventos que ocurren cuando la vista se carga por primera vez.
+    /// Configura las diferentes celdas de la tabla.
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -45,17 +68,29 @@ class DGSongOptionsTableView: UITableViewController {
         tableView.separatorStyle = .none
     }
 
+    
+    /// Indica el número de secciones de la tabla.
+    /// - Parameter tableView: tabla del controlador.
+    /// - Returns: número de secciones de la tabla.
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 2
     }
-
+    
+    /// Indica el número de filas por sección.
+    /// - Parameters:
+    ///   - tableView: tabla del controlador.
+    ///   - section: sección de la tabla.
+    /// - Returns: número de filas por sección de la tabla.
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return section == 0 ? toggleOptions.count : sliderOptions.count
     }
 
     
+    /// Configura  las diferentes celdas de la tabla.
+    /// - Parameters:
+    ///   - tableView: tabla del controlador.
+    ///   - indexPath: índice de cada celda.
+    /// - Returns: celdas de la tabla tras ser configuradas.
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let setting = (indexPath.section == 0) ? toggleOptions[indexPath.row] : sliderOptions[indexPath.row]
 
@@ -83,52 +118,5 @@ class DGSongOptionsTableView: UITableViewController {
             return cell
         }
     }
-
-    
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

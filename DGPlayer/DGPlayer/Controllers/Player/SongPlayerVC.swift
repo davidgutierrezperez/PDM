@@ -634,6 +634,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
+    /// Comprueba las distintas opciones a configurar mediante botones.
+    /// - Parameters:
+    ///   - id: identificador del ajuste.
+    ///   - isOn: indica si la configuración está activa.
+    ///   - foundActiveSetting: indica si se ha activado alguna configuración.
     private func checkToggleSettings(id: SettingID, isOn: Bool, foundActiveSetting: inout Bool){
         if (id == .looping && isOn){
             updateLoopingSetting()
@@ -644,6 +649,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
+    /// Actualiza la configuración de reproducción en bucle.
     private func updateLoopingSetting(){
         SongPlayerManager.shared.configureLoopingSong(activated: true)
         
@@ -653,6 +659,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.randomSongButton.tintColor = .white
     }
     
+    /// Actualiza la configuración de reproducción aleatoria.
     private func updateRandomSongLetting(){
         SongPlayerManager.shared.configureReproduceRandomSongAsNext(activated: true)
         songControls.changeRandomSongTint(activated: true)
@@ -660,6 +667,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.repeatButton.tintColor = .white
     }
     
+    /// Actualiza la configuración de reproducción simple
     private func updateSimpleReproductionSetting(){
         SongPlayerManager.shared.configureSimpleReproduction(activated: true)
         
@@ -669,6 +677,10 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         songControls.randomSongButton.tintColor = .white
     }
     
+    /// Comprueba las distintas opciones de configuración medinate *sider*.
+    /// - Parameters:
+    ///   - id: identificador de ajuste.
+    ///   - current: valor actual del slider.
     private func checkSliderSettings(id: SettingID, current: Float){
         switch (id){
         case .volume:
@@ -682,10 +694,14 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
         }
     }
     
+    /// Actualiza el volumen de la canción.
+    /// - Parameter volume: volumen actual de la canción.
     private func updatePlayerVolume(volume: Float){
         SongPlayerManager.shared.player?.volume = volume
     }
     
+    /// Actualiza la velocidad de reproducción de la canción.
+    /// - Parameter rate: velocidad de la canción.
     private func updatePlayerRate(rate: Float){
         let isRateEnabled = songSettings.isRateEnabled()
         let newRate = (isRateEnabled) ? rate : 1
