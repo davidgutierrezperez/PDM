@@ -7,10 +7,10 @@
 
 import UIKit
 
-class SongOptionsVC: UIViewController {
+class SongSettingVC: UIViewController {
     
     var tableView : DGSongOptionsTableView!
-    var options: [SettingItem] = []
+    var settings: [SettingItem] = []
     
     static let loopingSettingNumber:Int = 0
     static let randomSongSettingNumber:Int = 1
@@ -21,10 +21,10 @@ class SongOptionsVC: UIViewController {
 
         view.backgroundColor = .systemBackground
         
-        configureOptions()
-        tableView = DGSongOptionsTableView(options: options)
+        configureSettings()
+        tableView = DGSongOptionsTableView(options: settings)
         configure()
-        checkToggleOptions()
+        checkToggleSettings()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -34,9 +34,9 @@ class SongOptionsVC: UIViewController {
     }
     
     func isLoopingSettingActivated() -> Bool {
-        guard options.indices.contains(Self.loopingSettingNumber) else { return false }
+        guard settings.indices.contains(Self.loopingSettingNumber) else { return false }
         
-        let setting = options[Self.loopingSettingNumber]
+        let setting = settings[Self.loopingSettingNumber]
         
         if case .toggle(let isOn) = setting.type {
             return isOn
@@ -46,9 +46,9 @@ class SongOptionsVC: UIViewController {
     }
     
     func isRandomSongSettingActivated() -> Bool {
-        guard options.indices.contains(Self.randomSongSettingNumber) else { return false }
+        guard settings.indices.contains(Self.randomSongSettingNumber) else { return false }
         
-        let setting = options[Self.randomSongSettingNumber]
+        let setting = settings[Self.randomSongSettingNumber]
         
         if case .toggle(let isOn) = setting.type {
             return isOn
@@ -58,31 +58,31 @@ class SongOptionsVC: UIViewController {
     }
     
     private func deactivateRandomIfLoopingActivated(){
-        guard options.indices.contains(Self.randomSongSettingNumber),
-              options.indices.contains(Self.loopingSettingNumber) else { return }
+        guard settings.indices.contains(Self.randomSongSettingNumber),
+              settings.indices.contains(Self.loopingSettingNumber) else { return }
         
-        if case .toggle(true) = options[Self.loopingSettingNumber].type {
-            options[Self.randomSongSettingNumber].type = .toggle(isOn: false)
+        if case .toggle(true) = settings[Self.loopingSettingNumber].type {
+            settings[Self.randomSongSettingNumber].type = .toggle(isOn: false)
         }
     }
     
     private func deactivateLoopingIfRandomSongActivated(){
-        guard options.indices.contains(Self.randomSongSettingNumber),
-              options.indices.contains(Self.loopingSettingNumber) else { return }
+        guard settings.indices.contains(Self.randomSongSettingNumber),
+              settings.indices.contains(Self.loopingSettingNumber) else { return }
         
-        if case .toggle(true) = options[Self.randomSongSettingNumber].type {
-            options[Self.loopingSettingNumber].type = .toggle(isOn: false)
+        if case .toggle(true) = settings[Self.randomSongSettingNumber].type {
+            settings[Self.loopingSettingNumber].type = .toggle(isOn: false)
         }
     }
     
-    private func checkToggleOptions() {
+    private func checkToggleSettings() {
         tableView.onToggleChanged = { [weak self] index, isOn in
             guard let self = self else { return }
             
             let randomIndexPath = IndexPath(row: Self.randomSongSettingNumber, section: 0)
             let loopingIndexPath = IndexPath(row: Self.loopingSettingNumber, section: 0)
             
-            self.options[index].type = .toggle(isOn: isOn)
+            self.settings[index].type = .toggle(isOn: isOn)
             
             if (index == Self.loopingSettingNumber && isOn){
                 deactivateRandomIfLoopingActivated()
@@ -95,10 +95,10 @@ class SongOptionsVC: UIViewController {
         }
     }
     
-    private func configureOptions(){
-        guard options.isEmpty else { return }
+    private func configureSettings(){
+        guard settings.isEmpty else { return }
         
-        options = [
+        settings = [
                 SettingItem(title: "Repetir canción", type: .toggle(isOn: false)),
                 SettingItem(title: "Reproducción aleatoria", type: .toggle(isOn: false)),
                 SettingItem(title: "Graves", type: .slider(current: 0.5)),

@@ -38,7 +38,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     private var optionButton = UIBarButtonItem()
     
     
-    private var songOptions = SongOptionsVC()
+    private var songSettings = SongSettingVC()
     
     /// Indica si el slider debe activarse
     private var enableProgressSlider = true
@@ -349,7 +349,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     /// Muestra la vista de opciones de configuración de la canción.
     @objc private func showSongOptions(){
-        navigationController?.pushViewController(songOptions, animated: true)
+        navigationController?.pushViewController(songSettings, animated: true)
     }
     
     
@@ -613,7 +613,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     /// Actualiza las opciones de la canción.
     func updateOptions(){
-        
+        for setting in songSettings.settings {
+            
+        }
     }
     
     
