@@ -10,12 +10,13 @@ import Foundation
 enum SettingID {
     case looping
     case randomSong
+    case enableRate
     case volume
     case rate
 }
 
 enum SettingType {
-    case slider(min: Float, max: Float, current: Float)
+    case slider(min: Float, max: Float, current: Float, isEnabled: Bool)
     case toggle(isOn: Bool)
 }
 

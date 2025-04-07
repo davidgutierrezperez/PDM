@@ -18,9 +18,9 @@ class SongSettingVC: UIViewController {
     
     weak var delegate: SongSettingVCDelegate?
     
-    static let loopingSettingNumber:Int = 0
-    static let randomSongSettingNumber:Int = 1
-    static let sliderStartIndex:Int = 2
+    static let enableRateSetting:Int = 0
+    static let volumeSliderSetting:Int = 1
+    static let rateSliderSettting:Int = 2
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,56 +45,15 @@ class SongSettingVC: UIViewController {
         delegate?.songSettingsDidUpdate(settings)
     }
     
-    func isLoopingSettingActivated() -> Bool {
-        guard settings.indices.contains(Self.loopingSettingNumber) else { return false }
-        
-        let setting = settings[Self.loopingSettingNumber]
-        
-        if case .toggle(let isOn) = setting.type {
-            return isOn
-        }
-        
-        return false
-    }
     
-    func activateLoopingSetting() {
-        guard settings.indices.contains(Self.loopingSettingNumber) else { return }
-
-        if case .toggle = settings[Self.loopingSettingNumber].type {
-            settings[Self.loopingSettingNumber].type = .toggle(isOn: true)
-        }
+    private func activateEnableRateSetting(){
+        guard settings.indices.contains(Self.rateSliderSettting) else { return }
         
-        let loopingIndexPath = IndexPath(row: SongSettingVC.loopingSettingNumber, section: 0)
-        tableView.tableView.reloadRows(at: [loopingIndexPath], with: .none)
-    }
-    
-    func isRandomSongSettingActivated() -> Bool {
-        guard settings.indices.contains(Self.randomSongSettingNumber) else { return false }
-        
-        let setting = settings[Self.randomSongSettingNumber]
-        
-        if case .toggle(let isOn) = setting.type {
-            return isOn
-        }
-        
-        return false
-    }
-    
-    private func deactivateRandomIfLoopingActivated(){
-        guard settings.indices.contains(Self.randomSongSettingNumber),
-              settings.indices.contains(Self.loopingSettingNumber) else { return }
-        
-        if case .toggle(true) = settings[Self.loopingSettingNumber].type {
-            settings[Self.randomSongSettingNumber].type = .toggle(isOn: false)
-        }
-    }
-    
-    private func deactivateLoopingIfRandomSongActivated(){
-        guard settings.indices.contains(Self.randomSongSettingNumber),
-              settings.indices.contains(Self.loopingSettingNumber) else { return }
-        
-        if case .toggle(true) = settings[Self.randomSongSettingNumber].type {
-            settings[Self.loopingSettingNumber].type = .toggle(isOn: false)
+        if case .slider(let min, let max, let current, _) = settings[Self.rateSliderSettting].type {
+            settings[Self.rateSliderSettting].type = .slider(min: min, max: max, current: current, isEnabled: true)
+            
+            let rateSliderIndexPath = IndexPath(row: Self.rateSliderSettting, section: 1)
+            tableView.tableView.reloadRows(at: [rateSliderIndexPath], with: .none)
         }
     }
     
@@ -102,17 +61,10 @@ class SongSettingVC: UIViewController {
         tableView.onToggleChanged = { [weak self] index, isOn in
             guard let self = self else { return }
             
-            let randomIndexPath = IndexPath(row: Self.randomSongSettingNumber, section: 0)
-            let loopingIndexPath = IndexPath(row: Self.loopingSettingNumber, section: 0)
-            
             self.settings[index].type = .toggle(isOn: isOn)
-            
-            if (index == Self.loopingSettingNumber && isOn){
-                deactivateRandomIfLoopingActivated()
-                self.tableView.tableView.reloadRows(at: [randomIndexPath], with: .none)
-            } else if (index == Self.randomSongSettingNumber && isOn){
-                deactivateLoopingIfRandomSongActivated()
-                self.tableView.tableView.reloadRows(at: [loopingIndexPath], with: .none)
+
+            if (index == Self.enableRateSetting && isOn){
+                activateEnableRateSetting()
             }
 
         }
@@ -122,27 +74,30 @@ class SongSettingVC: UIViewController {
         tableView.onSliderChanged = { [weak self] index, newValue in
             guard let self = self else { return }
 
-            if case .slider(let min, let max, _) = self.settings[index + Self.sliderStartIndex].type {
-                self.settings[index + Self.sliderStartIndex].type = .slider(min: min, max: max, current: newValue)
+            let settingsIndex = Self.enableRateSetting + 1 + index // 👈 Corrige el offset
+
+            guard settingsIndex < self.settings.count else { return }
+
+            if case .slider(let min, let max, _, let isEnabled) = self.settings[settingsIndex].type {
+                self.settings[settingsIndex].type = .slider(min: min, max: max, current: newValue, isEnabled: isEnabled)
             }
 
-            if case .slider(let min, let max, _) = self.tableView.sliderOptions[index].type {
-                self.tableView.sliderOptions[index].type = .slider(min: min, max: max, current: newValue)
+            if case .slider(let min, let max, _, let isEnabled) = self.tableView.sliderOptions[index].type {
+                self.tableView.sliderOptions[index].type = .slider(min: min, max: max, current: newValue, isEnabled: isEnabled)
             }
 
             self.delegate?.songSettingsDidUpdate(self.settings)
         }
-
     }
+
     
     private func configureSettings(){
         guard settings.isEmpty else { return }
         
         settings = [
-            SettingItem(id: .looping, title: "Repetir canción", type: .toggle(isOn: false)),
-            SettingItem(id: .randomSong, title: "Reproducción aleatoria", type: .toggle(isOn: false)),
-            SettingItem(id: .volume, title: "Volume", type: .slider(min: 0, max: 1, current: 0.3)),
-            SettingItem(id: .rate, title: "Rate", type: .slider(min: 0, max: 2, current: 1))
+            SettingItem(id: .enableRate, title: "Enable rate", type: .toggle(isOn: false)),
+            SettingItem(id: .volume, title: "Volume", type: .slider(min: 0, max: 1, current: 0.3, isEnabled: true)),
+            SettingItem(id: .rate, title: "Rate", type: .slider(min: 0, max: 2, current: 1, isEnabled: false))
         ]
     }
 

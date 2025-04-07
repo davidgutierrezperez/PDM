@@ -289,11 +289,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             songControls.changeRepeatButtonSymbol(systemName: DGSongControl.isRepeatingIcon)
             songControls.repeatButton.tintColor = .systemRed
             songControls.randomSongButton.tintColor = .white
-            
-            songSettings.activateLoopingSetting()
 
-            
-            
             return
         } else if (isLoopingSong){
             manager.configureSimpleReproduction(activated: true)
@@ -627,7 +623,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             case .toggle(let isOn):
                 checkToggleSettings(id: setting.id, isOn: isOn, foundActiveSetting: &foundActiveSetting)
                 break
-            case .slider(_, _, let current):
+            case .slider(_, _, let current, _):
                 checkSliderSettings(id: setting.id, current: current)
                 break
             }

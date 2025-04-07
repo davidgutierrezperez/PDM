@@ -19,19 +19,20 @@ class DGSongSliderOption: UITableViewCell {
         super.init(style: style, reuseIdentifier: DGSongSliderOption.reusableIdentifier)
         
         setupView()
-        configureSlider(min: 0, max: 1, current: 0.5)
-        configure(title: "", min: 0, max: 1, current: 0.5)
+        configureSlider(min: 0, max: 1, current: 0.5, isEnabled: true)
+        configure(title: "", min: 0, max: 1, current: 0.5, isEnabled: true)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configureSlider(min: Float, max: Float, current: Float){
+    private func configureSlider(min: Float, max: Float, current: Float, isEnabled: Bool){
         slider.addTarget(self, action: #selector(sliderChanged), for: .valueChanged)
         slider.minimumValue = min
         slider.maximumValue = max
         slider.value = current
+        slider.isEnabled = isEnabled
     }
     
     private func configureTitleCell(title: String){
@@ -39,9 +40,9 @@ class DGSongSliderOption: UITableViewCell {
         titleCell.font = UIFont.systemFont(ofSize: 16, weight: .medium)
     }
     
-    func configure(title: String, min: Float, max: Float, current: Float){
+    func configure(title: String, min: Float, max: Float, current: Float, isEnabled: Bool){
         configureTitleCell(title: title)
-        configureSlider(min: min, max: max, current: current)
+        configureSlider(min: min, max: max, current: current, isEnabled: isEnabled)
     }
     
     private func setupView(){
