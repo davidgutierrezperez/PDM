@@ -45,6 +45,16 @@ class SongSettingVC: UIViewController {
         delegate?.songSettingsDidUpdate(settings)
     }
     
+    func isRateEnabled() -> Bool {
+        guard settings.indices.contains(Self.enableRateSetting) else { return false }
+        
+        if case .toggle(let isOn) = settings[Self.enableRateSetting].type {
+            return isOn
+        }
+        
+        return false
+    }
+    
     
     private func activateEnableRateSetting(){
         guard settings.indices.contains(Self.rateSliderSettting) else { return }
@@ -60,21 +70,27 @@ class SongSettingVC: UIViewController {
     private func checkToggleSettings() {
         tableView.onToggleChanged = { [weak self] index, isOn in
             guard let self = self else { return }
-            
+
             self.settings[index].type = .toggle(isOn: isOn)
 
-            if (index == Self.enableRateSetting && isOn){
-                activateEnableRateSetting()
+            if index == Self.enableRateSetting {
+                if case .slider(let min, let max, let current, _) = self.settings[Self.rateSliderSettting].type {
+                    self.settings[Self.rateSliderSettting].type = .slider(min: min, max: max, current: current, isEnabled: isOn)
+   
+                    let rateIndexInSliders = Self.rateSliderSettting - (Self.enableRateSetting + 1)
+                    let rateIndexPath = IndexPath(row: rateIndexInSliders, section: 1)
+                    self.tableView.tableView.reloadRows(at: [rateIndexPath], with: .none)
+                }
             }
-
         }
     }
+
     
     private func checkSliderOptions(){
         tableView.onSliderChanged = { [weak self] index, newValue in
             guard let self = self else { return }
 
-            let settingsIndex = Self.enableRateSetting + 1 + index // 👈 Corrige el offset
+            let settingsIndex = Self.enableRateSetting + 1 + index
 
             guard settingsIndex < self.settings.count else { return }
 

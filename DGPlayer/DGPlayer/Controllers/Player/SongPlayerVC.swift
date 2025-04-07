@@ -687,8 +687,13 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
     
     private func updatePlayerRate(rate: Float){
+        let isRateEnabled = songSettings.isRateEnabled()
+        let newRate = (isRateEnabled) ? rate : 1
+        
+        print("New rate:", newRate)
+        
         SongPlayerManager.shared.player?.enableRate = true
-        SongPlayerManager.shared.player?.rate = rate
+        SongPlayerManager.shared.player?.rate = newRate
     }
     
     

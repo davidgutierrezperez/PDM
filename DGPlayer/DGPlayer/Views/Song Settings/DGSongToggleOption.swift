@@ -51,12 +51,11 @@ class DGSongToggleOption: UITableViewCell {
         titleLabel.text = text
         isOptionEnabled = isEnabled
 
-        // 🔥 Detenemos el callback para evitar que al hacer isOn = ... se dispare
         toggleSwitch.removeTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
-        toggleSwitch.isOn = isEnabled // 👈 ESTO es lo que actualiza visualmente el switch
+        toggleSwitch.isOn = isEnabled
         toggleSwitch.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
 
-        // Solo agregar subviews y constraints si aún no están añadidos (esto evita que se repitan)
+
         if titleLabel.superview == nil {
             contentView.addSubview(titleLabel)
             contentView.addSubview(toggleSwitch)

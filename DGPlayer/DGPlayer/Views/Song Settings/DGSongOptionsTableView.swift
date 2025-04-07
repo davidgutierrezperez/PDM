@@ -76,7 +76,6 @@ class DGSongOptionsTableView: UITableViewController {
             cell.configure(title: setting.title, min: min, max: max, current: current, isEnabled: isEnabled)
             
             cell.onValueChanged = { [weak self] newValue in
-                print("NewValue: ", newValue)
                 self?.onSliderChanged?(indexPath.row, newValue)
                 
             }

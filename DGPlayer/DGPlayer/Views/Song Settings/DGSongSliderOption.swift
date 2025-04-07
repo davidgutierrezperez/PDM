@@ -20,6 +20,7 @@ class DGSongSliderOption: UITableViewCell {
         
         setupView()
         configureSlider(min: 0, max: 1, current: 0.5, isEnabled: true)
+        slider.addTarget(self, action: #selector(sliderChanged), for: .valueChanged)
         configure(title: "", min: 0, max: 1, current: 0.5, isEnabled: true)
     }
     
@@ -28,7 +29,6 @@ class DGSongSliderOption: UITableViewCell {
     }
     
     private func configureSlider(min: Float, max: Float, current: Float, isEnabled: Bool){
-        slider.addTarget(self, action: #selector(sliderChanged), for: .valueChanged)
         slider.minimumValue = min
         slider.maximumValue = max
         slider.value = current
