@@ -71,11 +71,12 @@ class DGSongOptionsTableView: UITableViewController {
             
             return cell
 
-        case .slider:
+        case .slider(let min, let max, let current):
             let cell = tableView.dequeueReusableCell(withIdentifier: DGSongSliderOption.reusableIdentifier, for: indexPath) as! DGSongSliderOption
-            cell.configure(title: setting.title)
+            cell.configure(title: setting.title, min: min, max: max, current: current)
             
             cell.onValueChanged = { [weak self] newValue in
+                print("NewValue: ", newValue)
                 self?.onSliderChanged?(indexPath.row, newValue)
                 
             }

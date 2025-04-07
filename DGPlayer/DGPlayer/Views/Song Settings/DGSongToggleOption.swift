@@ -47,24 +47,31 @@ class DGSongToggleOption: UITableViewCell {
         switchAction?(sender.isOn)
     }
     
-    func configure(text: String, isEnabled: Bool){
-        configureLabel(title: text)
+    func configure(text: String, isEnabled: Bool) {
+        titleLabel.text = text
         isOptionEnabled = isEnabled
-        
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(toggleSwitch)
-        
+
+        // 🔥 Detenemos el callback para evitar que al hacer isOn = ... se dispare
         toggleSwitch.removeTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
-        toggleSwitch.isOn = isEnabled
+        toggleSwitch.isOn = isEnabled // 👈 ESTO es lo que actualiza visualmente el switch
         toggleSwitch.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-                        
-            toggleSwitch.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-            toggleSwitch.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
-        ])
+
+        // Solo agregar subviews y constraints si aún no están añadidos (esto evita que se repitan)
+        if titleLabel.superview == nil {
+            contentView.addSubview(titleLabel)
+            contentView.addSubview(toggleSwitch)
+
+            titleLabel.translatesAutoresizingMaskIntoConstraints = false
+            toggleSwitch.translatesAutoresizingMaskIntoConstraints = false
+
+            NSLayoutConstraint.activate([
+                titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+                titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+                toggleSwitch.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+                toggleSwitch.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            ])
+        }
     }
+
     
 }

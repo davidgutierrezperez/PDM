@@ -7,14 +7,20 @@
 
 import UIKit
 
+protocol SongSettingVCDelegate: AnyObject {
+    func songSettingsDidUpdate(_ updateSettings: [SettingItem])
+}
+
 class SongSettingVC: UIViewController {
     
     var tableView : DGSongOptionsTableView!
     var settings: [SettingItem] = []
     
+    weak var delegate: SongSettingVCDelegate?
+    
     static let loopingSettingNumber:Int = 0
     static let randomSongSettingNumber:Int = 1
-
+    static let sliderStartIndex:Int = 2
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,12 +31,18 @@ class SongSettingVC: UIViewController {
         tableView = DGSongOptionsTableView(options: settings)
         configure()
         checkToggleSettings()
+        checkSliderOptions()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         SongPlayerFooterVC.shared.hide()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        delegate?.songSettingsDidUpdate(settings)
     }
     
     func isLoopingSettingActivated() -> Bool {
@@ -43,6 +55,17 @@ class SongSettingVC: UIViewController {
         }
         
         return false
+    }
+    
+    func activateLoopingSetting() {
+        guard settings.indices.contains(Self.loopingSettingNumber) else { return }
+
+        if case .toggle = settings[Self.loopingSettingNumber].type {
+            settings[Self.loopingSettingNumber].type = .toggle(isOn: true)
+        }
+        
+        let loopingIndexPath = IndexPath(row: SongSettingVC.loopingSettingNumber, section: 0)
+        tableView.tableView.reloadRows(at: [loopingIndexPath], with: .none)
     }
     
     func isRandomSongSettingActivated() -> Bool {
@@ -95,15 +118,31 @@ class SongSettingVC: UIViewController {
         }
     }
     
+    private func checkSliderOptions(){
+        tableView.onSliderChanged = { [weak self] index, newValue in
+            guard let self = self else { return }
+
+            if case .slider(let min, let max, _) = self.settings[index + Self.sliderStartIndex].type {
+                self.settings[index + Self.sliderStartIndex].type = .slider(min: min, max: max, current: newValue)
+            }
+
+            if case .slider(let min, let max, _) = self.tableView.sliderOptions[index].type {
+                self.tableView.sliderOptions[index].type = .slider(min: min, max: max, current: newValue)
+            }
+
+            self.delegate?.songSettingsDidUpdate(self.settings)
+        }
+
+    }
+    
     private func configureSettings(){
         guard settings.isEmpty else { return }
         
         settings = [
-                SettingItem(title: "Repetir canción", type: .toggle(isOn: false)),
-                SettingItem(title: "Reproducción aleatoria", type: .toggle(isOn: false)),
-                SettingItem(title: "Graves", type: .slider(current: 0.5)),
-                SettingItem(title: "Medios", type: .slider(current: 0.5)),
-                SettingItem(title: "Agudos", type: .slider(current: 0.5)),
+            SettingItem(id: .looping, title: "Repetir canción", type: .toggle(isOn: false)),
+            SettingItem(id: .randomSong, title: "Reproducción aleatoria", type: .toggle(isOn: false)),
+            SettingItem(id: .volume, title: "Volume", type: .slider(min: 0, max: 1, current: 0.3)),
+            SettingItem(id: .rate, title: "Rate", type: .slider(min: 0, max: 2, current: 1))
         ]
     }
 

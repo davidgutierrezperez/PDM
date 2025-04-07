@@ -7,12 +7,20 @@
 
 import Foundation
 
+enum SettingID {
+    case looping
+    case randomSong
+    case volume
+    case rate
+}
+
 enum SettingType {
-    case slider(current: Float)
+    case slider(min: Float, max: Float, current: Float)
     case toggle(isOn: Bool)
 }
 
 struct SettingItem {
+    let id: SettingID
     let title: String
     var type: SettingType
 }

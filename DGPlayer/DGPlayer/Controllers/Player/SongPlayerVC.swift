@@ -290,6 +290,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             songControls.repeatButton.tintColor = .systemRed
             songControls.randomSongButton.tintColor = .white
             
+            songSettings.activateLoopingSetting()
+
+            
             
             return
         } else if (isLoopingSong){
@@ -349,7 +352,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     /// Muestra la vista de opciones de configuración de la canción.
     @objc private func showSongOptions(){
-        navigationController?.pushViewController(songSettings, animated: true)
+        let vc = SongSettingVC()
+        vc.settings = songSettings.settings
+        vc.delegate = self
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     
@@ -612,10 +619,80 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     }
     
     /// Actualiza las opciones de la canción.
-    func updateOptions(){
+    private func updateOptions(){
+        var foundActiveSetting = false
+        
         for setting in songSettings.settings {
-            
+            switch (setting.type){
+            case .toggle(let isOn):
+                checkToggleSettings(id: setting.id, isOn: isOn, foundActiveSetting: &foundActiveSetting)
+                break
+            case .slider(_, _, let current):
+                checkSliderSettings(id: setting.id, current: current)
+                break
+            }
         }
+        
+        if (!foundActiveSetting){
+            updateSimpleReproductionSetting()
+        }
+    }
+    
+    private func checkToggleSettings(id: SettingID, isOn: Bool, foundActiveSetting: inout Bool){
+        if (id == .looping && isOn){
+            updateLoopingSetting()
+            foundActiveSetting = true
+        } else if (id == .randomSong && isOn){
+            updateRandomSongLetting()
+            foundActiveSetting = true
+        }
+    }
+    
+    private func updateLoopingSetting(){
+        SongPlayerManager.shared.configureLoopingSong(activated: true)
+        
+        SongPlayerManager.shared.player?.numberOfLoops = Int.max
+        songControls.changeRepeatButtonSymbol(systemName: DGSongControl.isRepeatingIcon)
+        songControls.repeatButton.tintColor = .systemRed
+        songControls.randomSongButton.tintColor = .white
+    }
+    
+    private func updateRandomSongLetting(){
+        SongPlayerManager.shared.configureReproduceRandomSongAsNext(activated: true)
+        songControls.changeRandomSongTint(activated: true)
+        songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
+        songControls.repeatButton.tintColor = .white
+    }
+    
+    private func updateSimpleReproductionSetting(){
+        SongPlayerManager.shared.configureSimpleReproduction(activated: true)
+        
+        SongPlayerManager.shared.player?.numberOfLoops = 0
+        songControls.changeRepeatButtonSymbol(systemName: DGSongControl.repeatIcon)
+        songControls.repeatButton.tintColor = .white
+        songControls.randomSongButton.tintColor = .white
+    }
+    
+    private func checkSliderSettings(id: SettingID, current: Float){
+        switch (id){
+        case .volume:
+            updatePlayerVolume(volume: current)
+            break
+        case .rate:
+            updatePlayerRate(rate: current)
+            break
+        default:
+            break
+        }
+    }
+    
+    private func updatePlayerVolume(volume: Float){
+        SongPlayerManager.shared.player?.volume = volume
+    }
+    
+    private func updatePlayerRate(rate: Float){
+        SongPlayerManager.shared.player?.enableRate = true
+        SongPlayerManager.shared.player?.rate = rate
     }
     
     
@@ -747,6 +824,13 @@ extension SongPlayerVC: AVAudioPlayerDelegate {
         updateView(with: song, songs: songs, selectedIndex: indexSelectedSong)
     }
 
+}
+
+extension SongPlayerVC: SongSettingVCDelegate {
+    func songSettingsDidUpdate(_ updateSettings: [SettingItem]) {
+        songSettings.settings = updateSettings
+        updateOptions()
+    }
 }
 
 
