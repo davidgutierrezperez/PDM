@@ -613,30 +613,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     /// Actualiza las opciones de la canción.
     func updateOptions(){
-        for setting in songOptions.options {
-            switch (setting.songSetting){
-            case .Looping:
-                updateLoopingOptions()
-                break
-            }
-        }
-    }
-    
-    /// Actualiza las opciones de reproducción en bucle del reproductor de música.
-    private func updateLoopingOptions(){
-        let isLoopingEnableBySettings = songOptions.options[SongOptionsVC.loopingSettingNumber].isOptionEnabled
         
-        
-        let numberOfLoops = (isLoopingEnableBySettings) ? Int.max : 0
-        let repeatIcon = (isLoopingEnableBySettings) ? DGSongControl.isRepeatingIcon : DGSongControl.repeatIcon
-        songControls.repeatButton.tintColor = (isLoopingEnableBySettings) ? .systemRed : .white
-        
-        SongPlayerManager.shared.configureLoopingSong(activated: true)
-        songControls.changeRepeatButtonSymbol(systemName: repeatIcon)
-        
-        if (!SongPlayerManager.shared.player!.isPlaying && SongPlayerManager.shared.isLoopingSong){
-            SongPlayerManager.shared.player?.play()
-        }
     }
     
     

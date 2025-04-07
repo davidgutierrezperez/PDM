@@ -10,9 +10,10 @@ import UIKit
 class SongOptionsVC: UIViewController {
     
     var tableView : DGSongOptionsTableView!
-    var options: [DGSongOption] = []
+    var options: [SettingItem] = []
     
     static let loopingSettingNumber:Int = 0
+    static let randomSongSettingNumber:Int = 1
 
 
     override func viewDidLoad() {
@@ -20,19 +21,90 @@ class SongOptionsVC: UIViewController {
 
         view.backgroundColor = .systemBackground
         
-        SongPlayerFooterVC.shared.hide()
-        
         configureOptions()
         tableView = DGSongOptionsTableView(options: options)
         configure()
+        checkToggleOptions()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        SongPlayerFooterVC.shared.hide()
+    }
+    
+    func isLoopingSettingActivated() -> Bool {
+        guard options.indices.contains(Self.loopingSettingNumber) else { return false }
+        
+        let setting = options[Self.loopingSettingNumber]
+        
+        if case .toggle(let isOn) = setting.type {
+            return isOn
+        }
+        
+        return false
+    }
+    
+    func isRandomSongSettingActivated() -> Bool {
+        guard options.indices.contains(Self.randomSongSettingNumber) else { return false }
+        
+        let setting = options[Self.randomSongSettingNumber]
+        
+        if case .toggle(let isOn) = setting.type {
+            return isOn
+        }
+        
+        return false
+    }
+    
+    private func deactivateRandomIfLoopingActivated(){
+        guard options.indices.contains(Self.randomSongSettingNumber),
+              options.indices.contains(Self.loopingSettingNumber) else { return }
+        
+        if case .toggle(true) = options[Self.loopingSettingNumber].type {
+            options[Self.randomSongSettingNumber].type = .toggle(isOn: false)
+        }
+    }
+    
+    private func deactivateLoopingIfRandomSongActivated(){
+        guard options.indices.contains(Self.randomSongSettingNumber),
+              options.indices.contains(Self.loopingSettingNumber) else { return }
+        
+        if case .toggle(true) = options[Self.randomSongSettingNumber].type {
+            options[Self.loopingSettingNumber].type = .toggle(isOn: false)
+        }
+    }
+    
+    private func checkToggleOptions() {
+        tableView.onToggleChanged = { [weak self] index, isOn in
+            guard let self = self else { return }
+            
+            let randomIndexPath = IndexPath(row: Self.randomSongSettingNumber, section: 0)
+            let loopingIndexPath = IndexPath(row: Self.loopingSettingNumber, section: 0)
+            
+            self.options[index].type = .toggle(isOn: isOn)
+            
+            if (index == Self.loopingSettingNumber && isOn){
+                deactivateRandomIfLoopingActivated()
+                self.tableView.tableView.reloadRows(at: [randomIndexPath], with: .none)
+            } else if (index == Self.randomSongSettingNumber && isOn){
+                deactivateLoopingIfRandomSongActivated()
+                self.tableView.tableView.reloadRows(at: [loopingIndexPath], with: .none)
+            }
+
+        }
     }
     
     private func configureOptions(){
-        let loopingSetting = DGSongOption()
+        guard options.isEmpty else { return }
         
-        loopingSetting.configure(text: "Loop", isEnabled: false)
-        
-        options.append(loopingSetting)
+        options = [
+                SettingItem(title: "Repetir canción", type: .toggle(isOn: false)),
+                SettingItem(title: "Reproducción aleatoria", type: .toggle(isOn: false)),
+                SettingItem(title: "Graves", type: .slider(current: 0.5)),
+                SettingItem(title: "Medios", type: .slider(current: 0.5)),
+                SettingItem(title: "Agudos", type: .slider(current: 0.5)),
+        ]
     }
 
     
@@ -48,16 +120,5 @@ class SongOptionsVC: UIViewController {
         ])
         
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

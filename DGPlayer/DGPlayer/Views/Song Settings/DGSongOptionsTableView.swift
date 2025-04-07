@@ -11,12 +11,25 @@ private let reuseIdentifier = "Cell"
 
 class DGSongOptionsTableView: UITableViewController {
     
-    var options: [DGSongOption] = []
+    var toggleOptions: [SettingItem] = []
+    var sliderOptions: [SettingItem] = []
     
-    init(options: [DGSongOption]){
+    var onToggleChanged: ((Int, Bool) -> Void)?
+    var onSliderChanged: ((Int, Float) -> Void)?
+    
+    init(options: [SettingItem]){
         super.init(style: .plain)
         
-        self.options = options
+        for option in options {
+            switch option.type {
+            case .toggle:
+                toggleOptions.append(option)
+                break
+            case .slider:
+                sliderOptions.append(option)
+                break
+            }
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -26,37 +39,51 @@ class DGSongOptionsTableView: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tableView.register(DGSongOption.self, forCellReuseIdentifier: DGSongOption.reusableIdentifier)
-        tableView.rowHeight = 50
+        tableView.register(DGSongToggleOption.self, forCellReuseIdentifier: DGSongToggleOption.reusableIdentifier)
+        tableView.register(DGSongSliderOption.self, forCellReuseIdentifier: DGSongSliderOption.reusableIdentifier)
+        
+        tableView.separatorStyle = .none
     }
-
-    // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return options.count
+        return section == 0 ? toggleOptions.count : sliderOptions.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: DGSongOption.reusableIdentifier, for: indexPath) as? DGSongOption else {
-            return UITableViewCell()
-        }
+        let setting = (indexPath.section == 0) ? toggleOptions[indexPath.row] : sliderOptions[indexPath.row]
+
+        switch setting.type {
+        case .toggle(let isOn):
+            let cell = tableView.dequeueReusableCell(withIdentifier: DGSongToggleOption.reusableIdentifier, for: indexPath) as! DGSongToggleOption
+            cell.configure(text: setting.title, isEnabled: isOn)
+            
+            cell.switchAction = { [weak self] newValue in
+                self?.onToggleChanged?(indexPath.row, newValue)
                 
-        let option = options[indexPath.row]
-        cell.configure(text: option.label.text!, isEnabled: option.isOptionEnabled)
-        
-        cell.switchAction = { [weak self] isOn in
-            self?.options[indexPath.row].isOptionEnabled = isOn
+            }
+            
+            return cell
+
+        case .slider:
+            let cell = tableView.dequeueReusableCell(withIdentifier: DGSongSliderOption.reusableIdentifier, for: indexPath) as! DGSongSliderOption
+            cell.configure(title: setting.title)
+            
+            cell.onValueChanged = { [weak self] newValue in
+                self?.onSliderChanged?(indexPath.row, newValue)
+                
+            }
+            
+            return cell
         }
-        
-        return cell
     }
+
     
 
     /*
