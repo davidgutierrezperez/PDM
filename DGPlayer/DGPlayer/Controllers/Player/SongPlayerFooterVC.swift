@@ -26,6 +26,8 @@ class SongPlayerFooterVC: UIViewController {
     private init(){
         super.init(nibName: nil, bundle: nil)
         view.addSubview(footerView)
+        
+        view.backgroundColor = .systemGray2
                 
         setFooterViewAsView()
     }

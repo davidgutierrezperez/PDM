@@ -37,7 +37,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     /// Boton de configuración de opciones de la canción
     private var optionButton = UIBarButtonItem()
     
-    
+    /// Ajustes de configuración de la canción
     private var songSettings = SongSettingVC()
     
     /// Indica si el slider debe activarse
@@ -387,7 +387,6 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
             timerSong = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
                 guard let self = self, let player = SongPlayerManager.shared.player else { return }
 
-                // Si el usuario está moviendo el slider, no sobrescribir su valor
                 if self.songControls.progressSlider.isTracking { return }
 
                 self.songControls.progressSlider.value = Float(player.currentTime / player.duration)
@@ -616,21 +615,15 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     
     /// Actualiza las opciones de la canción.
     private func updateOptions(){
-        var foundActiveSetting = false
-        
         for setting in songSettings.settings {
             switch (setting.type){
             case .toggle(let isOn):
-                checkToggleSettings(id: setting.id, isOn: isOn, foundActiveSetting: &foundActiveSetting)
+                checkToggleSettings(id: setting.id, isOn: isOn)
                 break
             case .slider(_, _, let current, _):
                 checkSliderSettings(id: setting.id, current: current)
                 break
             }
-        }
-        
-        if (!foundActiveSetting){
-            updateSimpleReproductionSetting()
         }
     }
     
@@ -639,13 +632,11 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     ///   - id: identificador del ajuste.
     ///   - isOn: indica si la configuración está activa.
     ///   - foundActiveSetting: indica si se ha activado alguna configuración.
-    private func checkToggleSettings(id: SettingID, isOn: Bool, foundActiveSetting: inout Bool){
+    private func checkToggleSettings(id: SettingID, isOn: Bool){
         if (id == .looping && isOn){
             updateLoopingSetting()
-            foundActiveSetting = true
         } else if (id == .randomSong && isOn){
             updateRandomSongLetting()
-            foundActiveSetting = true
         }
     }
     
@@ -786,9 +777,9 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
 
         if !isSameSong || (isReproducingRandomOrAll && !SongPlayerManager.shared.isLoopingSong) {
             resetEverythingAndPlay()
-        } else {
-            if !SongPlayerManager.shared.player!.isPlaying {
-                SongPlayerManager.shared.player?.stop()
+            
+            if (SongPlayerManager.shared.isLoopingSong){
+                SongPlayerManager.shared.player?.numberOfLoops = Int.max
             }
         }
         
