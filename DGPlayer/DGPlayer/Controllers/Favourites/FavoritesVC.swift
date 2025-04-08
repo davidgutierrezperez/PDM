@@ -53,9 +53,10 @@ class FavoritesVC: SongsVC {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        FavoritesManager.shared.reloadData()
         songs = FavoritesManager.shared.songs
         
-        if (tableView.songs != songs){
+        if (tableView.songs.count != songs.count){
             tableView.setSongs(songs: songs)
             tableView.tableView.reloadData()
         }
@@ -68,6 +69,7 @@ class FavoritesVC: SongsVC {
         
         tableView.songs.remove(at: index)
         tableView.tableView.deleteRows(at: [IndexPath(item: index, section: 0)], with: .automatic)
+        FavoritesManager.shared.deleteSong(song: song)
         
         FileManagerHelper.addSongToFavourites(title: song.title!)
     }

@@ -26,6 +26,10 @@ class FavoritesManager {
         songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
     }
     
+    func reloadData(){
+        songs = FileManagerHelper.loadFavouriteSongsFromCoreData()
+    }
+    
     
     /// Añade o elimina una canción de favoritos en función de su estado actual.
     /// Si la canción no se encuentra catalogada como favorita, entonces se añadirá, en caso

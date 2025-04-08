@@ -1,0 +1,14 @@
+{
+    "environment": {
+        "audoSnap": 1,
+        "blockMovable": 1,
+        "timelinePercent": 40.0,
+        "timelinePlayPos": 181750.0,
+        "mediaIconSize": 1,
+        "mediaSortType": 0,
+        "timelineVisibleStart": 0.0,
+        "timelineVisibleDuration": 0.0,
+        "rulerState": false,
+        "export_profile": "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGlCwwVFhdVJG51bGzTDQ4PEBIUV05TLmtleXNaTlMub2JqZWN0c1YkY2xhc3OhEYACoROAA4AEWW91dHB1dEZtdBAA0hgZGhtaJGNsYXNzbmFtZVgkY2xhc3Nlc18QE05TTXV0YWJsZURpY3Rpb25hcnmjGhwdXE5TRGljdGlvbmFyeVhOU09iamVjdAgRGiQpMjdJTFFTWV9mbnmAgoSGiIqUlpumr8XJ1gAAAAAAAAEBAAAAAAAAAB4AAAAAAAAAAAAAAAAAAADf"
+    }
+}

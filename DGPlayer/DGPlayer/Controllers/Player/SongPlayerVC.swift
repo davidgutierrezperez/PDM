@@ -328,7 +328,7 @@ class SongPlayerVC: UIViewController, DGSongControlDelegate {
     /// Añade una canción a favoritos.
     @objc private func addSongToFavourites(){
         let isSongInFavourites = FileManagerHelper.isSongInFavourites(title: songs[indexSelectedSong].title!)
-        let favoriteIconTintColor: UIColor = (isSongInFavourites) ? .systemRed : .white
+        let favoriteIconTintColor: UIColor = .systemRed 
         
         let favouriteIcon: String
         

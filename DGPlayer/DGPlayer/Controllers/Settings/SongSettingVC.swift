@@ -51,7 +51,7 @@ class SongSettingVC: UIViewController {
     
     /// Eventos que se producen cuando la vista se carga de nuevo.
     /// Se oculta SongPlayerFooterVC.
-    /// - Parameter animated: <#animated description#>
+    /// - Parameter animated: indica si se debe animar la aparición de la vista.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -60,7 +60,7 @@ class SongSettingVC: UIViewController {
     
     /// Eventos que se producen cuando la vista desaparece. Se
     /// actualizan los ajustes de reproducción de canciones.
-    /// - Parameter animated: <#animated description#>
+    /// - Parameter animated: indica si se debe animar la desaparición de la vista
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         delegate?.songSettingsDidUpdate(settings)
