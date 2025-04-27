@@ -1,0 +1,45 @@
+- Crear notas
+	- Añadir a una carpeta
+	- Funcionalidad de pined en el Home
+
+- Crear carpetas 
+	- Notas almacenadas dentro de notas
+	- Funcionalidad de pined en el Home
+	- Mostrar el número de notas por carpeta
+		* Si no hay ninguna nota, mostrar una pantalla personalizada
+
+- Notas:
+	- Añadir texto
+	- Editar texto
+	- Añadir imágenes
+	- Añadir tablas
+	- Funcionalidad de ir hacia delante y atrás
+	- Añadir fecha
+	
+
+- Home: 
+	- Barra en el Home como en WhastApp para seleccionar distintos tipos de notas
+		* Todos
+		* Recientes
+		* Favoritos
+
+	- Mostrar las notas y carpetas pinned 
+	- Mostrar carpetas con notas
+	- Si una nota no está en una carpeta se añade a una carpeta llamada "Todos"
+	- Edición de carpetas (salvo la de todos)
+	- Al buscar, mostrar las notas y carpetas que tengan un nombre parecido
+	
+- Estructura:
+	- Model:
+		* Folder
+			- Mostrar las celdas de las notas
+		* Note
+			- Texto enriquecido (texto -> (itálica, bold, etc), imágenes, listas)
+	- Components:
+		* NoteCell (la única opción de edición de celda es eliminar)
+		* NoteTableView
+		* FolderCell (la única opción de edición de celda es eliminar)
+		* FolderTableView
+		* GeneralTabBar (solo tiene la opción de crear notas la derecha)
+			- HomeTabBar(puede craer también carpetas)
+			- NoteTabBar (opciones avanzadas como crear listas o añadir imágenes o videos)
