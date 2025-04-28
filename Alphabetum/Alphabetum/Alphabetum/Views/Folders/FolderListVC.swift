@@ -9,16 +9,19 @@ import UIKit
 
 class FolderListVC: UIViewController {
     
-    private let viewModel = FolderListViewModel()
+    private let viewModel = FolderListViewModel.shared
     private let tableView = FolderTableView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "Folders"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        addRightBarButton(image: UIImage(systemName: "folder.badge.plus")!, selector: #selector(openCreateFolderVC))
         
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.searchController = createSearchController(placeholder: "Search a folder", searchResultsUpdater: self, delegate: self)
+        navigationItem.searchController?.searchBar.isHidden = false
+        
+        addRightBarButton(image: UIImage(systemName: "folder.badge.plus")!, selector: #selector(openCreateFolderVC))
         setupView()
     }
     
@@ -31,6 +34,7 @@ class FolderListVC: UIViewController {
         
         createFolderVC.onCreated = { [weak self] folderTitle in
             self?.viewModel.createFolder(title: folderTitle)
+            self?.tableView.onCreatedNewFolder()
         }
         
         let navVC = UINavigationController(rootViewController: createFolderVC)
@@ -43,13 +47,20 @@ class FolderListVC: UIViewController {
         tableView.view.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-                tableView.view.topAnchor.constraint(equalTo: view.topAnchor),
-                tableView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                tableView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                tableView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-            ])
+            tableView.view.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
 
-            tableView.didMove(toParent: self)
+        tableView.didMove(toParent: self)
     }
 
+}
+
+extension FolderListVC: UISearchResultsUpdating, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        viewModel.filterFolders(with: searchController.searchBar.text ?? "")
+        tableView.reloadData()
+    }
 }

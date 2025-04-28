@@ -9,14 +9,26 @@ import UIKit
 
 class FolderTableView: UITableViewController {
     
-    private let viewModel = FolderListViewModel()
+    private let viewModel = FolderListViewModel.shared
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         tableView.register(FolderCell.self, forCellReuseIdentifier: FolderCell.reusableIdentifier)
         
+        fetchAndReload()
+    }
+    
+    private func fetchAndReload(){
         viewModel.fetchFolders()
+        tableView.reloadData()
+    }
+    
+    func onCreatedNewFolder(){
+        fetchAndReload()
+    }
+    
+    func reloadData(){
         tableView.reloadData()
     }
 

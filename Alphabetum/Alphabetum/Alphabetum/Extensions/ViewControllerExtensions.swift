@@ -38,6 +38,17 @@ extension UIViewController {
         navigationItem.rightBarButtonItem = okButton
     }
     
+    func createSearchController(placeholder: String = "Search", searchResultsUpdater: UISearchResultsUpdating, delegate: UISearchBarDelegate) -> UISearchController {
+        let searchController = UISearchController()
+        
+        searchController.searchResultsUpdater = searchResultsUpdater
+        searchController.searchBar.delegate = delegate
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = placeholder
+        
+        return searchController
+    }
+    
     @objc func didTapOk(){}
     
     @objc func didTapCancel(){
