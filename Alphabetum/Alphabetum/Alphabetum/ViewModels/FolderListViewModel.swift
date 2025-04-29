@@ -34,6 +34,10 @@ final class FolderListViewModel {
         filteredFolders = folders
     }
     
+    func deleteFolder(){
+        
+    }
+    
     func folder(at index: Int) -> Folder {
         return isFiltering ? filteredFolders[index] : folders[index]
     }

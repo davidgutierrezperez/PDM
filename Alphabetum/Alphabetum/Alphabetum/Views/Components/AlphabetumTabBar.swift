@@ -38,7 +38,7 @@ class AlphabetumTabBar: UITabBarController {
     }
     
     private func setupNoteNavigationController() -> UINavigationController {
-        let noteVC = NoteVC()
+        let noteVC = CreateEntityVC(title: "New Note", style: .pushed)
         let noteTabBarItem = createTabBarItem(UIImage(systemName: Self.CreateNoteIcon), 1)
         
         

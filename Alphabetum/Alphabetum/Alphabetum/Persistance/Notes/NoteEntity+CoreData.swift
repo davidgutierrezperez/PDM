@@ -21,4 +21,12 @@ extension Note {
             self.content = NSMutableAttributedString(string: "")
         }
     }
+    
+    init(title: String){
+        self.id = UUID()
+        self.title = title
+        self.creationDate = Date()
+        self.lastModifiedSince = creationDate
+        self.content = NSMutableAttributedString(string: "")
+    }
 }

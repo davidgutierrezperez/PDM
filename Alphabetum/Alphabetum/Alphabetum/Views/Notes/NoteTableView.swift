@@ -1,35 +1,22 @@
 //
-//  FolderTableView.swift
+//  NoteTableView.swift
 //  Alphabetum
 //
-//  Created by David Gutierrez on 27/4/25.
+//  Created by David Gutierrez on 29/4/25.
 //
 
 import UIKit
 
-class FolderTableView: UITableViewController {
+class NoteTableView: UITableViewController {
     
-    private let viewModel = FolderListViewModel.shared
+    private let viewModel = NoteListViewModel.shared
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tableView.register(FolderCell.self, forCellReuseIdentifier: FolderCell.reusableIdentifier)
+        tableView.register(NoteCell.self, forCellReuseIdentifier: NoteCell.reuseIdentifier)
         
-        fetchAndReload()
-    }
-    
-    private func fetchAndReload(){
-        viewModel.fetchFolders()
-        tableView.reloadData()
-    }
-    
-    func onCreatedNewFolder(){
-        fetchAndReload()
-    }
-    
-    func reloadData(){
-        tableView.reloadData()
+        viewModel.fetchNotesOfFolder(id: viewModel.folderID)
     }
 
     // MARK: - Table view data source
@@ -41,24 +28,17 @@ class FolderTableView: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return viewModel.numberOfFolders()
+        return viewModel.numberOfNotes()
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: FolderCell.reusableIdentifier, for: indexPath) as? FolderCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! NoteCell
 
-        let folder = viewModel.folder(at: indexPath.row)
-        cell?.configure(title: folder.title)
-
-        return cell ?? UITableViewCell()
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let folder = viewModel.folder(at: indexPath.row)
-        let folderVC = FolderVC(folderID: folder.id, title: folder.title)
+        let note = viewModel.note(at: indexPath.row)
+        cell.configure(title: note.title)
         
-        navigationController?.pushViewController(folderVC, animated: true)
+        return cell
     }
     
 
@@ -94,16 +74,6 @@ class FolderTableView: UITableViewController {
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the item to be re-orderable.
         return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
     }
     */
 

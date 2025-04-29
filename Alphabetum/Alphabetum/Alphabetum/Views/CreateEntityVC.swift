@@ -7,13 +7,22 @@
 
 import UIKit
 
+enum PresentationStyle {
+    case modal
+    case pushed
+}
+
 class CreateEntityVC: UIViewController {
     
     private let viewModel = CreateEntityViewModel()
+    private var presentationStyle: PresentationStyle
+    
     var textfield = UITextField()
     var onCreated: ((String) -> Void)?
     
-    init(title: String){
+    init(title: String, style: PresentationStyle){
+        presentationStyle = style
+        
         super.init(nibName: nil, bundle: nil)
         
         textfield = createConfiguratedTextfield(placeholder: "Title of your new folder")
@@ -41,7 +50,19 @@ class CreateEntityVC: UIViewController {
     override func didTapOk() {
         guard viewModel.isValid else { return }
         onCreated?(viewModel.text)
-        dismiss(animated: true)
+        dismissVC()
+    }
+    
+    override func didTapCancel() {
+        dismissVC()
+    }
+    
+    override func dismissVC(){
+        if presentationStyle == .pushed {
+            navigationController?.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
                             
     @objc private func textFieldDidChange(_ textfield: UITextField){

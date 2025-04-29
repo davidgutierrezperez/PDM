@@ -8,10 +8,49 @@
 import Foundation
 
 class NoteListViewModel {
+    
+    static let shared = NoteListViewModel()
+    
     private let noteRepository = NoteRepository()
     
     private(set) var notes: [Note] = []
     private(set) var filteredNotes: [Note] = []
     private(set) var isFiltering: Bool = false
     
+    private(set) var folderID = UUID()
+    
+    private init(){}
+    
+    func setFolderID(id: UUID){
+        folderID = id
+    }
+    
+    func createNote(title: String){
+        let note = Note(title: title)
+        
+        noteRepository.createNote(note: note)
+    }
+    
+    func fetchNotesOfFolder(id: UUID){
+        notes = noteRepository.fetchNotesOfFolder(id: id)
+        filteredNotes = notes
+    }
+    
+    func numberOfNotes() -> Int {
+        return isFiltering ? filteredNotes.count : notes.count
+    }
+    
+    func note(at index: Int) -> Note {
+        return isFiltering ? filteredNotes[index] : notes[index]
+    }
+    
+    func filterNote(with searchText: String){
+        if searchText.isEmpty {
+            isFiltering = false
+            filteredNotes = notes
+        } else {
+            isFiltering = true
+            filteredNotes = notes.filter { $0.title.contains(searchText.lowercased()) }
+        }
+    }
 }

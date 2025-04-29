@@ -76,4 +76,19 @@ final class NoteRepository: NoteRepositoryProtocol {
         
         return []
     }
+    
+    func fetchNotesOfFolder(id: UUID) -> [Note] {
+        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "folder.id == %@", id as CVarArg)
+        
+        do {
+            let notes = try context.fetch(fetchRequest) as! [Note]
+            return notes
+        } catch {
+            print("❌ No se ha podido obtener las notas de la carpeta con ID \(id) de CoreData")
+        }
+        
+        return []
+    }
+    
 }

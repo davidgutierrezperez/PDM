@@ -1,5 +1,5 @@
 //
-//  FolderListViewController.swift
+//  FolderListVC.swift
 //  Alphabetum
 //
 //  Created by David Gutierrez on 23/4/25.
@@ -30,7 +30,7 @@ class FolderListVC: UIViewController {
     }
     
     @objc private func openCreateFolderVC(){
-        let createFolderVC = CreateEntityVC(title: "New Folder")
+        let createFolderVC = CreateEntityVC(title: "New Folder", style: .modal)
         
         createFolderVC.onCreated = { [weak self] folderTitle in
             self?.viewModel.createFolder(title: folderTitle)
@@ -64,3 +64,4 @@ extension FolderListVC: UISearchResultsUpdating, UISearchBarDelegate {
         tableView.reloadData()
     }
 }
+
