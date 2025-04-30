@@ -28,11 +28,16 @@ class NoteListViewModel {
     func createNote(title: String){
         let note = Note(title: title)
         
-        noteRepository.createNote(note: note)
+        noteRepository.create(note: note)
+    }
+    
+    func fetchAll(){
+        notes = noteRepository.fetchAll()
+        filteredNotes = notes
     }
     
     func fetchNotesOfFolder(id: UUID){
-        notes = noteRepository.fetchNotesOfFolder(id: id)
+        notes = noteRepository.fetchNotesOfFolder(folderID: id)
         filteredNotes = notes
     }
     

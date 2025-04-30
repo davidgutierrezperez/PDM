@@ -16,7 +16,8 @@ class NoteTableView: UITableViewController {
 
         tableView.register(NoteCell.self, forCellReuseIdentifier: NoteCell.reuseIdentifier)
         
-        viewModel.fetchNotesOfFolder(id: viewModel.folderID)
+        viewModel.fetchAll()
+        print("El número de notas es: ", viewModel.numberOfNotes())
     }
 
     // MARK: - Table view data source
@@ -33,7 +34,7 @@ class NoteTableView: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! NoteCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: NoteCell.reuseIdentifier, for: indexPath) as! NoteCell
 
         let note = viewModel.note(at: indexPath.row)
         cell.configure(title: note.title)

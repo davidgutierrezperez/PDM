@@ -8,8 +8,10 @@
 import Foundation
 
 protocol NoteRepositoryProtocol {
-    func createNote(note: Note)
-    func deleteNote(id: UUID)
-    func updateNote(id: UUID, content: NSMutableAttributedString)
-    func fetchAllNotes() -> [Note]
+    func create(note: Note)
+    func delete(id: UUID)
+    func update(id: UUID, content: NSMutableAttributedString)
+    func fetchNotesOfFolder(folderID: UUID) -> [Note]
+    func fetchAll() -> [Note]
+    func fetchById(id: UUID) -> Note?
 }

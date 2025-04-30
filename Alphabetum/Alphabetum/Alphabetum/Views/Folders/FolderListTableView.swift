@@ -70,17 +70,20 @@ class FolderTableView: UITableViewController {
     }
     */
 
-    /*
-    // Override to support editing the table view.
+
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete the row from the data source
+            let folder = viewModel.folder(at: indexPath.row)
+
+            if folder.id.uuidString == "00000000-0000-0000-0000-000000000000" {
+                return
+            }
+
+            viewModel.delete(id: folder.id)
             tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
-    */
+    
 
     /*
     // Override to support rearranging the table view.

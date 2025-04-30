@@ -8,11 +8,46 @@
 import UIKit
 
 class NoteVC: UIViewController {
-
+    
+    private let noteRepository = NoteRepository()
+    private let viewModel: NoteViewModel
+    
+    
+    init() {
+        self.viewModel = NoteViewModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    init(id: UUID){
+        if let existingNote = noteRepository.fetchById(id: id) {
+            self.viewModel = NoteViewModel(note: existingNote)
+        } else {
+            self.viewModel = NoteViewModel()
+        }
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .black
+        
+        navigationItem.rightBarButtonItems = [createBarButton(image: UIImage(systemName: "folder.badge.plus") ?? UIImage(), selector: #selector(selectFolder)),
+                                              createBarButton(image: UIImage(systemName: "checkmark") ?? UIImage(), selector: #selector(saveNote))]
+    }
+    
+    @objc private func saveNote(){
+        let note = viewModel.getNote()
+        
+        noteRepository.save(note: note)
+    }
+    
+    @objc private func selectFolder(){
+        let folderListVC = FolderListVC()
+        
+        
     }
     
 

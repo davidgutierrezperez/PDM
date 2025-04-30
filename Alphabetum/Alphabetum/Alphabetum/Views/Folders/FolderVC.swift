@@ -19,6 +19,8 @@ class FolderVC: UIViewController {
         super.viewDidLoad()
         
         title = folderTitle
+        
+        setupView()
     }
     
     init(folderID: UUID, title: String) {
@@ -26,6 +28,7 @@ class FolderVC: UIViewController {
         self.folderTitle = title
         
         viewModel.setFolderID(id: folderID)
+        viewModel.fetchAll()
         
         super.init(nibName: nil, bundle: nil)
     }

@@ -8,9 +8,10 @@
 import CoreData
 
 final class NoteRepository: NoteRepositoryProtocol {
+    
     private let context = CoreDataStack.shared.context
     
-    func createNote(note: Note) {
+    func create(note: Note) {
         let noteEntity = NoteEntity(context: context)
         
         noteEntity.id = note.id
@@ -27,7 +28,7 @@ final class NoteRepository: NoteRepositoryProtocol {
         CoreDataStack.shared.saveContext()
     }
     
-    func deleteNote(id: UUID) {
+    func delete(id: UUID) {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         fetchRequest.fetchLimit = 1
@@ -45,7 +46,7 @@ final class NoteRepository: NoteRepositoryProtocol {
         
     }
     
-    func updateNote(id: UUID, content: NSMutableAttributedString) {
+    func update(id: UUID, content: NSMutableAttributedString) {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         fetchRequest.fetchLimit = 1
@@ -63,12 +64,12 @@ final class NoteRepository: NoteRepositoryProtocol {
         }
     }
     
-    func fetchAllNotes() -> [Note] {
+    func fetchAll() -> [Note] {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
         
         do {
-            let notes = try context.fetch(fetchRequest) as! [Note]
-            return notes
+            let noteEntities = try context.fetch(fetchRequest)
+            return noteEntities.map { Note(entity: $0) }
         } catch {
             print("❌ No se ha encontrado obtener las notas de CoreData")
         }
@@ -77,18 +78,53 @@ final class NoteRepository: NoteRepositoryProtocol {
         return []
     }
     
-    func fetchNotesOfFolder(id: UUID) -> [Note] {
+    func fetchById(id: UUID) -> Note? {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "folder.id == %@", id as CVarArg)
+        fetchRequest.predicate = NSPredicate(format: "id == %id", id as CVarArg)
+        fetchRequest.fetchLimit = 1
         
         do {
-            let notes = try context.fetch(fetchRequest) as! [Note]
-            return notes
+            let note = try context.fetch(fetchRequest).first!
+            return Note(entity: note)
         } catch {
-            print("❌ No se ha podido obtener las notas de la carpeta con ID \(id) de CoreData")
+            print("❌ No se ha podido obtener la nota con ID \(id) de CoreData")
+        }
+        
+        return Note(title: "Error note")
+    }
+    
+    func fetchNotesOfFolder(folderID: UUID) -> [Note] {
+        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "folder.id == %@", folderID as CVarArg)
+        
+        do {
+            let noteEntities = try context.fetch(fetchRequest)
+            return noteEntities.map { Note(entity: $0) }
+        } catch {
+            print("❌ No se ha podido obtener las notas de la carpeta con ID \(folderID) de CoreData")
         }
         
         return []
+    }
+    
+    func save(note: Note){
+        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", note.id as CVarArg)
+        fetchRequest.fetchLimit = 1
+        
+        let noteEntity: NoteEntity
+        
+        if let existing = try? context.fetch(fetchRequest).first {
+            noteEntity = existing
+        } else {
+            noteEntity = NoteEntity(context: context)
+            noteEntity.id = note.id
+        }
+        
+        noteEntity.title = note.title
+        noteEntity.content = try? NSKeyedArchiver.archivedData(withRootObject: note.content, requiringSecureCoding: false)
+        
+        CoreDataStack.shared.saveContext()
     }
     
 }

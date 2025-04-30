@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIViewController {
-    func addRightBarButton(image: UIImage, selector: Selector){
+    func addRightBarButton(image: UIImage, selector: Selector) {
         let rightBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: selector)
         rightBarButton.tintColor = .systemYellow
         
@@ -20,6 +20,13 @@ extension UIViewController {
         leftBarButton.tintColor = .systemYellow
         
         navigationItem.leftBarButtonItem = leftBarButton
+    }
+    
+    func createBarButton(image: UIImage, selector: Selector) -> UIBarButtonItem {
+        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: selector)
+        button.tintColor = .systemYellow
+        
+        return button
     }
     
     func addCancelBarButton(){
@@ -47,6 +54,18 @@ extension UIViewController {
         searchController.searchBar.placeholder = placeholder
         
         return searchController
+    }
+    
+    func closeSelf(animated: Bool){
+        if let nav = navigationController {
+            if nav.viewControllers.first == self {
+                dismiss(animated: animated)
+            } else {
+                nav.popViewController(animated: animated)
+            }
+        } else {
+            dismiss(animated: animated)
+        }
     }
     
     @objc func didTapOk(){}

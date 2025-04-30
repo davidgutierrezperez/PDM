@@ -15,7 +15,6 @@ final class FolderRepository: FolderRepositoryProtocol {
         
         folderEntity.id = folder.id
         folderEntity.title = folder.title
-        folderEntity.notes = [] as? Data
         
         CoreDataStack.shared.saveContext()
     }

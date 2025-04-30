@@ -23,6 +23,7 @@ final class CoreDataStack {
             if let error = error as NSError? {
                 fatalError("Unresolved Core Data error: \(error)")
             }
+
             
         }
     }

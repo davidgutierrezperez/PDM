@@ -47,22 +47,18 @@ class CreateEntityVC: UIViewController {
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
     }
 
-    override func didTapOk() {
+    @objc override func didTapOk() {
         guard viewModel.isValid else { return }
         onCreated?(viewModel.text)
         dismissVC()
     }
     
-    override func didTapCancel() {
+    @objc override func didTapCancel() {
         dismissVC()
     }
     
     override func dismissVC(){
-        if presentationStyle == .pushed {
-            navigationController?.popViewController(animated: true)
-        } else {
-            dismiss(animated: true)
-        }
+        closeSelf(animated: true)
     }
                             
     @objc private func textFieldDidChange(_ textfield: UITextField){
