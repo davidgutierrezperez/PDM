@@ -28,7 +28,13 @@ class FolderVC: UIViewController {
         self.folderTitle = title
         
         viewModel.setFolderID(id: folderID)
-        viewModel.fetchAll()
+        
+        
+        if (title == "All"){
+            viewModel.fetchAll()
+        } else {
+            viewModel.fetchNotesOfFolder(id: folderID)
+        }
         
         super.init(nibName: nil, bundle: nil)
     }

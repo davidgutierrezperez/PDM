@@ -8,6 +8,9 @@
 import Foundation
 
 class NoteViewModel {
+    
+    private let noteRepository = NoteRepository()
+    
     private(set) var id = UUID()
     private var note: Note
     private var title: String { note.title }
@@ -35,5 +38,8 @@ class NoteViewModel {
         return note
     }
     
+    func addToFolder(folderID: UUID){
+        noteRepository.addToFolder(noteID: note.id, to: folderID)
+    }
     
 }

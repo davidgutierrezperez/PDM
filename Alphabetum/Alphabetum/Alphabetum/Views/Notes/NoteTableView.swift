@@ -16,7 +16,11 @@ class NoteTableView: UITableViewController {
 
         tableView.register(NoteCell.self, forCellReuseIdentifier: NoteCell.reuseIdentifier)
         
-        viewModel.fetchAll()
+        print("EL ID es: ", viewModel.folderID.uuidString)
+        
+
+        viewModel.fetchNotesOfFolder(id: viewModel.folderID)
+        
         print("El número de notas es: ", viewModel.numberOfNotes())
     }
 
@@ -42,6 +46,12 @@ class NoteTableView: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let noteID = viewModel.note(at: indexPath.row).id
+        
+        let noteVC = NoteVC(id: noteID)
+        navigationController?.pushViewController(noteVC, animated: true)
+    }
 
     /*
     // Override to support conditional editing of the table view.

@@ -19,6 +19,15 @@ class FolderTableView: UITableViewController {
         fetchAndReload()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if (viewModel.hasChanged){
+            fetchAndReload()
+            viewModel.hasChanged = false
+        }
+    }
+    
     private func fetchAndReload(){
         viewModel.fetchFolders()
         tableView.reloadData()

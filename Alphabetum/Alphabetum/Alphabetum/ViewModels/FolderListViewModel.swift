@@ -17,6 +17,8 @@ final class FolderListViewModel {
     private(set) var filteredFolders: [Folder] = []
     private(set) var isFiltering: Bool = false
     
+    var hasChanged: Bool = false
+    
     private let allFolder = Folder(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, title: "All")
     
     func createFolder(title: String){

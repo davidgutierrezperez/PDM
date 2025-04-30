@@ -80,7 +80,7 @@ final class NoteRepository: NoteRepositoryProtocol {
     
     func fetchById(id: UUID) -> Note? {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %id", id as CVarArg)
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         fetchRequest.fetchLimit = 1
         
         do {
@@ -125,6 +125,36 @@ final class NoteRepository: NoteRepositoryProtocol {
         noteEntity.content = try? NSKeyedArchiver.archivedData(withRootObject: note.content, requiringSecureCoding: false)
         
         CoreDataStack.shared.saveContext()
+    }
+    
+    func addToFolder(noteID: UUID, to folderID: UUID){
+        let noteFetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
+        noteFetchRequest.predicate = NSPredicate(format: "id == %@", noteID as CVarArg)
+        noteFetchRequest.fetchLimit = 1
+        
+        let folderFetchRequest: NSFetchRequest<FolderEntity> = FolderEntity.fetchRequest()
+        folderFetchRequest.predicate = NSPredicate(format: "id == %@", folderID as CVarArg)
+        folderFetchRequest.fetchLimit = 1
+        
+        do {
+            guard let noteEntity = try context.fetch(noteFetchRequest).first else {
+                print("❌ Nota con ID \(noteID) no encontrada")
+                return
+            }
+
+            guard let folderEntity = try context.fetch(folderFetchRequest).first else {
+                print("❌ Carpeta con ID \(folderID) no encontrada")
+                return
+            }
+        
+            noteEntity.folder = folderEntity
+            
+            CoreDataStack.shared.saveContext()
+        } catch {
+            print("❌ Error al asignar la nota con ID \(noteID) a la carpeta con ID \(folderID) en CoreData")
+        }
+        
+        
     }
     
 }

@@ -9,8 +9,8 @@ import UIKit
 
 class FolderListVC: UIViewController {
     
-    private let viewModel = FolderListViewModel.shared
-    private let tableView = FolderTableView()
+    let viewModel = FolderListViewModel.shared
+    let tableView = FolderTableView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +20,7 @@ class FolderListVC: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.searchController = createSearchController(placeholder: "Search a folder", searchResultsUpdater: self, delegate: self)
         navigationItem.searchController?.searchBar.isHidden = false
+        navigationItem.hidesSearchBarWhenScrolling = false
         
         addRightBarButton(image: UIImage(systemName: "folder.badge.plus")!, selector: #selector(openCreateFolderVC))
         setupView()
@@ -35,6 +36,7 @@ class FolderListVC: UIViewController {
         createFolderVC.onCreated = { [weak self] folderTitle in
             self?.viewModel.createFolder(title: folderTitle)
             self?.tableView.onCreatedNewFolder()
+            self?.viewModel.hasChanged = true
         }
         
         let navVC = UINavigationController(rootViewController: createFolderVC)

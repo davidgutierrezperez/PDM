@@ -34,6 +34,8 @@ class NoteVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = viewModel.getNote().title
+        navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.rightBarButtonItems = [createBarButton(image: UIImage(systemName: "folder.badge.plus") ?? UIImage(), selector: #selector(selectFolder)),
                                               createBarButton(image: UIImage(systemName: "checkmark") ?? UIImage(), selector: #selector(saveNote))]
     }
@@ -45,9 +47,10 @@ class NoteVC: UIViewController {
     }
     
     @objc private func selectFolder(){
-        let folderListVC = FolderListVC()
+        let folderPickerVC = FolderPickerVC(note: viewModel.getNote())
+        let navVC = UINavigationController(rootViewController: folderPickerVC)
         
-        
+        present(navVC, animated: true)
     }
     
 
