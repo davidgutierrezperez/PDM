@@ -10,7 +10,7 @@ import CoreData
 extension Note {
     init(entity: NoteEntity){
         self.id = entity.id ?? UUID()
-        self.title = entity.title ?? ""
+        self.title = entity.title ?? "Sin título"
         self.creationDate = entity.creationDate ?? Date()
         self.lastModifiedSince = entity.lastModifiedSince ?? Date()
         

@@ -16,6 +16,8 @@ class NoteCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        title.text = "Sin título"
+        
         setupView()
     }
     
@@ -44,9 +46,11 @@ class NoteCell: UITableViewCell {
         title.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            title.leadingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 10),
-            title.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            title.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20)
         ])
+
     }
 
 }
