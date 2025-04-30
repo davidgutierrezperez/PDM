@@ -49,6 +49,11 @@ class NoteListViewModel {
         return isFiltering ? filteredNotes[index] : notes[index]
     }
     
+    func delete(id: UUID){
+        noteRepository.delete(id: id)
+        notes.removeAll { $0.id == id } 
+    }
+    
     func filterNote(with searchText: String){
         if searchText.isEmpty {
             isFiltering = false
