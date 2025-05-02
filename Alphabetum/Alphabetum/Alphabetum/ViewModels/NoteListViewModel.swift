@@ -60,7 +60,7 @@ class NoteListViewModel {
             filteredNotes = notes
         } else {
             isFiltering = true
-            filteredNotes = notes.filter { $0.title.contains(searchText.lowercased()) }
+            filteredNotes = notes.filter { $0.title.lowercased().contains(searchText.lowercased()) }
         }
     }
 }

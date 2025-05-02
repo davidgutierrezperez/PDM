@@ -27,6 +27,10 @@ class NoteTableView: UITableViewController {
         tableView.reloadData()
     }
 
+    func reloadData(){
+        tableView.reloadData()
+    }
+
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {

@@ -12,7 +12,7 @@ class NoteVC: UIViewController {
     private let noteRepository = NoteRepository()
     private let viewModel: NoteViewModel
     private var titleField = UITextField()
-    private var contentView = UITextField()
+    private var contentView = UITextView()
     
     
     init() {
@@ -94,19 +94,18 @@ class NoteVC: UIViewController {
         titleField.font = .preferredFont(forTextStyle: .title1)
         titleField.borderStyle = .roundedRect
         
-        contentView.addTarget(self, action: #selector(updateContent), for: .editingChanged)
-        contentView.borderStyle = .roundedRect
+        contentView.delegate = self
+        contentView.layer.borderColor = UIColor.systemGray4.cgColor
+        contentView.layer.borderWidth = 1
+        contentView.layer.cornerRadius = 8
+        contentView.font = UIFont.systemFont(ofSize: 16)
+        
     }
-    
 
-    /*
-    // MARK: - Navigation
+}
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+extension NoteVC: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        viewModel.updateContent(textView.attributedText.mutableCopy() as! NSMutableAttributedString)
     }
-    */
-
 }

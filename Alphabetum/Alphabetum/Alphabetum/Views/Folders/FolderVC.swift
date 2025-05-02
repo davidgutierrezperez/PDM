@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FolderVC: UIViewController {
+class FolderVC: UIViewController, UISearchBarDelegate {
     
     private let viewModel = NoteListViewModel.shared
     private let tableView = NoteTableView()
@@ -21,6 +21,10 @@ class FolderVC: UIViewController {
         title = folderTitle
         
         addRightBarButton(image: UIImage(systemName: "plus.circle") ?? UIImage(), selector: #selector(addNoteToFolder))
+        
+        navigationItem.searchController = createSearchController(searchResultsUpdater: self, delegate: self)
+        navigationItem.searchController?.searchBar.isHidden = false
+        navigationItem.hidesSearchBarWhenScrolling = false
         
         setupView()
     }
@@ -68,4 +72,14 @@ class FolderVC: UIViewController {
     }
     
 
+}
+
+extension FolderVC: UISearchControllerDelegate, UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchText = searchController.searchBar.text
+        viewModel.filterNote(with: searchText ?? "")
+        tableView.reloadData()
+    }
+    
+    
 }
