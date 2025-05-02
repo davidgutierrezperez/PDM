@@ -11,6 +11,8 @@ class NoteVC: UIViewController {
     
     private let noteRepository = NoteRepository()
     private let viewModel: NoteViewModel
+    private let formattingViewModel: TextFormattingViewModel
+    
     private var titleField = UITextField()
     private var contentView = UITextView()
     
@@ -22,6 +24,7 @@ class NoteVC: UIViewController {
     
     init() {
         self.viewModel = NoteViewModel()
+        self.formattingViewModel = TextFormattingViewModel()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -31,6 +34,8 @@ class NoteVC: UIViewController {
         } else {
             self.viewModel = NoteViewModel()
         }
+        
+        self.formattingViewModel = TextFormattingViewModel()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -42,19 +47,21 @@ class NoteVC: UIViewController {
         super.viewDidLoad()
         
         titleField.text = viewModel.getNote().title
-        contentView.text = viewModel.getNote().content.string
+        contentView.attributedText = viewModel.getNote().content
         
         title = nil
         navigationController?.navigationBar.prefersLargeTitles = false
         
         configureButtons()
+        configureTextFormattingOptionsView()
         navigationItem.rightBarButtonItems = [selectFolderButton, disableKeyboardButton]
-        
-        configureTextFields()
         
         contentView.inputAccessoryView = textFormattingOptionsView
         contentView.reloadInputViews()
         
+        configureTextFields()
+        
+
         setupView()
     }
     
@@ -63,6 +70,28 @@ class NoteVC: UIViewController {
         contentView.becomeFirstResponder()
         contentView.reloadInputViews()
     }
+    
+    private func configureTextFormattingOptionsView(){
+        textFormattingOptionsView.onBoldTap = { [weak self] in
+            self?.toggleBold()
+        }
+    }
+    
+    private func toggleBold() {
+        formattingViewModel.toggleBold()
+
+        let defaultFontSize: CGFloat = 16
+
+        let currentFont = (contentView.typingAttributes[.font] as? UIFont)
+            ?? UIFont.systemFont(ofSize: defaultFontSize)
+
+        let newFont: UIFont = formattingViewModel.isBold
+            ? UIFont.boldSystemFont(ofSize: currentFont.pointSize)
+            : UIFont.systemFont(ofSize: currentFont.pointSize)
+
+        contentView.typingAttributes[.font] = newFont
+    }
+
     
     @objc private func updateTitle(){
         viewModel.updateTitle(titleField.text!)
@@ -116,7 +145,6 @@ class NoteVC: UIViewController {
         contentView.layer.borderColor = UIColor.systemGray4.cgColor
         contentView.layer.borderWidth = 1
         contentView.layer.cornerRadius = 8
-        contentView.font = UIFont.systemFont(ofSize: 16)
         
     }
 

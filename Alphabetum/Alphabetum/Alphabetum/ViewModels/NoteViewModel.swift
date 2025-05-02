@@ -56,7 +56,6 @@ class NoteViewModel {
     }
     
     func saveNote(){
-        print("El nuevo título es: ", note.title)
         noteRepository.save(note: note)
     }
     

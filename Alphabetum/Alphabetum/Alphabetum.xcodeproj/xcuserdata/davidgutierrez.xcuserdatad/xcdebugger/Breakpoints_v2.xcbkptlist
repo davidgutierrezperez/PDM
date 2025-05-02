@@ -3,4 +3,80 @@
    uuid = "A6F9C190-CECB-42C3-9127-5BE3A4F011D7"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6DEADF91-C926-4044-9B3F-CC7F00AB056A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Alphabetum/Views/Notes/NoteVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
+            landmarkName = "configureTextFormattingOptionsView()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6DEADF91-C926-4044-9B3F-CC7F00AB056A - a83397ddce1481d7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Alphabetum.NoteVC.configureTextFormattingOptionsView() -&gt; ()"
+                  moduleName = "Alphabetum.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidgutierrez/Desktop/Universidad/Ultimo/Segundo/PDM/Alphabetum/Alphabetum/Alphabetum/Views/Notes/NoteVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "70"
+                  endingLineNumber = "70">
+               </Location>
+               <Location
+                  uuid = "6DEADF91-C926-4044-9B3F-CC7F00AB056A - b94f8d77091798db"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Alphabetum.NoteVC.configureTextFormattingOptionsView() -&gt; ()"
+                  moduleName = "Alphabetum.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidgutierrez/Desktop/Universidad/Ultimo/Segundo/PDM/Alphabetum/Alphabetum/Alphabetum/Views/Notes/NoteVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "70"
+                  endingLineNumber = "70">
+               </Location>
+               <Location
+                  uuid = "6DEADF91-C926-4044-9B3F-CC7F00AB056A - a83397ddce148138"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Alphabetum.NoteVC.configureTextFormattingOptionsView() -&gt; ()"
+                  moduleName = "Alphabetum.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidgutierrez/Desktop/Universidad/Ultimo/Segundo/PDM/Alphabetum/Alphabetum/Alphabetum/Views/Notes/NoteVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "71"
+                  endingLineNumber = "71">
+               </Location>
+               <Location
+                  uuid = "6DEADF91-C926-4044-9B3F-CC7F00AB056A - b94f8d7709179834"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Alphabetum.NoteVC.configureTextFormattingOptionsView() -&gt; ()"
+                  moduleName = "Alphabetum.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davidgutierrez/Desktop/Universidad/Ultimo/Segundo/PDM/Alphabetum/Alphabetum/Alphabetum/Views/Notes/NoteVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "71"
+                  endingLineNumber = "71">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

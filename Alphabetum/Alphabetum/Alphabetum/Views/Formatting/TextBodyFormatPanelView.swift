@@ -7,26 +7,57 @@
 
 import UIKit
 
-class TextBodyFormatPanelView: UIView {
+class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
     
     private let boldButton = UIButton()
     private let italicButton = UIButton()
-    private let undergroundButton = UIButton()
+    private let underlineButton = UIButton()
+    
+    var onBoldTap: (() -> Void)?
+    var onItalicTap: (() -> Void)?
+    var onUnderlineTap: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        backgroundColor = .systemGray4
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configureButtons(){
+    override func configureButtons(){
+        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular)
         
+        boldButton.setSFImageAndTarget(systemName: "bold", configuration: buttonConfig, target: self, selector: #selector(boldButtonTapped))
+        italicButton.setSFImageAndTarget(systemName: "italic", configuration: buttonConfig, target: self, selector: #selector(italicButtonTapped))
+        underlineButton.setSFImageAndTarget(systemName: "underline", configuration: buttonConfig, target: self, selector: #selector(underlineButtonTapped))
     }
     
-    private func setupView(){
+    override func configureStackView(){
+        super.configureStackView()
         
+        stackView.addArrangedSubview(boldButton)
+        stackView.addArrangedSubview(italicButton)
+        stackView.addArrangedSubview(underlineButton)
     }
-
+    
+    private func configureButton(button: inout UIButton, systemName: String, configuration: UIImage.SymbolConfiguration, selector: Selector){
+        button.setImage(UIImage(systemName: systemName, withConfiguration: configuration), for: .normal)
+        button.addTarget(self, action: selector, for: .touchUpInside)
+    }
+    
+    @objc private func boldButtonTapped(){
+        onBoldTap?()
+    }
+    
+    @objc private func italicButtonTapped(){
+        onItalicTap?()
+    }
+    
+    @objc private func underlineButtonTapped(){
+        onUnderlineTap?()
+    }
+    
 }

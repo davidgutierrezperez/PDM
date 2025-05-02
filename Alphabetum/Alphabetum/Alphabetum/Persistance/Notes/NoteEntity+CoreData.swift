@@ -15,7 +15,7 @@ extension Note {
         self.lastModifiedSince = entity.lastModifiedSince ?? Date()
         
         if let data = entity.content,
-           let attributedString = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? NSMutableAttributedString {
+           let attributedString = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data as! Data) as? NSMutableAttributedString {
             self.content = attributedString
         } else {
             self.content = NSMutableAttributedString(string: "")

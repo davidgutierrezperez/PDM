@@ -7,66 +7,75 @@
 
 import UIKit
 
-class TextFormattingOptionsView: UIView {
+class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     
     private let formattingTextButton = UIButton()
     private let insertImageButton = UIButton()
     
-    private let stackView = UIStackView()
+    private let textFormatOptionsPanel = TextBodyFormatPanelView()
+    
+    var onBoldTap: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         backgroundColor = .systemGray2
         
-        configureButtons()
-        configureStackView()
-        setupView()
+        configureTextFormatOptionsPanel()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configureButtons(){
+    @objc private func showTextFormattingOptions(){
+        textFormatOptionsPanel.isHidden.toggle()
+        invalidateIntrinsicContentSize()
+        
+        stackView.alignment = .center
+        stackView.distribution = .equalCentering
+    }
+    
+    private func configureTextFormatOptionsPanel(){
+        addSubview(textFormatOptionsPanel)
+        textFormatOptionsPanel.isHidden = true
+        textFormatOptionsPanel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            textFormatOptionsPanel.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 4),
+            textFormatOptionsPanel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            textFormatOptionsPanel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            textFormatOptionsPanel.heightAnchor.constraint(equalToConstant: 50) // o el tamaño necesario
+        ])
+
+        textFormatOptionsPanel.onBoldTap = { [weak self] in
+            self?.onBoldTap?()
+        }
+    }
+    
+    override func configureButtons(){
         let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
         
         formattingTextButton.setImage(UIImage(systemName: "textformat", withConfiguration: buttonConfig), for: .normal)
+        formattingTextButton.addTarget(self, action: #selector(showTextFormattingOptions), for: .touchUpInside)
+        
         insertImageButton.setImage(UIImage(systemName: "paperclip", withConfiguration: buttonConfig), for: .normal)
         
         formattingTextButton.tintColor = .systemYellow
         insertImageButton.tintColor = .systemYellow
     }
     
-    private func configureStackView(){
-        stackView.axis = .horizontal
-        stackView.spacing = 12
-        stackView.alignment = .center
-        stackView.distribution = .equalSpacing
+    override func configureStackView(){
+        super.configureStackView()
         
         stackView.addArrangedSubview(formattingTextButton)
         stackView.addArrangedSubview(insertImageButton)
     }
     
-    private func setupView(){
-        addSubview(stackView)
-        
-        self.translatesAutoresizingMaskIntoConstraints = false
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            self.heightAnchor.constraint(equalToConstant: 44)
-        ])
+    override var intrinsicContentSize: CGSize {
+        let baseHeight: CGFloat = 50
+        let panelHeight: CGFloat = textFormatOptionsPanel.isHidden ? 0 : 75
+        return CGSize(width: UIView.noIntrinsicMetric, height: baseHeight + panelHeight)
     }
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
 
 }
