@@ -72,19 +72,9 @@ class NoteVC: UIViewController {
     }
     
     private func configureTextFormattingOptionsView(){
-        textFormattingOptionsView.onBoldTap = { [weak self] in
-            self?.toggleFormating(TextFormat.bold)
+        textFormattingOptionsView.onFormatTap = { [weak self] format in
+            self?.toggleFormating(format)
         }
-        
-        textFormattingOptionsView.onItalicTap = { [weak self] in
-            self?.toggleFormating(TextFormat.italic)
-        }
-        
-        textFormattingOptionsView.onUnderlineTap = { [weak self] in
-            self?.toggleFormating(TextFormat.underline)
-        }
-        
-        
     }
     
     private func toggleFormating(_ format: TextFormat){
@@ -110,22 +100,6 @@ class NoteVC: UIViewController {
             break
         }
     }
-    
-    private func toggleBold() {
-        formattingViewModel.toggleBold()
-
-        let defaultFontSize: CGFloat = 16
-
-        let currentFont = (contentView.typingAttributes[.font] as? UIFont)
-            ?? UIFont.systemFont(ofSize: defaultFontSize)
-
-        let newFont: UIFont = formattingViewModel.isBold
-            ? UIFont.boldSystemFont(ofSize: currentFont.pointSize)
-            : UIFont.systemFont(ofSize: currentFont.pointSize)
-
-        contentView.typingAttributes[.font] = newFont
-    }
-
     
     @objc private func updateTitle(){
         viewModel.updateTitle(titleField.text!)

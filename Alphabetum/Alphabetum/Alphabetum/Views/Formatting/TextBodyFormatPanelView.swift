@@ -13,9 +13,7 @@ class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
     private let italicButton = UIButton()
     private let underlineButton = UIButton()
     
-    var onBoldTap: (() -> Void)?
-    var onItalicTap: (() -> Void)?
-    var onUnderlineTap: (() -> Void)?
+    var onFormatTap: ((TextFormat) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -49,15 +47,15 @@ class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
     }
     
     @objc private func boldButtonTapped(){
-        onBoldTap?()
+        onFormatTap?(.bold)
     }
     
     @objc private func italicButtonTapped(){
-        onItalicTap?()
+        onFormatTap?(.italic)
     }
     
     @objc private func underlineButtonTapped(){
-        onUnderlineTap?()
+        onFormatTap?(.underline)
     }
     
 }
