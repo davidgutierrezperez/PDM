@@ -14,6 +14,11 @@ class NoteVC: UIViewController {
     private var titleField = UITextField()
     private var contentView = UITextView()
     
+    private var selectFolderButton = UIBarButtonItem()
+    private var disableKeyboardButton = UIBarButtonItem()
+    
+    private let textFormattingOptionsView = TextFormattingOptionsView()
+    
     
     init() {
         self.viewModel = NoteViewModel()
@@ -41,14 +46,22 @@ class NoteVC: UIViewController {
         
         title = nil
         navigationController?.navigationBar.prefersLargeTitles = false
-        navigationItem.rightBarButtonItems = [createBarButton(image: UIImage(systemName: "folder.badge.plus") ?? UIImage(), selector: #selector(selectFolder))]
+        
+        configureButtons()
+        navigationItem.rightBarButtonItems = [selectFolderButton, disableKeyboardButton]
         
         configureTextFields()
+        
+        contentView.inputAccessoryView = textFormattingOptionsView
+        contentView.reloadInputViews()
+        
         setupView()
     }
     
-    @objc private func saveNote(){
-        viewModel.saveNote()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        contentView.becomeFirstResponder()
+        contentView.reloadInputViews()
     }
     
     @objc private func updateTitle(){
@@ -66,7 +79,12 @@ class NoteVC: UIViewController {
         
         present(navVC, animated: true)
     }
-    
+                                                              
+    @objc private func disableKeyboard(){
+        contentView.endEditing(true)
+            
+    }
+                                            
     private func setupView(){
         view.addSubview(titleField)
         view.addSubview(contentView)
@@ -102,10 +120,15 @@ class NoteVC: UIViewController {
         
     }
 
+    private func configureButtons(){
+        selectFolderButton = createBarButton(image: UIImage(systemName: "folder.badge.plus") ?? UIImage(), selector: #selector(selectFolder))
+        disableKeyboardButton = createBarButton(image: UIImage(systemName: "checkmark") ?? UIImage(), selector: #selector(disableKeyboard))
+    }
 }
 
 extension NoteVC: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         viewModel.updateContent(textView.attributedText.mutableCopy() as! NSMutableAttributedString)
     }
+    
 }
