@@ -15,13 +15,16 @@ class NoteTableView: UITableViewController {
         super.viewDidLoad()
 
         tableView.register(NoteCell.self, forCellReuseIdentifier: NoteCell.reuseIdentifier)
-        
-        print("EL ID es: ", viewModel.folderID.uuidString)
-        
 
         viewModel.fetchNotesOfFolder(id: viewModel.folderID)
+    }
+    
+    // TODO: Estoy hay que mejorarlo
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        print("El número de notas es: ", viewModel.numberOfNotes())
+        viewModel.fetchNotesOfFolder(id: viewModel.folderID)
+        tableView.reloadData()
     }
 
     // MARK: - Table view data source
@@ -69,6 +72,8 @@ class NoteTableView: UITableViewController {
             
             viewModel.delete(id: noteID)
             tableView.deleteRows(at: [indexPath], with: .fade)
+        } else if editingStyle == .insert {
+            
         }
     }
     
@@ -80,12 +85,11 @@ class NoteTableView: UITableViewController {
     }
     */
 
-    /*
-    // Override to support conditional rearranging of the table view.
+        // Override to support conditional rearranging of the table view.
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the item to be re-orderable.
         return true
     }
-    */
+    
 
 }

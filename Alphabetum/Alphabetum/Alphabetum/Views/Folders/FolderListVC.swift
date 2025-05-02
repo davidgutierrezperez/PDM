@@ -27,7 +27,11 @@ class FolderListVC: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        print("El número de carpetas es: ", viewModel.numberOfFolders())
+        if (viewModel.hasChanged){
+            viewModel.fetchFolders()
+            tableView.reloadData()
+            viewModel.hasChanged = false
+        }
     }
     
     @objc private func openCreateFolderVC(){

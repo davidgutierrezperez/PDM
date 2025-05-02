@@ -20,6 +20,8 @@ class FolderVC: UIViewController {
         
         title = folderTitle
         
+        addRightBarButton(image: UIImage(systemName: "plus.circle") ?? UIImage(), selector: #selector(addNoteToFolder))
+        
         setupView()
     }
     
@@ -56,6 +58,13 @@ class FolderVC: UIViewController {
         ])
 
         tableView.didMove(toParent: self)
+    }
+    
+    @objc private func addNoteToFolder(){
+        let newNote = Note(title: "Sin titulo")
+        let noteViewModel = NoteViewModel(note: newNote, folderID: folderID)
+        
+        navigationController?.pushViewController(NoteVC(id: newNote.id), animated: true)
     }
     
 

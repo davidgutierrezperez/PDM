@@ -11,6 +11,8 @@ class NoteVC: UIViewController {
     
     private let noteRepository = NoteRepository()
     private let viewModel: NoteViewModel
+    private var titleField = UITextField()
+    private var contentView = UITextField()
     
     
     init() {
@@ -34,16 +36,28 @@ class NoteVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = viewModel.getNote().title
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.rightBarButtonItems = [createBarButton(image: UIImage(systemName: "folder.badge.plus") ?? UIImage(), selector: #selector(selectFolder)),
-                                              createBarButton(image: UIImage(systemName: "checkmark") ?? UIImage(), selector: #selector(saveNote))]
+        titleField.text = viewModel.getNote().title
+        contentView.text = viewModel.getNote().content.string
+        
+        title = nil
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationItem.rightBarButtonItems = [createBarButton(image: UIImage(systemName: "folder.badge.plus") ?? UIImage(), selector: #selector(selectFolder))]
+        
+        configureTextFields()
+        setupView()
     }
     
     @objc private func saveNote(){
-        let note = viewModel.getNote()
-        
-        noteRepository.save(note: note)
+        viewModel.saveNote()
+    }
+    
+    @objc private func updateTitle(){
+        viewModel.updateTitle(titleField.text!)
+    }
+    
+    @objc private func updateContent(){
+        let newContent = contentView.attributedText?.mutableCopy() as? NSMutableAttributedString
+        viewModel.updateContent(newContent ?? NSMutableAttributedString(""))
     }
     
     @objc private func selectFolder(){
@@ -51,6 +65,37 @@ class NoteVC: UIViewController {
         let navVC = UINavigationController(rootViewController: folderPickerVC)
         
         present(navVC, animated: true)
+    }
+    
+    private func setupView(){
+        view.addSubview(titleField)
+        view.addSubview(contentView)
+        
+        titleField.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+        // Título (UITextField)
+            titleField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            titleField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            titleField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            titleField.heightAnchor.constraint(equalToConstant: 40),
+
+            // Contenido (UITextView)
+            contentView.topAnchor.constraint(equalTo: titleField.bottomAnchor, constant: 12),
+            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            contentView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        ])
+    }
+    
+    private func configureTextFields(){
+        titleField.addTarget(self, action: #selector(updateTitle), for: .editingChanged)
+        titleField.font = .preferredFont(forTextStyle: .title1)
+        titleField.borderStyle = .roundedRect
+        
+        contentView.addTarget(self, action: #selector(updateContent), for: .editingChanged)
+        contentView.borderStyle = .roundedRect
     }
     
 
