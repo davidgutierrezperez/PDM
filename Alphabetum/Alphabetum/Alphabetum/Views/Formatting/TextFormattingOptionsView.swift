@@ -15,6 +15,8 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     private let textFormatOptionsPanel = TextBodyFormatPanelView()
     
     var onBoldTap: (() -> Void)?
+    var onItalicTap: (() -> Void)?
+    var onUnderlineTap: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,6 +52,14 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
 
         textFormatOptionsPanel.onBoldTap = { [weak self] in
             self?.onBoldTap?()
+        }
+        
+        textFormatOptionsPanel.onItalicTap = { [weak self] in
+            self?.onItalicTap?()
+        }
+        
+        textFormatOptionsPanel.onUnderlineTap = { [weak self] in
+            self?.onUnderlineTap?()
         }
     }
     

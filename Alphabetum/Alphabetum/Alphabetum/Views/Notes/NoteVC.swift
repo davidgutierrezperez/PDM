@@ -73,7 +73,41 @@ class NoteVC: UIViewController {
     
     private func configureTextFormattingOptionsView(){
         textFormattingOptionsView.onBoldTap = { [weak self] in
-            self?.toggleBold()
+            self?.toggleFormating(TextFormat.bold)
+        }
+        
+        textFormattingOptionsView.onItalicTap = { [weak self] in
+            self?.toggleFormating(TextFormat.italic)
+        }
+        
+        textFormattingOptionsView.onUnderlineTap = { [weak self] in
+            self?.toggleFormating(TextFormat.underline)
+        }
+        
+        
+    }
+    
+    private func toggleFormating(_ format: TextFormat){
+        let defaultFontSize: CGFloat = 16
+        let currentFont = (contentView.typingAttributes[.font] as? UIFont) ?? UIFont.systemFont(ofSize: defaultFontSize)
+        let defaultFont = UIFont.systemFont(ofSize: currentFont.pointSize)
+        
+        formattingViewModel.toggleTextFomat(format)
+        
+        let newFont: UIFont
+        
+        switch(format){
+        case .bold:
+            newFont = formattingViewModel.isBold ? UIFont.boldSystemFont(ofSize: currentFont.pointSize) : defaultFont
+            contentView.typingAttributes[.font] = newFont
+            break
+        case .italic:
+            newFont = formattingViewModel.isItalic ? UIFont.italicSystemFont(ofSize: currentFont.pointSize) : defaultFont
+            contentView.typingAttributes[.font] = newFont
+            break
+        case .underline:
+            contentView.typingAttributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
+            break
         }
     }
     

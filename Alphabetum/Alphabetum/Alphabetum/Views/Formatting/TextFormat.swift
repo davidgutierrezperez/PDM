@@ -1,0 +1,14 @@
+//
+//  TextFormat.swift
+//  Alphabetum
+//
+//  Created by David Gutierrez on 2/5/25.
+//
+
+import Foundation
+
+enum TextFormat {
+    case bold
+    case italic
+    case underline
+}
