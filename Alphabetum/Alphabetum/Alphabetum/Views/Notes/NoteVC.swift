@@ -115,7 +115,7 @@ class NoteVC: UIViewController {
                 contentView.typingAttributes[.strikethroughStyle] = style
             }
             break
-        case .bulletlist, .dashList:
+        case .bulletlist, .dashList, .numberedList:
             insertListAtCurrentLine(format)
             break
         default:
@@ -154,14 +154,17 @@ class NoteVC: UIViewController {
     }
     
     private func insertListAtCurrentLine(_ format: TextFormat){
-        var bullet: String = ""
+        var listSymbol: String = ""
         
         switch format {
         case .bulletlist:
-            bullet = "• "
+            listSymbol = "• "
             break
         case .dashList:
-            bullet = "- "
+            listSymbol = "- "
+            break
+        case .numberedList:
+            listSymbol = "1. "
             break
         default:
             break
@@ -174,15 +177,15 @@ class NoteVC: UIViewController {
         let lineRange = plainText.lineRange(for: selectedRange)
         
         let lineText = plainText.substring(with: lineRange)
-        if lineText.contains(bullet) {
+        if lineText.contains(listSymbol) {
             return
         }
         
-        let bulletAttr = NSMutableAttributedString(string: bullet)
+        let bulletAttr = NSMutableAttributedString(string: listSymbol)
         fullText.insert(bulletAttr, at: lineRange.location)
         
         contentView.attributedText = fullText
-        contentView.selectedRange = NSRange(location: selectedRange.location + bullet.count, length: 0)
+        contentView.selectedRange = NSRange(location: selectedRange.location + listSymbol.count, length: 0)
     }
     
     private func insertBulletAtCurrentLine(){
@@ -273,38 +276,42 @@ extension NoteVC: UITextViewDelegate {
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         
-        let isList = formattingViewModel.isBulletlist || formattingViewModel.isDashList
+        if text != "\n" { return true }
         
-        if (isList){
-            var listSymbol: String = ""
-            
-            if formattingViewModel.isBulletlist {
-                listSymbol = "• "
-            } else if formattingViewModel.isDashList {
-                listSymbol = "- "
-            }
-            
-            if text == "\n" {
-                guard let fullText = contentView.attributedText.mutableCopy() as? NSMutableAttributedString else { return true }
-                
-                let plainText = fullText.string as NSString
-                let lineRange = plainText.lineRange(for: range)
-                
-                let currentLineText = plainText.substring(with: lineRange)
-                
-                if currentLineText.trimmingCharacters(in: .whitespaces).hasPrefix(listSymbol){
-                    let insertion = "\n" + listSymbol
-                    let insertionAttr = NSMutableAttributedString(string: insertion, attributes: textView.typingAttributes)
-                    
-                    fullText.replaceCharacters(in: range, with: insertionAttr)
-                    textView.attributedText = fullText
-                    textView.selectedRange = NSRange(location: lineRange.location + insertion.count, length: 0)
-                    
-                    return false
-                }
+        guard let fullText = contentView.attributedText.mutableCopy() as? NSMutableAttributedString else { return true }
+        
+        let plainText = fullText.string as NSString
+        let lineRange = plainText.lineRange(for: range)
+        let currentLineText = plainText.substring(with: lineRange)
+        
+        var insertion: String?
+        
+        if formattingViewModel.isBulletlist && currentLineText.hasPrefix("• "){
+            insertion = "\n• "
+        }
+        
+        else if formattingViewModel.isDashList && currentLineText.hasPrefix("- "){
+            insertion = "\n- "
+        }
+        
+        else if formattingViewModel.isNumberedList {
+            let components = currentLineText.components(separatedBy: ".")
+            if let numberString = components.first,
+               let number = Int(numberString) {
+                let nextNumber = number + 1
+                insertion = "\n\(nextNumber). "
             }
         }
         
+        if let insertion = insertion {
+            let insertionAttr = NSAttributedString(string: insertion, attributes: textView.typingAttributes)
+            fullText.replaceCharacters(in: range, with: insertionAttr)
+            textView.attributedText = fullText
+            textView.selectedRange = NSRange(location: range.location + insertion.count, length: 0)
+                    
+            return false
+        }
+
         return true
     }
 }

@@ -11,6 +11,7 @@ class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
     
     private let bulletListButton = UIButton()
     private let dashListButton = UIButton()
+    private let numberedListButton = UIButton()
 
     
     override init(frame: CGRect) {
@@ -26,6 +27,7 @@ class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
         
         bulletListButton.setSFImageAndTarget(systemName: "list.bullet", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
         dashListButton.setSFImageAndTarget(systemName: "list.dash", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
+        numberedListButton.setSFImageAndTarget(systemName: "list.number", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
     }
     
     override func configureStackView() {
@@ -33,6 +35,7 @@ class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
         
         stackView.addArrangedSubview(bulletListButton)
         stackView.addArrangedSubview(dashListButton)
+        stackView.addArrangedSubview(numberedListButton)
     }
 
     @objc private func buttonTapped(_ sender: UIButton){
@@ -42,6 +45,8 @@ class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
             newFormat = .bulletlist
         } else if sender == dashListButton {
             newFormat = .dashList
+        } else if sender == numberedListButton {
+            newFormat = .numberedList
         }
         
         onFormatTap?(newFormat)
