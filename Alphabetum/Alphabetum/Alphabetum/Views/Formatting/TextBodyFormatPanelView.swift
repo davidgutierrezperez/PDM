@@ -7,14 +7,12 @@
 
 import UIKit
 
-class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
+class TextBodyFormatPanelView: TextFormatHorizontalPanelSubView {
     
     private let boldButton = UIButton()
     private let italicButton = UIButton()
     private let underlineButton = UIButton()
     private let strikethroughButton = UIButton()
-    
-    var onFormatTap: ((TextFormat) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,11 +38,6 @@ class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
         stackView.addArrangedSubview(italicButton)
         stackView.addArrangedSubview(underlineButton)
         stackView.addArrangedSubview(strikethroughButton)
-    }
-    
-    private func configureButton(button: inout UIButton, systemName: String, configuration: UIImage.SymbolConfiguration, selector: Selector){
-        button.setImage(UIImage(systemName: systemName, withConfiguration: configuration), for: .normal)
-        button.addTarget(self, action: selector, for: .touchUpInside)
     }
     
     @objc private func buttonTapped(_ sender: UIButton){

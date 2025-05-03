@@ -7,16 +7,11 @@
 
 import UIKit
 
-class TextHeadingFormatPanelView: TextFormatPanelHorizontalView {
+class TextHeadingFormatPanelView: TextFormatHorizontalPanelSubView {
     
     private let titleButton = UIButton()
     private let headerButton = UIButton()
     private let subtitleButton = UIButton()
-    
-    private var lastFormatSelected: TextFormat = .body
-    private var lastSelectedButton: UIButton? = nil
-    
-    var onFormatTap: ((TextFormat) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,22 +50,7 @@ class TextHeadingFormatPanelView: TextFormatPanelHorizontalView {
         
         onFormatTap?(newFormat)
 
-        if newFormat != lastFormatSelected {
-            lastSelectedButton?.backgroundColor = .clear
-            
-            sender.backgroundColor = .systemYellow
-            
-            lastSelectedButton = sender
-            lastFormatSelected = newFormat
-        } else {
-            sender.backgroundColor = .clear
-            lastSelectedButton = nil
-            lastFormatSelected = .body
-            
-            onFormatTap?(.body)
-        }
-        
-        
+        changeButtonBackgroundColorWithinContext(sender, newFormat: newFormat)
     }
 
     override var intrinsicContentSize: CGSize {

@@ -16,4 +16,6 @@ enum TextFormat {
     case header
     case subtitle
     case body
+    case bulletlist
+    case dashList
 }

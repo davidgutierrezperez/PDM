@@ -15,6 +15,9 @@ class TextFormattingViewModel {
     private(set) var isTitle: Bool = false
     private(set) var isHeader: Bool = false
     private(set) var isSubtitle: Bool = false
+    private(set) var isBody: Bool = true
+    private(set) var isBulletlist: Bool = false
+    private(set) var isDashList: Bool = false
     
     func toggleTextFomat(_ format: TextFormat){
         switch(format){
@@ -38,6 +41,13 @@ class TextFormattingViewModel {
             break
         case .subtitle:
             isSubtitle.toggle()
+            break
+        case .bulletlist:
+            isBulletlist.toggle()
+            break
+        case .dashList:
+            isDashList.toggle()
+            break
         default:
             break
         }

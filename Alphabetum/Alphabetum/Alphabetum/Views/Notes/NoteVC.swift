@@ -115,6 +115,9 @@ class NoteVC: UIViewController {
                 contentView.typingAttributes[.strikethroughStyle] = style
             }
             break
+        case .bulletlist, .dashList:
+            insertListAtCurrentLine(format)
+            break
         default:
             break
         }
@@ -148,6 +151,58 @@ class NoteVC: UIViewController {
         
         contentView.attributedText = mutableText
         contentView.selectedRange = range
+    }
+    
+    private func insertListAtCurrentLine(_ format: TextFormat){
+        var bullet: String = ""
+        
+        switch format {
+        case .bulletlist:
+            bullet = "• "
+            break
+        case .dashList:
+            bullet = "- "
+            break
+        default:
+            break
+        }
+        
+        let selectedRange = contentView.selectedRange
+        guard let fullText = contentView.attributedText?.mutableCopy() as? NSMutableAttributedString else { return }
+        
+        let plainText = fullText.string as NSString
+        let lineRange = plainText.lineRange(for: selectedRange)
+        
+        let lineText = plainText.substring(with: lineRange)
+        if lineText.contains(bullet) {
+            return
+        }
+        
+        let bulletAttr = NSMutableAttributedString(string: bullet)
+        fullText.insert(bulletAttr, at: lineRange.location)
+        
+        contentView.attributedText = fullText
+        contentView.selectedRange = NSRange(location: selectedRange.location + bullet.count, length: 0)
+    }
+    
+    private func insertBulletAtCurrentLine(){
+        let bullet = "• "
+        let selectedRange = contentView.selectedRange
+        guard let fullText = contentView.attributedText?.mutableCopy() as? NSMutableAttributedString else { return }
+        
+        let plainText = fullText.string as NSString
+        let lineRange = plainText.lineRange(for: selectedRange)
+        
+        let lineText = plainText.substring(with: lineRange)
+        if lineText.contains(bullet) {
+            return
+        }
+        
+        let bulletAttr = NSMutableAttributedString(string: bullet)
+        fullText.insert(bulletAttr, at: lineRange.location)
+        
+        contentView.attributedText = fullText
+        contentView.selectedRange = NSRange(location: selectedRange.location + bullet.count, length: 0)
     }
     
     @objc private func updateTitle(){
@@ -216,4 +271,40 @@ extension NoteVC: UITextViewDelegate {
         viewModel.updateContent(textView.attributedText.mutableCopy() as! NSMutableAttributedString)
     }
     
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        
+        let isList = formattingViewModel.isBulletlist || formattingViewModel.isDashList
+        
+        if (isList){
+            var listSymbol: String = ""
+            
+            if formattingViewModel.isBulletlist {
+                listSymbol = "• "
+            } else if formattingViewModel.isDashList {
+                listSymbol = "- "
+            }
+            
+            if text == "\n" {
+                guard let fullText = contentView.attributedText.mutableCopy() as? NSMutableAttributedString else { return true }
+                
+                let plainText = fullText.string as NSString
+                let lineRange = plainText.lineRange(for: range)
+                
+                let currentLineText = plainText.substring(with: lineRange)
+                
+                if currentLineText.trimmingCharacters(in: .whitespaces).hasPrefix(listSymbol){
+                    let insertion = "\n" + listSymbol
+                    let insertionAttr = NSMutableAttributedString(string: insertion, attributes: textView.typingAttributes)
+                    
+                    fullText.replaceCharacters(in: range, with: insertionAttr)
+                    textView.attributedText = fullText
+                    textView.selectedRange = NSRange(location: lineRange.location + insertion.count, length: 0)
+                    
+                    return false
+                }
+            }
+        }
+        
+        return true
+    }
 }

@@ -14,6 +14,7 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     
     private let textFormatOptionsPanel = TextBodyFormatPanelView()
     private let textHeadingFormatOptionsPanel = TextHeadingFormatPanelView()
+    private let textListFormatOptionsPanel = TextListFormatPanelView()
     
     private let verticalStackView = UIStackView()
     
@@ -36,9 +37,11 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         
         if shoudExpand {
             verticalStackView.addArrangedSubview(textFormatOptionsPanel)
+            verticalStackView.addArrangedSubview(textListFormatOptionsPanel)
             verticalStackView.addArrangedSubview(textHeadingFormatOptionsPanel)
         } else {
             textFormatOptionsPanel.removeFromSuperview()
+            textListFormatOptionsPanel.removeFromSuperview()
             textHeadingFormatOptionsPanel.removeFromSuperview()
         }
         
@@ -64,6 +67,10 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
 
         // Propagar los closures
         textFormatOptionsPanel.onFormatTap = { [weak self] format in
+            self?.onFormatTap?(format)
+        }
+        
+        textListFormatOptionsPanel.onFormatTap = { [weak self] format in
             self?.onFormatTap?(format)
         }
 
