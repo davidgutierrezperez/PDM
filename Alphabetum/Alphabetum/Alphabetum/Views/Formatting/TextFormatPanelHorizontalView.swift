@@ -14,6 +14,8 @@ class TextFormatPanelHorizontalView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        backgroundColor = .systemGray2
+        
         configureButtons()
         configureStackView()
         setupView()
@@ -27,9 +29,9 @@ class TextFormatPanelHorizontalView: UIView {
     
     func configureStackView(){
         stackView.axis = .horizontal
-        stackView.spacing = 12
+        stackView.spacing = 30
         stackView.alignment = .center
-        stackView.distribution = .equalCentering
+        stackView.distribution = .equalSpacing
     }
     
     func setupView(){
@@ -44,5 +46,4 @@ class TextFormatPanelHorizontalView: UIView {
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12)
         ])
     }
-    
 }

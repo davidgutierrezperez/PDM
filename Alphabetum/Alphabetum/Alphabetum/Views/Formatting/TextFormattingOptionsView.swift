@@ -13,13 +13,16 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     private let insertImageButton = UIButton()
     
     private let textFormatOptionsPanel = TextBodyFormatPanelView()
+    private let textHeadingFormatOptionsPanel = TextHeadingFormatPanelView()
+    
+    private let verticalStackView = UIStackView()
     
     var onFormatTap: ((TextFormat) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = .systemGray2
+        backgroundColor = .darkGray
         
         configureTextFormatOptionsPanel()
     }
@@ -28,29 +31,47 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc private func showTextFormattingOptions(){
-        textFormatOptionsPanel.isHidden.toggle()
+    @objc private func showTextFormattingOptions() {
+        let shoudExpand = verticalStackView.arrangedSubviews.isEmpty
+        
+        if shoudExpand {
+            verticalStackView.addArrangedSubview(textFormatOptionsPanel)
+            verticalStackView.addArrangedSubview(textHeadingFormatOptionsPanel)
+        } else {
+            textFormatOptionsPanel.removeFromSuperview()
+            textHeadingFormatOptionsPanel.removeFromSuperview()
+        }
+        
+        verticalStackView.isHidden.toggle()
+
         invalidateIntrinsicContentSize()
-        
-        stackView.alignment = .center
-        stackView.distribution = .equalCentering
+        setNeedsLayout()
     }
-    
-    private func configureTextFormatOptionsPanel(){
-        addSubview(textFormatOptionsPanel)
-        textFormatOptionsPanel.isHidden = true
-        textFormatOptionsPanel.translatesAutoresizingMaskIntoConstraints = false
-        
+
+    private func configureTextFormatOptionsPanel() {
+        addSubview(verticalStackView)
+
+        verticalStackView.isHidden = true
+        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+
+        // Constraints para que se vea y ocupe espacio
         NSLayoutConstraint.activate([
-            textFormatOptionsPanel.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 4),
-            textFormatOptionsPanel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            textFormatOptionsPanel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            textFormatOptionsPanel.heightAnchor.constraint(equalToConstant: 50) // o el tamaño necesario
+            verticalStackView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 4),
+            verticalStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            verticalStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            verticalStackView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
 
+        // Propagar los closures
         textFormatOptionsPanel.onFormatTap = { [weak self] format in
             self?.onFormatTap?(format)
         }
+
+        textHeadingFormatOptionsPanel.onFormatTap = { [weak self] format in
+            self?.onFormatTap?(format)
+        }
+
+        configureVerticalStackView()
     }
     
     override func configureButtons(){
@@ -72,10 +93,25 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         stackView.addArrangedSubview(insertImageButton)
     }
     
+    private func configureVerticalStackView(){
+        verticalStackView.axis = .vertical
+        verticalStackView.spacing = 15
+        verticalStackView.alignment = .center
+        verticalStackView.distribution = .equalCentering
+    }
+    
     override var intrinsicContentSize: CGSize {
         let baseHeight: CGFloat = 50
-        let panelHeight: CGFloat = textFormatOptionsPanel.isHidden ? 0 : 75
-        return CGSize(width: UIView.noIntrinsicMetric, height: baseHeight + panelHeight)
+        
+        guard !verticalStackView.isHidden else {
+            return CGSize(width: UIView.noIntrinsicMetric, height: baseHeight)
+        }
+        
+        let panelHeight = verticalStackView.systemLayoutSizeFitting(
+                CGSize(width: bounds.width, height: UIView.layoutFittingCompressedSize.height)
+            ).height
+        
+        return CGSize(width: UIView.noIntrinsicMetric, height: panelHeight + baseHeight)
     }
 
 }

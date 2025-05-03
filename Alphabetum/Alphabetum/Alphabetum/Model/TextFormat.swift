@@ -11,4 +11,9 @@ enum TextFormat {
     case bold
     case italic
     case underline
+    case strikethrough
+    case title
+    case header
+    case subtitle
+    case body
 }

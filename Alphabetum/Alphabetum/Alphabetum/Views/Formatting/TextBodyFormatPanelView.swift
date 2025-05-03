@@ -12,13 +12,12 @@ class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
     private let boldButton = UIButton()
     private let italicButton = UIButton()
     private let underlineButton = UIButton()
+    private let strikethroughButton = UIButton()
     
     var onFormatTap: ((TextFormat) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        backgroundColor = .systemGray4
     }
     
     required init?(coder: NSCoder) {
@@ -28,9 +27,10 @@ class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
     override func configureButtons(){
         let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular)
         
-        boldButton.setSFImageAndTarget(systemName: "bold", configuration: buttonConfig, target: self, selector: #selector(boldButtonTapped))
-        italicButton.setSFImageAndTarget(systemName: "italic", configuration: buttonConfig, target: self, selector: #selector(italicButtonTapped))
-        underlineButton.setSFImageAndTarget(systemName: "underline", configuration: buttonConfig, target: self, selector: #selector(underlineButtonTapped))
+        boldButton.setSFImageAndTarget(systemName: "bold", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
+        italicButton.setSFImageAndTarget(systemName: "italic", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
+        underlineButton.setSFImageAndTarget(systemName: "underline", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
+        strikethroughButton.setSFImageAndTarget(systemName: "strikethrough", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
     }
     
     override func configureStackView(){
@@ -39,6 +39,7 @@ class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
         stackView.addArrangedSubview(boldButton)
         stackView.addArrangedSubview(italicButton)
         stackView.addArrangedSubview(underlineButton)
+        stackView.addArrangedSubview(strikethroughButton)
     }
     
     private func configureButton(button: inout UIButton, systemName: String, configuration: UIImage.SymbolConfiguration, selector: Selector){
@@ -46,16 +47,22 @@ class TextBodyFormatPanelView: TextFormatPanelHorizontalView {
         button.addTarget(self, action: selector, for: .touchUpInside)
     }
     
-    @objc private func boldButtonTapped(){
-        onFormatTap?(.bold)
+    @objc private func buttonTapped(_ sender: UIButton){
+        if sender == boldButton {
+            onFormatTap?(.bold)
+        } else if sender == italicButton {
+            onFormatTap?(.italic)
+        } else if sender == underlineButton {
+            onFormatTap?(.underline)
+        } else if sender == strikethroughButton {
+            onFormatTap?(.strikethrough)
+        }
+        
+        sender.backgroundColor = (sender.backgroundColor == .systemYellow) ? .clear : .systemYellow
     }
     
-    @objc private func italicButtonTapped(){
-        onFormatTap?(.italic)
-    }
-    
-    @objc private func underlineButtonTapped(){
-        onFormatTap?(.underline)
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: UIView.noIntrinsicMetric, height: 50)
     }
     
 }

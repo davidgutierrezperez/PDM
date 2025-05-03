@@ -80,25 +80,74 @@ class NoteVC: UIViewController {
     private func toggleFormating(_ format: TextFormat){
         let defaultFontSize: CGFloat = 16
         let currentFont = (contentView.typingAttributes[.font] as? UIFont) ?? UIFont.systemFont(ofSize: defaultFontSize)
-        let defaultFont = UIFont.systemFont(ofSize: currentFont.pointSize)
+        let defaultFont = (format == .title) ? UIFont.systemFont(ofSize: defaultFontSize) : UIFont.systemFont(ofSize: currentFont.pointSize)
         
         formattingViewModel.toggleTextFomat(format)
         
-        let newFont: UIFont
+        let selectedRange = contentView.selectedRange
+        let hasSelection = selectedRange.length > 0
         
         switch(format){
-        case .bold:
-            newFont = formattingViewModel.isBold ? UIFont.boldSystemFont(ofSize: currentFont.pointSize) : defaultFont
-            contentView.typingAttributes[.font] = newFont
-            break
-        case .italic:
-            newFont = formattingViewModel.isItalic ? UIFont.italicSystemFont(ofSize: currentFont.pointSize) : defaultFont
-            contentView.typingAttributes[.font] = newFont
+        case .bold, .italic, .title, .header, .subtitle:
+            let font = fontWith(format, baseFont: defaultFont)
+            
+            if hasSelection {
+                applyAttribute(.font, value: font, to: selectedRange)
+            } else {
+                contentView.typingAttributes[.font] = font
+            }
             break
         case .underline:
-            contentView.typingAttributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
+            let style = formattingViewModel.isUnderline ? NSUnderlineStyle.single.rawValue : nil
+            
+            if hasSelection {
+                applyAttribute(.underlineStyle, value: style, to: selectedRange)
+            } else {
+                contentView.typingAttributes[.underlineStyle] = style
+            }
+            break
+        case .strikethrough:
+            let style = formattingViewModel.isStrikeThrough ? NSUnderlineStyle.single.rawValue : nil
+            
+            if hasSelection {
+                applyAttribute(.strikethroughStyle, value: style, to: selectedRange)
+            } else {
+                contentView.typingAttributes[.strikethroughStyle] = style
+            }
+            break
+        default:
             break
         }
+    }
+    
+    private func fontWith(_ format: TextFormat, baseFont: UIFont) -> UIFont {
+        switch format {
+        case .bold:
+            return formattingViewModel.isBold ? UIFont.boldSystemFont(ofSize: baseFont.pointSize) : UIFont.systemFont(ofSize: baseFont.pointSize)
+        case .italic:
+            return formattingViewModel.isItalic ? UIFont.italicSystemFont(ofSize: baseFont.pointSize) : UIFont.systemFont(ofSize: baseFont.pointSize)
+        case .title:
+            return formattingViewModel.isTitle ? UIFont.preferredFont(forTextStyle: .title1) : UIFont.systemFont(ofSize: baseFont.pointSize)
+        case .header:
+            return formattingViewModel.isHeader ? UIFont.preferredFont(forTextStyle: .headline) : UIFont.systemFont(ofSize: baseFont.pointSize)
+        case .subtitle:
+            return formattingViewModel.isSubtitle ? UIFont.preferredFont(forTextStyle: .title2) : UIFont.systemFont(ofSize: baseFont.pointSize)
+        default:
+            return baseFont
+        }
+    }
+    
+    private func applyAttribute(_ key: NSAttributedString.Key, value: Any?, to range: NSRange){
+        let mutableText = NSMutableAttributedString(attributedString: contentView.attributedText)
+        
+        if let value = value {
+            mutableText.addAttribute(key, value: value, range: range)
+        } else {
+            mutableText.removeAttribute(key, range: range)
+        }
+        
+        contentView.attributedText = mutableText
+        contentView.selectedRange = range
     }
     
     @objc private func updateTitle(){

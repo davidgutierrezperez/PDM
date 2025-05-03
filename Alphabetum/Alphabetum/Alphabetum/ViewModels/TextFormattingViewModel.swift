@@ -11,6 +11,10 @@ class TextFormattingViewModel {
     private(set) var isBold: Bool = false
     private(set) var isItalic: Bool = false
     private(set) var isUnderline: Bool = false
+    private(set) var isStrikeThrough: Bool = false
+    private(set) var isTitle: Bool = false
+    private(set) var isHeader: Bool = false
+    private(set) var isSubtitle: Bool = false
     
     func toggleTextFomat(_ format: TextFormat){
         switch(format){
@@ -22,6 +26,19 @@ class TextFormattingViewModel {
             break
         case .underline:
             isUnderline.toggle()
+            break
+        case .strikethrough:
+            isStrikeThrough.toggle()
+            break
+        case .title:
+            isTitle.toggle()
+            break
+        case .header:
+            isHeader.toggle()
+            break
+        case .subtitle:
+            isSubtitle.toggle()
+        default:
             break
         }
     }
