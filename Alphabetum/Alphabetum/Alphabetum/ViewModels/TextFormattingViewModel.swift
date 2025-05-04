@@ -8,64 +8,21 @@
 import Foundation
 
 class TextFormattingViewModel {
-    private(set) var isBold: Bool = false
-    private(set) var isItalic: Bool = false
-    private(set) var isUnderline: Bool = false
-    private(set) var isStrikeThrough: Bool = false
-    private(set) var isTitle: Bool = false
-    private(set) var isHeader: Bool = false
-    private(set) var isSubtitle: Bool = false
-    private(set) var isBody: Bool = true
-    private(set) var isBulletlist: Bool = false
-    private(set) var isDashList: Bool = false
-    private(set) var isNumberedList: Bool = false
+    private(set) var activeFormats: Set<TextFormat> = []
     
-    func toggleTextFomat(_ format: TextFormat){
-        switch(format){
-        case .bold:
-            isBold.toggle()
-            break
-        case .italic:
-            isItalic.toggle()
-            break
-        case .underline:
-            isUnderline.toggle()
-            break
-        case .strikethrough:
-            isStrikeThrough.toggle()
-            break
-        case .title:
-            isTitle.toggle()
-            break
-        case .header:
-            isHeader.toggle()
-            break
-        case .subtitle:
-            isSubtitle.toggle()
-            break
-        case .bulletlist:
-            isBulletlist.toggle()
-            break
-        case .dashList:
-            isDashList.toggle()
-            break
-        case .numberedList:
-            isNumberedList.toggle()
-            break
-        default:
-            break
+    func updateActiveFormats(_ formats: Set<TextFormat>){
+        activeFormats = formats
+    }
+    
+    func toggle(_ format: TextFormat){
+        if activeFormats.contains(format){
+            activeFormats.remove(format)
+        } else {
+            activeFormats.insert(format)
         }
     }
     
-    func toggleBold(){
-        isBold.toggle()
-    }
-    
-    func toggleItalic(){
-        isItalic.toggle()
-    }
-    
-    func toggleUnderline(){
-        isUnderline.toggle()
+    func isActive(_ format: TextFormat) -> Bool {
+        return activeFormats.contains(format)
     }
 }

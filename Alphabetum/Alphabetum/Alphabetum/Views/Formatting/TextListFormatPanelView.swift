@@ -16,6 +16,12 @@ class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        formatButtons = [
+            .bulletlist: bulletListButton,
+            .dashList: dashListButton,
+            .numberedList: numberedListButton
+        ]
     }
     
     @MainActor required init?(coder: NSCoder) {

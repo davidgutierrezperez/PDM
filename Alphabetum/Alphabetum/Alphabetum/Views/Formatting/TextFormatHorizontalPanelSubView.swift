@@ -13,6 +13,8 @@ class TextFormatHorizontalPanelSubView: TextFormatPanelHorizontalView {
     var lastSelectedButton: UIButton? = nil
     var onFormatTap: ((TextFormat) -> Void)?
     
+    var formatButtons: [TextFormat: UIButton] = [:]
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -37,6 +39,13 @@ class TextFormatHorizontalPanelSubView: TextFormatPanelHorizontalView {
             onFormatTap?(.body)
         }
     }
+    
+    func updateButtons(with formats: Set<TextFormat>) {
+        for (format, button) in formatButtons {
+            button.backgroundColor = formats.contains(format) ? .systemYellow : .clear
+        }
+    }
+
     
     /*
     // Only override draw() if you perform custom drawing.

@@ -82,7 +82,7 @@ class NoteVC: UIViewController {
         let currentFont = (contentView.typingAttributes[.font] as? UIFont) ?? UIFont.systemFont(ofSize: defaultFontSize)
         let defaultFont = (format == .title) ? UIFont.systemFont(ofSize: defaultFontSize) : UIFont.systemFont(ofSize: currentFont.pointSize)
         
-        formattingViewModel.toggleTextFomat(format)
+        formattingViewModel.toggle(format)
         
         let selectedRange = contentView.selectedRange
         let hasSelection = selectedRange.length > 0
@@ -98,7 +98,7 @@ class NoteVC: UIViewController {
             }
             break
         case .underline:
-            let style = formattingViewModel.isUnderline ? NSUnderlineStyle.single.rawValue : nil
+            let style = formattingViewModel.isActive(.underline) ? NSUnderlineStyle.single.rawValue : nil
             
             if hasSelection {
                 applyAttribute(.underlineStyle, value: style, to: selectedRange)
@@ -107,7 +107,7 @@ class NoteVC: UIViewController {
             }
             break
         case .strikethrough:
-            let style = formattingViewModel.isStrikeThrough ? NSUnderlineStyle.single.rawValue : nil
+            let style = formattingViewModel.isActive(.strikethrough) ? NSUnderlineStyle.single.rawValue : nil
             
             if hasSelection {
                 applyAttribute(.strikethroughStyle, value: style, to: selectedRange)
@@ -126,15 +126,15 @@ class NoteVC: UIViewController {
     private func fontWith(_ format: TextFormat, baseFont: UIFont) -> UIFont {
         switch format {
         case .bold:
-            return formattingViewModel.isBold ? UIFont.boldSystemFont(ofSize: baseFont.pointSize) : UIFont.systemFont(ofSize: baseFont.pointSize)
+            return formattingViewModel.isActive(.bold) ? UIFont.boldSystemFont(ofSize: baseFont.pointSize) : UIFont.systemFont(ofSize: baseFont.pointSize)
         case .italic:
-            return formattingViewModel.isItalic ? UIFont.italicSystemFont(ofSize: baseFont.pointSize) : UIFont.systemFont(ofSize: baseFont.pointSize)
+            return formattingViewModel.isActive(.italic) ? UIFont.italicSystemFont(ofSize: baseFont.pointSize) : UIFont.systemFont(ofSize: baseFont.pointSize)
         case .title:
-            return formattingViewModel.isTitle ? UIFont.preferredFont(forTextStyle: .title1) : UIFont.systemFont(ofSize: baseFont.pointSize)
+            return formattingViewModel.isActive(.title) ? UIFont.preferredFont(forTextStyle: .title1) : UIFont.systemFont(ofSize: baseFont.pointSize)
         case .header:
-            return formattingViewModel.isHeader ? UIFont.preferredFont(forTextStyle: .headline) : UIFont.systemFont(ofSize: baseFont.pointSize)
+            return formattingViewModel.isActive(.header) ? UIFont.preferredFont(forTextStyle: .headline) : UIFont.systemFont(ofSize: baseFont.pointSize)
         case .subtitle:
-            return formattingViewModel.isSubtitle ? UIFont.preferredFont(forTextStyle: .title2) : UIFont.systemFont(ofSize: baseFont.pointSize)
+            return formattingViewModel.isActive(.subtitle) ? UIFont.preferredFont(forTextStyle: .title2) : UIFont.systemFont(ofSize: baseFont.pointSize)
         default:
             return baseFont
         }
@@ -286,15 +286,15 @@ extension NoteVC: UITextViewDelegate {
         
         var insertion: String?
         
-        if formattingViewModel.isBulletlist && currentLineText.hasPrefix("• "){
+        if formattingViewModel.isActive(.bulletlist) && currentLineText.hasPrefix("• "){
             insertion = "\n• "
         }
         
-        else if formattingViewModel.isDashList && currentLineText.hasPrefix("- "){
+        else if formattingViewModel.isActive(.dashList) && currentLineText.hasPrefix("- "){
             insertion = "\n- "
         }
         
-        else if formattingViewModel.isNumberedList {
+        else if formattingViewModel.isActive(.numberedList) {
             let components = currentLineText.components(separatedBy: ".")
             if let numberString = components.first,
                let number = Int(numberString) {
@@ -313,5 +313,68 @@ extension NoteVC: UITextViewDelegate {
         }
 
         return true
+    }
+    
+    func textViewDidChangeSelection(_ textView: UITextView) {
+        let range = textView.selectedRange
+        let index = max(range.location, 0)
+        
+        guard index < textView.attributedText.length else { return }
+        
+        let attributes = textView.attributedText.attributes(at: index, effectiveRange: nil)
+        let nsText = textView.attributedText.string as NSString
+        let lineRange = nsText.lineRange(for: NSRange(location: index, length: 0))
+        let lineText = nsText.substring(with: lineRange)
+        
+        var activeFormats: Set<TextFormat> = []
+    
+        var isBulletlist = false
+        var isDashlist = false
+        var isNumberedList = false
+        
+        if let font = attributes[.font] as? UIFont {
+            let traits = font.fontDescriptor.symbolicTraits
+            if traits.contains(.traitBold) { activeFormats.insert(.bold) }
+            if traits.contains(.traitItalic) { activeFormats.insert(.italic) }
+            activeFormats.insert(detectHeadingType(for: font))
+        }
+        
+        if attributes[.underlineStyle] != nil { activeFormats.insert(.underline) }
+        if attributes[.strikethroughStyle] != nil { activeFormats.insert(.strikethrough) }
+        
+        formattingViewModel.updateActiveFormats(activeFormats)
+        textFormattingOptionsView.updateButtons(with: activeFormats)
+    }
+    
+    func detectHeadingType(for font: UIFont) -> TextFormat {
+        switch font.pointSize {
+        case 28:
+            return .title
+        case 22:
+            return .subtitle
+        case 18:
+            return .header
+        default:
+            return .body
+        }
+    }
+    
+    func detectListType(for lineText: String) -> TextFormat? {
+        let trimmedText = lineText.trimmingCharacters(in: .whitespaces)
+        
+        if trimmedText.hasPrefix("• "){
+            return .bulletlist
+        }
+        
+        if trimmedText.hasPrefix("- "){
+            return .dashList
+        }
+        
+        let pattern = #"^\d+\.\s"# // regex: empieza con 1 o más dígitos + punto + espacio
+        if let _ = trimmedText.range(of: pattern, options: .regularExpression) {
+            return .numberedList
+        }
+
+        return nil
     }
 }

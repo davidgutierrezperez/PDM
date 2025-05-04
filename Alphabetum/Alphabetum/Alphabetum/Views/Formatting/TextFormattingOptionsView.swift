@@ -32,6 +32,12 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func updateButtons(with formats: Set<TextFormat>){
+        textFormatOptionsPanel.updateButtons(with: formats)
+        textHeadingFormatOptionsPanel.updateButtons(with: formats)
+        textListFormatOptionsPanel.updateButtons(with: formats)
+    }
+    
     @objc private func showTextFormattingOptions() {
         let shoudExpand = verticalStackView.arrangedSubviews.isEmpty
         

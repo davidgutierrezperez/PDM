@@ -16,6 +16,13 @@ class TextBodyFormatPanelView: TextFormatHorizontalPanelSubView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        formatButtons = [
+            .bold: boldButton,
+            .italic: italicButton,
+            .underline: underlineButton,
+            .strikethrough: strikethroughButton
+        ]
     }
     
     required init?(coder: NSCoder) {
@@ -52,6 +59,12 @@ class TextBodyFormatPanelView: TextFormatHorizontalPanelSubView {
         }
         
         sender.backgroundColor = (sender.backgroundColor == .systemYellow) ? .clear : .systemYellow
+    }
+    
+    override func updateButtons(with formats: Set<TextFormat>) {
+        for (format, button) in formatButtons {
+            button.backgroundColor = formats.contains(format) ? .systemYellow : .clear
+        }
     }
     
     override var intrinsicContentSize: CGSize {

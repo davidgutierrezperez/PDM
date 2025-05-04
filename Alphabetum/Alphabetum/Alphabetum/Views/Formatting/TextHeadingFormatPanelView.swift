@@ -15,6 +15,13 @@ class TextHeadingFormatPanelView: TextFormatHorizontalPanelSubView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        formatButtons = [
+            .title: titleButton,
+            .header: headerButton,
+            .subtitle: subtitleButton
+        ]
+
     }
     
     @MainActor required init?(coder: NSCoder) {
