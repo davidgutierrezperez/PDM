@@ -60,9 +60,19 @@ class NoteVC: UIViewController {
         contentView.reloadInputViews()
         
         configureTextFields()
-        
-
         setupView()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -71,10 +81,39 @@ class NoteVC: UIViewController {
         contentView.reloadInputViews()
     }
     
+    @objc private func keyboardWillShow(notification: Notification){
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
+        
+        let bottomInset = keyboardFrame.height
+        contentView.contentInset.bottom = bottomInset
+        contentView.verticalScrollIndicatorInsets.bottom = bottomInset
+    }
+    
+    @objc private func keyboardWillHide(notification: Notification){
+        contentView.contentInset.bottom = 0
+        contentView.verticalScrollIndicatorInsets.bottom = 0
+    }
+    
     private func configureTextFormattingOptionsView(){
         textFormattingOptionsView.onFormatTap = { [weak self] format in
             self?.toggleFormating(format)
         }
+        
+        textFormattingOptionsView.onImageButtonTap = { [weak self] inputSource in
+            self?.presentImagePicker(sourceType: (inputSource == .camera) ? .camera : .photoLibrary)
+        }
+    }
+    
+    private func presentImagePicker(sourceType: UIImagePickerController.SourceType){
+        guard UIImagePickerController.isSourceTypeAvailable(sourceType) else { return }
+        
+        let picker = UIImagePickerController()
+        picker.sourceType = sourceType
+        picker.delegate = self
+        present(picker, animated: true)
     }
     
     private func toggleFormating(_ format: TextFormat){
@@ -188,26 +227,6 @@ class NoteVC: UIViewController {
         contentView.selectedRange = NSRange(location: selectedRange.location + listSymbol.count, length: 0)
     }
     
-    private func insertBulletAtCurrentLine(){
-        let bullet = "• "
-        let selectedRange = contentView.selectedRange
-        guard let fullText = contentView.attributedText?.mutableCopy() as? NSMutableAttributedString else { return }
-        
-        let plainText = fullText.string as NSString
-        let lineRange = plainText.lineRange(for: selectedRange)
-        
-        let lineText = plainText.substring(with: lineRange)
-        if lineText.contains(bullet) {
-            return
-        }
-        
-        let bulletAttr = NSMutableAttributedString(string: bullet)
-        fullText.insert(bulletAttr, at: lineRange.location)
-        
-        contentView.attributedText = fullText
-        contentView.selectedRange = NSRange(location: selectedRange.location + bullet.count, length: 0)
-    }
-    
     @objc private func updateTitle(){
         viewModel.updateTitle(titleField.text!)
     }
@@ -226,7 +245,6 @@ class NoteVC: UIViewController {
                                                               
     @objc private func disableKeyboard(){
         contentView.endEditing(true)
-            
     }
                                             
     private func setupView(){
@@ -327,10 +345,6 @@ extension NoteVC: UITextViewDelegate {
         let lineText = nsText.substring(with: lineRange)
         
         var activeFormats: Set<TextFormat> = []
-    
-        var isBulletlist = false
-        var isDashlist = false
-        var isNumberedList = false
         
         if let font = attributes[.font] as? UIFont {
             let traits = font.fontDescriptor.symbolicTraits
@@ -378,3 +392,15 @@ extension NoteVC: UITextViewDelegate {
         return nil
     }
 }
+
+extension NoteVC: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        
+        guard let image = info[.originalImage] as? UIImage else { return }
+        
+        contentView.insertImage(image)
+        updateContent()
+    }
+}
+

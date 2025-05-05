@@ -19,6 +19,7 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     private let verticalStackView = UIStackView()
     
     var onFormatTap: ((TextFormat) -> Void)?
+    var onImageButtonTap: ((ImageInputSource) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -36,6 +37,35 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         textFormatOptionsPanel.updateButtons(with: formats)
         textHeadingFormatOptionsPanel.updateButtons(with: formats)
         textListFormatOptionsPanel.updateButtons(with: formats)
+    }
+    
+    
+    override func configureButtons(){
+        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
+        
+        formattingTextButton.setImage(UIImage(systemName: "textformat", withConfiguration: buttonConfig), for: .normal)
+        formattingTextButton.addTarget(self, action: #selector(showTextFormattingOptions), for: .touchUpInside)
+        
+        insertImageButton.setImage(UIImage(systemName: "paperclip", withConfiguration: buttonConfig), for: .normal)
+        insertImageButton.menu = createImageOptionMenu()
+        insertImageButton.showsMenuAsPrimaryAction = true
+        
+        formattingTextButton.tintColor = .systemYellow
+        insertImageButton.tintColor = .systemYellow
+    }
+    
+    override func configureStackView(){
+        super.configureStackView()
+        
+        stackView.addArrangedSubview(formattingTextButton)
+        stackView.addArrangedSubview(insertImageButton)
+    }
+    
+    private func configureVerticalStackView(){
+        verticalStackView.axis = .vertical
+        verticalStackView.spacing = 15
+        verticalStackView.alignment = .center
+        verticalStackView.distribution = .equalCentering
     }
     
     @objc private func showTextFormattingOptions() {
@@ -56,6 +86,8 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         invalidateIntrinsicContentSize()
         setNeedsLayout()
     }
+    
+    
 
     private func configureTextFormatOptionsPanel() {
         addSubview(verticalStackView)
@@ -87,30 +119,16 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         configureVerticalStackView()
     }
     
-    override func configureButtons(){
-        let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
-        
-        formattingTextButton.setImage(UIImage(systemName: "textformat", withConfiguration: buttonConfig), for: .normal)
-        formattingTextButton.addTarget(self, action: #selector(showTextFormattingOptions), for: .touchUpInside)
-        
-        insertImageButton.setImage(UIImage(systemName: "paperclip", withConfiguration: buttonConfig), for: .normal)
-        
-        formattingTextButton.tintColor = .systemYellow
-        insertImageButton.tintColor = .systemYellow
-    }
-    
-    override func configureStackView(){
-        super.configureStackView()
-        
-        stackView.addArrangedSubview(formattingTextButton)
-        stackView.addArrangedSubview(insertImageButton)
-    }
-    
-    private func configureVerticalStackView(){
-        verticalStackView.axis = .vertical
-        verticalStackView.spacing = 15
-        verticalStackView.alignment = .center
-        verticalStackView.distribution = .equalCentering
+    private func createImageOptionMenu() -> UIMenu {
+        let imageMenu = UIMenu(title: "Insert image", children: [
+            UIAction(title: "Choose an image", image: UIImage(systemName: "photo")) { [weak self] _ in
+                self?.onImageButtonTap?(.gallery)
+            },
+            UIAction(title: "Take a picture", image: UIImage(systemName: "camera")) { [weak self] _ in
+                self?.onImageButtonTap?(.camera)
+            }
+        ])
+        return imageMenu
     }
     
     override var intrinsicContentSize: CGSize {
@@ -128,3 +146,5 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     }
 
 }
+
+
