@@ -25,6 +25,7 @@ class FolderListVC: UIViewController {
         navigationItem.searchController = createSearchController(placeholder: "Search a folder", searchResultsUpdater: self, delegate: self)
         navigationItem.searchController?.searchBar.isHidden = false
         navigationItem.hidesSearchBarWhenScrolling = false
+        navigationController?.navigationBar.prefersLargeTitles = true
         
         addRightBarButton(image: UIImage(systemName: "folder.badge.plus")!, selector: #selector(openCreateFolderVC))
         setupView()

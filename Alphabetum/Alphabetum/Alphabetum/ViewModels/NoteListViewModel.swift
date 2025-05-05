@@ -106,6 +106,7 @@ class NoteListViewModel {
         self.isSelecting = isSelecting
         
         if (!isSelecting){
+            fetchNotesOfFolder(id: folderID)
             clearSelection()
         }
     }

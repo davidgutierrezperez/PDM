@@ -27,13 +27,22 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         
         addToFolderButton.configureButton(systemName: "plus.circle", selector: #selector(addNoteToFolder), target: self)
         editNotesButton.configureButton(title: "Edit", selector: #selector(selectAndEditNotes), target: self)
+        editNotesButton.isHidden = (viewModel.numberOfNotes() == 0)
         
         navigationItem.searchController = createSearchController(searchResultsUpdater: self, delegate: self)
         navigationItem.searchController?.searchBar.isHidden = false
         navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.rightBarButtonItems = [addToFolderButton, editNotesButton]
+        navigationController?.navigationBar.prefersLargeTitles = true
         
         setupView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewModel.setSelecting(false)
+        updateEditButton()
     }
     
     init(folderID: UUID, title: String) {
@@ -63,6 +72,10 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         ])
 
         tableView.didMove(toParent: self)
+        
+        tableView.onDeletion = { [weak self] in
+            self?.updateEditButton()
+        }
     }
     
     @objc private func addNoteToFolder(){
@@ -76,12 +89,11 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         viewModel.setSelecting(true)
         tableView.reloadData()
         navigationController?.tabBarController?.tabBar.isHidden = true
-        
-        let numOfSelectedNotes = viewModel.numberOfSelectedNotes()
-        let deleteNotesStr = "Delete (" + String(numOfSelectedNotes) + ")"
-        
-        addToFolderButton.configureButton(title: deleteNotesStr, selector: #selector(deleteSelectedNotes), target: self)
-        addToFolderButton.isEnabled = (numOfSelectedNotes != 0)
+
+        addToFolderButton.configureButton(title: "Delete (0)", selector: #selector(deleteSelectedNotes), target: self)
+        tableView.onSelectionChanged = { [weak self] in
+            self?.updateDeleteButton()
+        }
         
         editNotesButton.configureButton(title: "Cancel", selector: #selector(cancelSelection), target: self)
     }
@@ -95,8 +107,23 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         editNotesButton.configureButton(title: "Edit", selector: #selector(selectAndEditNotes), target: self)
     }
     
+    private func updateDeleteButton(){
+        guard viewModel.isSelecting else { return }
+        
+        let count = viewModel.numberOfSelectedNotes()
+        let deleteTitle = "Delete (\(count))"
+        
+        addToFolderButton.configureButton(title: deleteTitle, selector: #selector(deleteSelectedNotes), target: self)
+        addToFolderButton.isEnabled = (count > 0)
+    }
+    
+    private func updateEditButton(){
+        editNotesButton.isHidden = (viewModel.numberOfNotes() == 0)
+    }
+    
     @objc private func deleteSelectedNotes(){
         viewModel.deleteSelectedNotes()
+        updateEditButton()
         cancelSelection()
     }
     
@@ -144,6 +171,7 @@ class FolderVC: UIViewController, UISearchBarDelegate {
     private func openAlertToDeleteAction(id: UUID){
         viewModel.delete(id: id)
         tableView.fetchAndReload()
+        updateEditButton()
     }
 
 }
@@ -190,6 +218,7 @@ extension FolderVC: NoteCellDelegate {
         let moveToAnotherFolderAction = UIAction(title: "Move to another folder") { _ in
             self.openAlertToMoveToAnotherFolder(at: indexPath.row) { 
                 self.tableView.fetchAndReload()
+                self.updateEditButton()
             }
         }
         

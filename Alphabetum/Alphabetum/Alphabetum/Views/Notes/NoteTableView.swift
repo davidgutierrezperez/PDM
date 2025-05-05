@@ -10,6 +10,8 @@ import UIKit
 class NoteTableView: UITableViewController {
     
     private let viewModel = NoteListViewModel.shared
+    var onSelectionChanged: (() -> Void)?
+    var onDeletion: (() -> Void)?
     
     weak var noteCellDelegate: NoteCellDelegate?
 
@@ -71,6 +73,7 @@ class NoteTableView: UITableViewController {
         if viewModel.isSelecting {
             viewModel.toggleSelection(for: noteID)
             tableView.reloadRows(at: [indexPath], with: .none)
+            onSelectionChanged?()
         } else {
             let noteVC = NoteVC(id: noteID)
             navigationController?.pushViewController(noteVC, animated: true)
@@ -93,6 +96,8 @@ class NoteTableView: UITableViewController {
             
             viewModel.delete(id: noteID)
             tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            onDeletion?()
         } else if editingStyle == .insert {
             
         }
