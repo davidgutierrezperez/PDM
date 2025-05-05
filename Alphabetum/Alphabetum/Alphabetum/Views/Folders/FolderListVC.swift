@@ -115,9 +115,6 @@ extension FolderListVC: FolderCellDelegate {
             }
         }
         
-    
-        
-        
         return UIMenu(title: folder.title, children: [rename, delete])
     }
     

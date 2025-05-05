@@ -19,6 +19,7 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         super.viewDidLoad()
         
         title = folderTitle
+        tableView.noteCellDelegate = self
         
         addRightBarButton(image: UIImage(systemName: "plus.circle") ?? UIImage(), selector: #selector(addNoteToFolder))
         
@@ -34,7 +35,6 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         self.folderTitle = title
         
         viewModel.setFolderID(id: folderID)
-        
         
         if (title == "All"){
             viewModel.fetchAll()
@@ -66,11 +66,43 @@ class FolderVC: UIViewController, UISearchBarDelegate {
     
     @objc private func addNoteToFolder(){
         let newNote = Note(title: "Sin titulo")
-        let noteViewModel = NoteViewModel(note: newNote, folderID: folderID)
+        let _ = NoteViewModel(note: newNote, folderID: folderID)
         
         navigationController?.pushViewController(NoteVC(id: newNote.id), animated: true)
     }
     
+    private func openAlertToRenameAction(id: UUID, onRename: @escaping (() -> Void)){
+        let alert = makeAlertCancelConfirm(title: "Rename", placeholder: "New title") { newTitle in
+            self.viewModel.rename(id: id, newTitle: newTitle)
+            onRename()
+        }
+        present(alert, animated: true)
+    }
+    
+    private func openAlertToDuplicateAction(id: UUID, onDuplicate: @escaping (() -> Void)){
+        let alert = makeAlertCancelConfirm(title: "Duplicate a note", placeholder: "Title of the new note", action: { title in
+            self.viewModel.duplicate(id: id, title: title)
+            onDuplicate()
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func openAlertToMoveToAnotherFolder(at index: Int, onMove: @escaping (() -> Void)){
+        let folderPickerVC = FolderPickerVC(note: viewModel.note(at: index))
+        let navVC = UINavigationController(rootViewController: folderPickerVC)
+        
+        folderPickerVC.onMoved = {
+            onMove()
+        }
+        
+        present(navVC, animated: true)
+    }
+    
+    private func openAlertToDeleteAction(id: UUID){
+        viewModel.delete(id: id)
+        tableView.fetchAndReload()
+    }
 
 }
 
@@ -82,4 +114,36 @@ extension FolderVC: UISearchControllerDelegate, UISearchResultsUpdating {
     }
     
     
+}
+
+extension FolderVC: NoteCellDelegate {
+    func noteCellRequestMenu(for cell: NoteCell) -> UIMenu {
+        guard let indexPath = tableView.tableView.indexPath(for: cell) else { return UIMenu() }
+        
+        let note = viewModel.note(at: indexPath.row)
+        
+        let renameAction = UIAction(title: "Rename") { _ in
+            self.openAlertToRenameAction(id: note.id){
+                self.tableView.fetchAndReload()
+            }
+        }
+        
+        let duplicateAction = UIAction(title: "Duplicate") { _ in
+            self.openAlertToDuplicateAction(id: note.id){
+                self.tableView.fetchAndReload()
+            }
+        }
+        
+        let moveToAnotherFolderAction = UIAction(title: "Move to another folder") { _ in
+            self.openAlertToMoveToAnotherFolder(at: indexPath.row) { 
+                self.tableView.fetchAndReload()
+            }
+        }
+        
+        let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+            self.openAlertToDeleteAction(id: note.id)
+        }
+        
+        return UIMenu(title: folderTitle, children: [renameAction, duplicateAction, moveToAnotherFolderAction, deleteAction])
+    }
 }

@@ -7,11 +7,17 @@
 
 import UIKit
 
+protocol NoteCellDelegate: AnyObject {
+    func noteCellRequestMenu(for cell: NoteCell) -> UIMenu
+}
+
 class NoteCell: UITableViewCell {
     
     static let reuseIdentifier = "NoteCell"
     
     private let title = UILabel()
+    
+    weak var delegate: NoteCellDelegate?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -40,6 +46,13 @@ class NoteCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        
+        let interaction = UIContextMenuInteraction(delegate: self)
+        self.addInteraction(interaction)
+    }
+    
     private func setupView(){
         contentView.addSubview(title)
         
@@ -53,4 +66,14 @@ class NoteCell: UITableViewCell {
 
     }
 
+}
+
+extension NoteCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            return self.delegate?.noteCellRequestMenu(for: self)
+        }
+    }
+    
+    
 }

@@ -29,9 +29,7 @@ final class NoteRepository: NoteRepositoryProtocol {
     }
     
     func delete(id: UUID) {
-        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        fetchRequest.fetchLimit = 1
+        let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
         do {
             if let noteEntity = try context.fetch(fetchRequest).first {
@@ -47,9 +45,7 @@ final class NoteRepository: NoteRepositoryProtocol {
     }
     
     func update(id: UUID, content: NSMutableAttributedString) {
-        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        fetchRequest.fetchLimit = 1
+        let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
         do {
             if let noteEntity = try context.fetch(fetchRequest).first,
@@ -79,9 +75,7 @@ final class NoteRepository: NoteRepositoryProtocol {
     }
     
     func fetchById(id: UUID) -> Note? {
-        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        fetchRequest.fetchLimit = 1
+        let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
         do {
             let note = try context.fetch(fetchRequest).first!
@@ -108,9 +102,7 @@ final class NoteRepository: NoteRepositoryProtocol {
     }
     
     func save(note: Note){
-        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", note.id as CVarArg)
-        fetchRequest.fetchLimit = 1
+        let fetchRequest = NoteRepository.fetchRequestByID(id: note.id, limit: 1)
         
         let noteEntity: NoteEntity
         
@@ -127,10 +119,55 @@ final class NoteRepository: NoteRepositoryProtocol {
         CoreDataStack.shared.saveContext()
     }
     
+    func rename(id: UUID, newTitle: String){
+        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        fetchRequest.fetchLimit = 1
+        
+        do {
+            if let noteEntity = try context.fetch(fetchRequest).first {
+                noteEntity.title = newTitle
+            }
+            
+            CoreDataStack.shared.saveContext()
+        } catch {
+            print("❌ Nota con ID \(id) no encontrada")
+        }
+    }
+    
+    func duplicate(id: UUID, title: String){
+        let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
+        
+        do {
+            guard let noteEntity = try context.fetch(fetchRequest).first else {
+                print("❌ Nota con ID \(id) no encontrada")
+                return
+            }
+            
+            let content: NSMutableAttributedString
+            if let data = noteEntity.content,
+               let attributedString = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data as Data) as? NSMutableAttributedString {
+                content = attributedString.mutableCopy() as? NSMutableAttributedString ?? NSMutableAttributedString(string: "")
+            } else {
+                content = NSMutableAttributedString(string: "")
+            }
+            
+            let duplicateNote = Note(id: UUID(), content: content, title: title, lastModifiedSince: Date(), creationDate: Date())
+            
+            create(note: duplicateNote)
+            
+            if let folder = noteEntity.folder {
+                addToFolder(noteID: duplicateNote.id, to: folder.id!)
+            }
+            
+            CoreDataStack.shared.saveContext()
+        } catch {
+            print("❌ Nota con ID \(id) no encontrada")
+        }
+    }
+    
     func addToFolder(noteID: UUID, to folderID: UUID){
-        let noteFetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        noteFetchRequest.predicate = NSPredicate(format: "id == %@", noteID as CVarArg)
-        noteFetchRequest.fetchLimit = 1
+        let noteFetchRequest = NoteRepository.fetchRequestByID(id: noteID, limit: 1)
         
         let folderFetchRequest: NSFetchRequest<FolderEntity> = FolderEntity.fetchRequest()
         folderFetchRequest.predicate = NSPredicate(format: "id == %@", folderID as CVarArg)
@@ -155,6 +192,14 @@ final class NoteRepository: NoteRepositoryProtocol {
         }
         
         
+    }
+    
+    private static func fetchRequestByID(id: UUID, limit: Int = Int.max) -> NSFetchRequest<NoteEntity> {
+        let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        fetchRequest.fetchLimit = limit
+        
+        return fetchRequest
     }
     
 }

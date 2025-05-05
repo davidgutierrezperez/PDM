@@ -12,6 +12,8 @@ class FolderPickerVC: FolderListVC {
     private let noteViewModel:NoteViewModel
     private let noteID: UUID
     
+    var onMoved: (() -> Void)?
+    
     init(note: Note){
         noteID = note.id
         noteViewModel = NoteViewModel(note: note)
@@ -39,6 +41,8 @@ extension FolderPickerVC: UITableViewDelegate {
         let folderID = viewModel.folder(at: indexPath.row).id
         
         noteViewModel.addToFolder(folderID: folderID)
+        
+        onMoved?()
         dismiss(animated: true)
     }
 }

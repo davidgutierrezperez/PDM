@@ -54,6 +54,14 @@ class NoteListViewModel {
         notes.removeAll { $0.id == id } 
     }
     
+    func rename(id: UUID, newTitle: String){
+        noteRepository.rename(id: id, newTitle: newTitle)
+    }
+    
+    func duplicate(id: UUID, title: String){
+        noteRepository.duplicate(id: id, title: title)
+    }
+    
     func filterNote(with searchText: String){
         if searchText.isEmpty {
             isFiltering = false

@@ -10,6 +10,8 @@ import UIKit
 class NoteTableView: UITableViewController {
     
     private let viewModel = NoteListViewModel.shared
+    
+    weak var noteCellDelegate: NoteCellDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +25,11 @@ class NoteTableView: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        viewModel.fetchNotesOfFolder(id: viewModel.folderID)
+        tableView.reloadData()
+    }
+    
+    func fetchAndReload(){
         viewModel.fetchNotesOfFolder(id: viewModel.folderID)
         tableView.reloadData()
     }
@@ -49,6 +56,7 @@ class NoteTableView: UITableViewController {
 
         let note = viewModel.note(at: indexPath.row)
         cell.configure(title: note.title)
+        cell.delegate = noteCellDelegate
         
         return cell
     }
