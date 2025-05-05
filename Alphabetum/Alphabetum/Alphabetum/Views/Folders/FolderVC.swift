@@ -92,8 +92,21 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         let folderPickerVC = FolderPickerVC(note: viewModel.note(at: index))
         let navVC = UINavigationController(rootViewController: folderPickerVC)
         
-        folderPickerVC.onMoved = {
+        folderPickerVC.onMoved = { _ in
             onMove()
+        }
+        
+        present(navVC, animated: true)
+    }
+    
+    private func openAlertToCopyToAnotherFolder(at index: Int){
+        let folderPickerVC = FolderPickerVC(note: viewModel.note(at: index))
+        let navVC = UINavigationController(rootViewController: folderPickerVC)
+        
+        folderPickerVC.onMoved = { _ in
+            let noteID = self.viewModel.note(at: index).id
+            
+            self.viewModel.copyInOtherFolder(id: noteID, to: self.folderID)
         }
         
         present(navVC, animated: true)
@@ -151,10 +164,14 @@ extension FolderVC: NoteCellDelegate {
             }
         }
         
+        let copyToAnotherFolderAction = UIAction(title: "Copy to another folder") { _ in
+            self.openAlertToCopyToAnotherFolder(at: indexPath.row)
+        }
+        
         let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             self.openAlertToDeleteAction(id: note.id)
         }
         
-        return UIMenu(title: folderTitle, children: [renameAction, duplicateAction, moveToAnotherFolderAction, deleteAction])
+        return UIMenu(title: folderTitle, children: [renameAction, duplicateAction, moveToAnotherFolderAction, copyToAnotherFolderAction, deleteAction])
     }
 }

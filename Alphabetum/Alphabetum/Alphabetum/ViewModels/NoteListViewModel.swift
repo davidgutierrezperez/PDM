@@ -62,6 +62,10 @@ class NoteListViewModel {
         noteRepository.duplicate(id: id, title: title)
     }
     
+    func copyInOtherFolder(id: UUID, to folderID: UUID){
+        noteRepository.copyToOtherFolder(id: id, to: folderID)
+    }
+    
     func filterNote(with searchText: String){
         if searchText.isEmpty {
             isFiltering = false

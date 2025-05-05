@@ -12,7 +12,7 @@ class FolderPickerVC: FolderListVC {
     private let noteViewModel:NoteViewModel
     private let noteID: UUID
     
-    var onMoved: (() -> Void)?
+    var onMoved: ((UUID) -> Void)?
     
     init(note: Note){
         noteID = note.id
@@ -42,7 +42,7 @@ extension FolderPickerVC: UITableViewDelegate {
         
         noteViewModel.addToFolder(folderID: folderID)
         
-        onMoved?()
+        onMoved?(folderID)
         dismiss(animated: true)
     }
 }

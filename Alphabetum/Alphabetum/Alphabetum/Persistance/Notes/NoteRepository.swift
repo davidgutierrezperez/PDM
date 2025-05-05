@@ -190,8 +190,35 @@ final class NoteRepository: NoteRepositoryProtocol {
         } catch {
             print("❌ Error al asignar la nota con ID \(noteID) a la carpeta con ID \(folderID) en CoreData")
         }
+    
+    }
+    
+    func copyToOtherFolder(id: UUID, to folderID: UUID){
+        let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
-        
+        do {
+            guard let noteEntity = try context.fetch(fetchRequest).first else {
+                print("❌ Nota con ID \(id) no encontrada")
+                return
+            }
+            
+            let content: NSMutableAttributedString
+            if let data = noteEntity.content,
+               let attributedString = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data as Data) as? NSMutableAttributedString {
+                content = attributedString.mutableCopy() as? NSMutableAttributedString ?? NSMutableAttributedString(string: "")
+            } else {
+                content = NSMutableAttributedString(string: "")
+            }
+            
+            let duplicateNote = Note(id: UUID(), content: content, title: noteEntity.title!, lastModifiedSince: Date(), creationDate: Date())
+            
+            create(note: duplicateNote)
+            addToFolder(noteID: duplicateNote.id, to: folderID)
+            
+            CoreDataStack.shared.saveContext()
+        } catch {
+            print("❌ Error al copiar la nota con ID \(id) no a la carpeta \(folderID)")
+        }
     }
     
     private static func fetchRequestByID(id: UUID, limit: Int = Int.max) -> NSFetchRequest<NoteEntity> {
