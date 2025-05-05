@@ -10,6 +10,7 @@ import UIKit
 class FolderTableView: UITableViewController {
     
     private let viewModel = FolderListViewModel.shared
+    weak var folderCellDelegate: FolderCellDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,7 +29,7 @@ class FolderTableView: UITableViewController {
         }
     }
     
-    private func fetchAndReload(){
+    func fetchAndReload(){
         viewModel.fetchFolders()
         tableView.reloadData()
     }
@@ -59,6 +60,7 @@ class FolderTableView: UITableViewController {
 
         let folder = viewModel.folder(at: indexPath.row)
         cell?.configure(title: folder.title)
+        cell?.delegate = folderCellDelegate
 
         return cell ?? UITableViewCell()
     }

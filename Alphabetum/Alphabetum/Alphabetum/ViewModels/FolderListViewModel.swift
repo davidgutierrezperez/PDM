@@ -54,6 +54,10 @@ final class FolderListViewModel {
         }
     }
     
+    func renameFolder(id: UUID, newTitle: String){
+        folderRepository.renameFolder(id: id, newTitle: newTitle)
+    }
+    
     func filterFolders(with searchText: String){
         if searchText.isEmpty {
             isFiltering = false

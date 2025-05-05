@@ -36,6 +36,22 @@ final class FolderRepository: FolderRepositoryProtocol {
         }
     }
     
+    func renameFolder(id: UUID, newTitle: String){
+        let fetchRequest: NSFetchRequest<FolderEntity> = FolderEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        fetchRequest.fetchLimit = 1
+        
+        do {
+            if let folderEntity = try context.fetch(fetchRequest).first {
+                folderEntity.title = newTitle
+            }
+        
+            CoreDataStack.shared.saveContext()
+        } catch {
+            print("❌ No se han podido obtener las carpetas almacenadas en CoreData")
+        }
+    }
+    
     func fetchAllFolders() -> [Folder] {
         let fetchRequest: NSFetchRequest<FolderEntity> = FolderEntity.fetchRequest()
         

@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol FolderCellDelegate: AnyObject {
+    func folderCellRequestMenu(for cell: FolderCell) -> UIMenu
+}
+
 class FolderCell: UITableViewCell {
     
     static let reusableIdentifier = "FolderCell"
@@ -14,6 +18,8 @@ class FolderCell: UITableViewCell {
     private let title = UILabel()
     private var icon = UIImageView()
     private var numberOfNotes: Int = 0
+    
+    weak var delegate: FolderCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -43,6 +49,13 @@ class FolderCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        
+        let interaction = UIContextMenuInteraction(delegate: self)
+        self.addInteraction(interaction)
     }
     
     private func configureIcon(){
@@ -76,4 +89,14 @@ class FolderCell: UITableViewCell {
         ])
     }
 
+}
+
+extension FolderCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            return self.delegate?.folderCellRequestMenu(for: self)
+        }
+    }
+    
+    
 }

@@ -17,6 +17,8 @@ class FolderListVC: UIViewController {
 
         title = "Folders"
         
+        tableView.folderCellDelegate = self
+        
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.searchController = createSearchController(placeholder: "Search a folder", searchResultsUpdater: self, delegate: self)
         navigationItem.searchController?.searchBar.isHidden = false
@@ -47,6 +49,28 @@ class FolderListVC: UIViewController {
         present(navVC, animated: true)
     }
     
+    private func openAlertToRenameFolder(id: UUID, onRenamed: @escaping () -> Void){
+        let alert = UIAlertController(title: "Rename a folder", message: nil, preferredStyle: .alert)
+        
+        alert.addTextField { textfield in
+            textfield.placeholder = "New folder title"
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Confirm", style: .default) { _ in
+            let newTitle = alert.textFields?.first?.text
+            self.viewModel.renameFolder(id: id, newTitle: newTitle ?? "")
+            onRenamed()
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func deleteFolderByMenu(id: UUID, onDelete: @escaping () -> Void){
+        viewModel.delete(id: id)
+        onDelete()
+    }
+    
     private func setupView(){
         addChild(tableView)
         view.addSubview(tableView.view)
@@ -71,3 +95,31 @@ extension FolderListVC: UISearchResultsUpdating, UISearchBarDelegate {
     }
 }
 
+extension FolderListVC: FolderCellDelegate {
+    func folderCellRequestMenu(for cell: FolderCell) -> UIMenu {
+        guard let indexPath = tableView.tableView.indexPath(for: cell) else {
+            return UIMenu()
+        }
+        
+        let folder = viewModel.folder(at: indexPath.row)
+        
+        let rename = UIAction(title: "Rename") { _ in
+            self.openAlertToRenameFolder(id: folder.id) {
+                self.tableView.fetchAndReload()
+            }
+        }
+        
+        let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+            self.deleteFolderByMenu(id: folder.id) {
+                self.tableView.fetchAndReload()
+            }
+        }
+        
+    
+        
+        
+        return UIMenu(title: folder.title, children: [rename, delete])
+    }
+    
+    
+}
