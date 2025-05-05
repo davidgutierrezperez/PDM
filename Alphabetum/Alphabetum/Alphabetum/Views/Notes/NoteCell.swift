@@ -9,6 +9,7 @@ import UIKit
 
 protocol NoteCellDelegate: AnyObject {
     func noteCellRequestMenu(for cell: NoteCell) -> UIMenu
+    func makePreviewViewController(for cell: NoteCell) -> NoteVC
 }
 
 class NoteCell: UITableViewCell {
@@ -70,9 +71,11 @@ class NoteCell: UITableViewCell {
 
 extension NoteCell: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+            return self.delegate?.makePreviewViewController(for: self)
+        }, actionProvider: { _ in
             return self.delegate?.noteCellRequestMenu(for: self)
-        }
+        })
     }
     
     

@@ -81,6 +81,10 @@ class NoteVC: UIViewController {
         contentView.reloadInputViews()
     }
     
+    func hideFormattingViewOptions(){
+        textFormattingOptionsView.isHidden = true
+    }
+    
     @objc private func keyboardWillShow(notification: Notification){
         guard let userInfo = notification.userInfo,
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {

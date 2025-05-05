@@ -117,6 +117,17 @@ extension FolderVC: UISearchControllerDelegate, UISearchResultsUpdating {
 }
 
 extension FolderVC: NoteCellDelegate {
+    func makePreviewViewController(for cell: NoteCell) -> NoteVC {
+        guard let indexPath = tableView.tableView.indexPath(for: cell) else { return NoteVC() }
+        
+        let note = viewModel.note(at: indexPath.row)
+        let noteVC = NoteVC(id: note.id)
+        
+        noteVC.hideFormattingViewOptions()
+        
+        return noteVC
+    }
+    
     func noteCellRequestMenu(for cell: NoteCell) -> UIMenu {
         guard let indexPath = tableView.tableView.indexPath(for: cell) else { return UIMenu() }
         
