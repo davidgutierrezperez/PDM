@@ -14,6 +14,10 @@ class FolderVC: UIViewController, UISearchBarDelegate {
     
     private let folderID: UUID
     private let folderTitle: String
+    
+    private var addToFolderButton = UIBarButtonItem()
+    private var editNotesButton = UIBarButtonItem()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,11 +25,13 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         title = folderTitle
         tableView.noteCellDelegate = self
         
-        addRightBarButton(image: UIImage(systemName: "plus.circle") ?? UIImage(), selector: #selector(addNoteToFolder))
+        addToFolderButton.configureButton(systemName: "plus.circle", selector: #selector(addNoteToFolder), target: self)
+        editNotesButton.configureButton(title: "Edit", selector: #selector(selectAndEditNotes), target: self)
         
         navigationItem.searchController = createSearchController(searchResultsUpdater: self, delegate: self)
         navigationItem.searchController?.searchBar.isHidden = false
         navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.rightBarButtonItems = [addToFolderButton, editNotesButton]
         
         setupView()
     }
@@ -35,12 +41,7 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         self.folderTitle = title
         
         viewModel.setFolderID(id: folderID)
-        
-        if (title == "All"){
-            viewModel.fetchAll()
-        } else {
-            viewModel.fetchNotesOfFolder(id: folderID)
-        }
+        viewModel.fetchNotesOfFolder(id: folderID)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -69,6 +70,34 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         let _ = NoteViewModel(note: newNote, folderID: folderID)
         
         navigationController?.pushViewController(NoteVC(id: newNote.id), animated: true)
+    }
+    
+    @objc private func selectAndEditNotes(){
+        viewModel.setSelecting(true)
+        tableView.reloadData()
+        navigationController?.tabBarController?.tabBar.isHidden = true
+        
+        let numOfSelectedNotes = viewModel.numberOfSelectedNotes()
+        let deleteNotesStr = "Delete (" + String(numOfSelectedNotes) + ")"
+        
+        addToFolderButton.configureButton(title: deleteNotesStr, selector: #selector(deleteSelectedNotes), target: self)
+        addToFolderButton.isEnabled = (numOfSelectedNotes != 0)
+        
+        editNotesButton.configureButton(title: "Cancel", selector: #selector(cancelSelection), target: self)
+    }
+    
+    @objc private func cancelSelection(){
+        viewModel.setSelecting(false)
+        tableView.reloadData()
+        navigationController?.tabBarController?.tabBar.isHidden = false
+        addToFolderButton.configureButton(systemName: "plus.circle", selector: #selector(addNoteToFolder), target: self)
+        
+        editNotesButton.configureButton(title: "Edit", selector: #selector(selectAndEditNotes), target: self)
+    }
+    
+    @objc private func deleteSelectedNotes(){
+        viewModel.deleteSelectedNotes()
+        cancelSelection()
     }
     
     private func openAlertToRenameAction(id: UUID, onRename: @escaping (() -> Void)){

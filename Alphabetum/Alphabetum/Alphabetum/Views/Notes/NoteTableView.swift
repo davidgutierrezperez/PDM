@@ -58,14 +58,23 @@ class NoteTableView: UITableViewController {
         cell.configure(title: note.title)
         cell.delegate = noteCellDelegate
         
+        let isSelecting = viewModel.isSelecting
+        let isNoteSelected = viewModel.isSelected(id: note.id)
+        cell.updateSelectionUI(isVisible: isSelecting, isSelected: isNoteSelected)
+        
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let noteID = viewModel.note(at: indexPath.row).id
         
-        let noteVC = NoteVC(id: noteID)
-        navigationController?.pushViewController(noteVC, animated: true)
+        if viewModel.isSelecting {
+            viewModel.toggleSelection(for: noteID)
+            tableView.reloadRows(at: [indexPath], with: .none)
+        } else {
+            let noteVC = NoteVC(id: noteID)
+            navigationController?.pushViewController(noteVC, animated: true)
+        }
     }
 
     /*

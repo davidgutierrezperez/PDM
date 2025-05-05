@@ -11,6 +11,8 @@ class FolderListVC: UIViewController {
     
     let viewModel = FolderListViewModel.shared
     let tableView = FolderTableView()
+    
+    private let createFolderButton = UIBarButtonItem()
 
     override func viewDidLoad() {
         super.viewDidLoad()

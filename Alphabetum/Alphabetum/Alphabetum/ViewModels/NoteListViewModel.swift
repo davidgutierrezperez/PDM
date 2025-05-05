@@ -15,14 +15,25 @@ class NoteListViewModel {
     
     private(set) var notes: [Note] = []
     private(set) var filteredNotes: [Note] = []
+    private(set) var selectedNotes: Set<UUID> = []
+    
     private(set) var isFiltering: Bool = false
+    private(set) var isSelecting: Bool = false
     
     private(set) var folderID = UUID()
+    private(set) var isAllFolder = false
     
     private init(){}
     
     func setFolderID(id: UUID){
         folderID = id
+        isAllFolder = (id == UUID(uuidString: "00000000-0000-0000-0000-000000000000"))
+        
+        if id == UUID(uuidString: "00000000-0000-0000-0000-000000000000"){
+            print("Son iguales")
+        } else {
+            print("Son distintos")
+        }
     }
     
     func createNote(title: String){
@@ -37,7 +48,7 @@ class NoteListViewModel {
     }
     
     func fetchNotesOfFolder(id: UUID){
-        notes = noteRepository.fetchNotesOfFolder(folderID: id)
+        notes = (isAllFolder) ? noteRepository.fetchAll() : noteRepository.fetchNotesOfFolder(folderID: id)
         filteredNotes = notes
     }
     
@@ -73,6 +84,43 @@ class NoteListViewModel {
         } else {
             isFiltering = true
             filteredNotes = notes.filter { $0.title.lowercased().contains(searchText.lowercased()) }
+        }
+    }
+    
+    func isSelected(id: UUID) -> Bool {
+        return selectedNotes.contains(id)
+    }
+    
+    func toggleSelection(for id: UUID){
+        if selectedNotes.contains(id){
+            selectedNotes.remove(id)
+            
+            if selectedNotes.count == 0 { isSelecting = false }
+        } else {
+            selectedNotes.insert(id)
+            isSelecting = true
+        }
+    }
+    
+    func setSelecting(_ isSelecting: Bool){
+        self.isSelecting = isSelecting
+        
+        if (!isSelecting){
+            clearSelection()
+        }
+    }
+    
+    func numberOfSelectedNotes() -> Int {
+        return selectedNotes.count
+    }
+    
+    func clearSelection(){
+        selectedNotes.removeAll()
+    }
+    
+    func deleteSelectedNotes(){
+        for id in selectedNotes {
+            delete(id: id)
         }
     }
 }

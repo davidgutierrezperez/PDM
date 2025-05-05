@@ -23,7 +23,7 @@ extension Folder {
     }
     
     init(id: UUID = UUID(), title: String){
-        self.id = UUID()
+        self.id = id
         self.title = title
         self.notes = []
     }

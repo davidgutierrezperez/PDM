@@ -15,6 +15,13 @@ extension UIViewController {
         navigationItem.rightBarButtonItem = rightBarButton
     }
     
+    func addRightBarButton(title: String, selector: Selector){
+        let rightBarButton = UIBarButtonItem(title: title, style: .plain, target: self, action: selector)
+        rightBarButton.tintColor = .systemYellow
+        
+        navigationItem.rightBarButtonItems?.append(rightBarButton)
+    }
+    
     func addLeftBarButton(image: UIImage, selector: Selector){
         let leftBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: selector)
         leftBarButton.tintColor = .systemYellow
