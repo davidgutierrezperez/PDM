@@ -120,8 +120,16 @@ class NoteListViewModel {
     }
     
     func deleteSelectedNotes(){
-        for id in selectedNotes {
-            delete(id: id)
+        guard isSelecting else { return }
+        
+        if selectedNotes.isEmpty {
+            for note in notes {
+                delete(id: note.id)
+            }
+        } else {
+            for id in selectedNotes {
+                delete(id: id)
+            }
         }
     }
 }

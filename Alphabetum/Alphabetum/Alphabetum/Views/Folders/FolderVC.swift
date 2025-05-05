@@ -90,7 +90,7 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         tableView.reloadData()
         navigationController?.tabBarController?.tabBar.isHidden = true
 
-        addToFolderButton.configureButton(title: "Delete (0)", selector: #selector(deleteSelectedNotes), target: self)
+        addToFolderButton.configureButton(title: "Delete all", selector: #selector(deleteSelectedNotes), target: self)
         tableView.onSelectionChanged = { [weak self] in
             self?.updateDeleteButton()
         }
@@ -114,7 +114,6 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         let deleteTitle = "Delete (\(count))"
         
         addToFolderButton.configureButton(title: deleteTitle, selector: #selector(deleteSelectedNotes), target: self)
-        addToFolderButton.isEnabled = (count > 0)
     }
     
     private func updateEditButton(){

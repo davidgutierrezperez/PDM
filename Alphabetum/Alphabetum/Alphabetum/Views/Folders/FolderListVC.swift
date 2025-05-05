@@ -106,6 +106,10 @@ extension FolderListVC: FolderCellDelegate {
         
         let folder = viewModel.folder(at: indexPath.row)
         
+        guard folder.id != UUID(uuidString: "00000000-0000-0000-0000-000000000000") else {
+            return UIMenu()
+        }
+        
         let rename = UIAction(title: "Rename") { _ in
             self.openAlertToRenameFolder(id: folder.id) {
                 self.tableView.fetchAndReload()

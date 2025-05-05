@@ -86,13 +86,14 @@ class FolderTableView: UITableViewController {
         if editingStyle == .delete {
             let folder = viewModel.folder(at: indexPath.row)
 
-            if folder.id.uuidString == "00000000-0000-0000-0000-000000000000" {
-                return
-            }
-
             viewModel.delete(id: folder.id)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        let folder = viewModel.folder(at: indexPath.row)
+        return folder.id.uuidString != "00000000-0000-0000-0000-000000000000"
     }
     
 
