@@ -85,7 +85,9 @@ class FolderTableView: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: FolderCell.reusableIdentifier, for: indexPath) as? FolderCell
 
         let folder = viewModel.folder(at: indexPath.row)
-        cell?.configure(title: folder.title)
+        
+        let numberOfNotes = (folder.id.uuidString == "00000000-0000-0000-0000-000000000000") ? 0 : folder.notes.count
+        cell?.configure(title: folder.title, numberOfNotes: numberOfNotes)
         cell?.delegate = folderCellDelegate
 
         return cell ?? UITableViewCell()

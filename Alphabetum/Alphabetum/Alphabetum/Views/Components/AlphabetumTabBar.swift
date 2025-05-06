@@ -25,7 +25,7 @@ final class AlphabetumTabBar: UITabBarController {
     }
     
     /// Indica los controladores de vista que tendrá el *TabBar* para acceder a otras vistas.
-    func configureTabs(){
+    private func configureTabs(){
         viewControllers = [setupFolderNavigationController(), setupNoteNavigationController()]
     }
     
@@ -34,7 +34,7 @@ final class AlphabetumTabBar: UITabBarController {
     ///   - viewController: vista a la que se accederá cuando se pulse sobre el controlador de navegación.
     ///   - tabBarItem: item que representa el botón del controlador de navegación.
     /// - Returns: un objeto de tipo UINavigationController que permite acceder a otra vista.
-    func createNavigationController(viewController: UIViewController, tabBarItem: UITabBarItem) -> UINavigationController {
+    private func createNavigationController(viewController: UIViewController, tabBarItem: UITabBarItem) -> UINavigationController {
         viewController.tabBarItem = tabBarItem
         viewController.tabBarItem.title = nil
         tabBarItem.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 300)
@@ -47,7 +47,7 @@ final class AlphabetumTabBar: UITabBarController {
     ///   - image: imagen que tendrá el item.
     ///   - tag: índice del item en el *TabBar*.
     /// - Returns: un objeto de tipo UIBarItem que representa un botón a mostrar en el *TabBar*.
-    func createTabBarItem(_ image: UIImage!,_ tag: Int) -> UITabBarItem {
+    private func createTabBarItem(_ image: UIImage!,_ tag: Int) -> UITabBarItem {
         let coloredImage = image.withTintColor(.systemYellow, renderingMode: .alwaysOriginal)
         
         

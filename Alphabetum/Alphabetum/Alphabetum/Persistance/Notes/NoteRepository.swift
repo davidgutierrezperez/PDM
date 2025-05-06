@@ -61,6 +61,7 @@ final class NoteRepository: NoteRepositoryProtocol {
             if let noteEntity = try context.fetch(fetchRequest).first,
                let data = try? NSKeyedArchiver.archivedData(withRootObject: content, requiringSecureCoding: false){
                 noteEntity.content = data
+                noteEntity.lastModifiedSince = Date()
                 CoreDataStack.shared.saveContext()
             } else {
                 print("❌ No se ha encontrado ninguna nota con ID \(id) en CoreData")

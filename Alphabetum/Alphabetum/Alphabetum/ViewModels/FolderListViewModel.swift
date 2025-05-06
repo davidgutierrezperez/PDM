@@ -96,4 +96,9 @@ final class FolderListViewModel {
             filteredFolders = folders.filter { $0.title.lowercased().contains(searchText.lowercased()) }
         }
     }
+    
+    func numberOfAllFolders() -> Int {
+        let notes = folderRepository.fetchAllFolders()
+        return notes.count
+    }
 }

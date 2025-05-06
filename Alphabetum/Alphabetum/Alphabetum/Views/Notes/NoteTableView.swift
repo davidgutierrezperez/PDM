@@ -80,7 +80,7 @@ class NoteTableView: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: NoteCell.reuseIdentifier, for: indexPath) as! NoteCell
 
         let note = viewModel.note(at: indexPath.row)
-        cell.configure(title: note.title)
+        cell.configure(title: note.title, lastEdited: note.lastModifiedSince)
         cell.delegate = noteCellDelegate
         
         let isSelecting = viewModel.isSelecting

@@ -22,6 +22,9 @@ class NoteCell: UITableViewCell {
     /// Título de la nota
     private let title = UILabel()
     
+    /// Ultima edición de la nota
+    private let lastEdited = UILabel()
+    
     /// Botón de selección de nota
     private let selectionButton = UIButton()
     
@@ -57,8 +60,26 @@ class NoteCell: UITableViewCell {
     
     /// Configura el título de la celda.
     /// - Parameter title: título de la celda.
-    func configure(title: String){
+    func configure(title: String, lastEdited: Date){
+        configureTitle()
         self.title.text = title
+        
+        configureLastEdited(lastEdited: lastEdited)
+    }
+    
+    private func configureTitle(){
+        title.font = UIFont.boldSystemFont(ofSize: 14)
+    }
+    
+    private func configureLastEdited(lastEdited: Date){
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        
+        self.lastEdited.text = formatter.string(from: lastEdited)
+        self.lastEdited.font = UIFont.systemFont(ofSize: 12)
+        self.lastEdited.textColor = .secondaryLabel
+        self.lastEdited.textAlignment = .right
     }
     
     override func awakeFromNib() {
@@ -84,9 +105,11 @@ class NoteCell: UITableViewCell {
     private func setupView() {
         contentView.addSubview(selectionButton)
         contentView.addSubview(title)
+        contentView.addSubview(lastEdited)
 
         selectionButton.translatesAutoresizingMaskIntoConstraints = false
         title.translatesAutoresizingMaskIntoConstraints = false
+        lastEdited.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             selectionButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
@@ -94,8 +117,11 @@ class NoteCell: UITableViewCell {
             selectionButton.widthAnchor.constraint(equalToConstant: 24),
             selectionButton.heightAnchor.constraint(equalToConstant: 24),
 
+            lastEdited.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            lastEdited.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+
             title.leadingAnchor.constraint(equalTo: selectionButton.trailingAnchor, constant: 12),
-            title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            title.trailingAnchor.constraint(equalTo: lastEdited.leadingAnchor, constant: -8),
             title.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }

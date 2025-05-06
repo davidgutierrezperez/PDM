@@ -26,7 +26,7 @@ class FolderCell: UITableViewCell {
     private var icon = UIImageView()
     
     /// Número de notas que tiene la carpeta asociada a la celda.
-    private var numberOfNotes: Int = 0
+    private var numberOfNotes = UILabel()
     
     /// Variable que permite gestionar los eventos de la celda desde
     /// otras vistas.
@@ -55,7 +55,7 @@ class FolderCell: UITableViewCell {
         configureTitle()
         
         self.title.text = title
-        self.numberOfNotes = numberOfNotes
+        configureNumberOfNotes(numberOfNotes: numberOfNotes)
     }
     
     override func awakeFromNib() {
@@ -90,26 +90,44 @@ class FolderCell: UITableViewCell {
         title.font = UIFont.boldSystemFont(ofSize: 16)
     }
     
+    private func configureNumberOfNotes(numberOfNotes: Int){
+        self.numberOfNotes.text = (numberOfNotes > 0) ? String(numberOfNotes) : ""
+        self.numberOfNotes.text? += " >"
+        self.numberOfNotes.font = UIFont.systemFont(ofSize: 12)
+        self.numberOfNotes.textColor = .secondaryLabel
+        self.numberOfNotes.textAlignment = .right
+    }
+    
     /// Configura la vista de la celda.
-    private func setupView(){
+    private func setupView() {
         contentView.addSubview(title)
         contentView.addSubview(icon)
-        
+        contentView.addSubview(numberOfNotes)
+
         title.translatesAutoresizingMaskIntoConstraints = false
         icon.translatesAutoresizingMaskIntoConstraints = false
-        
+        numberOfNotes.translatesAutoresizingMaskIntoConstraints = false
+
         backgroundColor = .systemGray3
-        
+
         NSLayoutConstraint.activate([
+            // Icono de la carpeta
             icon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             icon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            icon.widthAnchor.constraint(equalToConstant: 24), // Ancho del icono
-            icon.heightAnchor.constraint(equalToConstant: 24), // Alto del icono
+            icon.widthAnchor.constraint(equalToConstant: 24),
+            icon.heightAnchor.constraint(equalToConstant: 24),
 
+            // Label de número de notas
+            numberOfNotes.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            numberOfNotes.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+
+            // Título de la carpeta
             title.leadingAnchor.constraint(equalTo: icon.trailingAnchor, constant: 10),
+            title.trailingAnchor.constraint(equalTo: numberOfNotes.leadingAnchor, constant: -8),
             title.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
+
 
 }
 
