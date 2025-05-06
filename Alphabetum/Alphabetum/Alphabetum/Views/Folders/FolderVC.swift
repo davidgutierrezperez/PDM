@@ -78,7 +78,7 @@ class FolderVC: UIViewController, UISearchBarDelegate {
         }
     }
     
-    @objc private func addNoteToFolder(){
+    @objc private func addNoteToFolder(){        
         let newNote = Note(title: "Sin titulo")
         let _ = NoteViewModel(note: newNote, folderID: folderID)
         

@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Enumerado que muestra las distintas opciones
+/// de obtención de una imagen.
 enum ImageInputSource {
     case camera
     case gallery

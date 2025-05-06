@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Estructura que representa una Carpeta
 struct Folder {
     let id: UUID
     let title: String

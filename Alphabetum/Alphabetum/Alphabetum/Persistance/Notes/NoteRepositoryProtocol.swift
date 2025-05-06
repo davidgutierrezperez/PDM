@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Protocolo que representa las funciones que tendrá la clase **NoteRepository**
 protocol NoteRepositoryProtocol {
     func create(note: Note)
     func delete(id: UUID)

@@ -7,10 +7,14 @@
 
 import CoreData
 
+/// Clase que gestiona las consultas a CoreData relacionadas con notas.
 final class NoteRepository: NoteRepositoryProtocol {
     
+    /// Contexto que permite acceder al motor de CoreData.
     private let context = CoreDataStack.shared.context
     
+    /// Crea una nueva nota y la almacena en CoreData.
+    /// - Parameter note: objeto que representa una nota en el modelo.
     func create(note: Note) {
         let noteEntity = NoteEntity(context: context)
         
@@ -28,6 +32,8 @@ final class NoteRepository: NoteRepositoryProtocol {
         CoreDataStack.shared.saveContext()
     }
     
+    /// Elimina una nota de la base de datos de CoreData.
+    /// - Parameter id: identificador de la nota.
     func delete(id: UUID) {
         let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
@@ -44,6 +50,10 @@ final class NoteRepository: NoteRepositoryProtocol {
         
     }
     
+    /// Permite actualizar una nota con nuevo contenido.
+    /// - Parameters:
+    ///   - id: identificador de la nota a actualizar.
+    ///   - content: nuevo contenido de la nota.
     func update(id: UUID, content: NSMutableAttributedString) {
         let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
@@ -60,6 +70,8 @@ final class NoteRepository: NoteRepositoryProtocol {
         }
     }
     
+    /// Permite obtener todas las notas almacenadas en CoreData.
+    /// - Returns: un array de tipo Note con todas las notas almacendas.
     func fetchAll() -> [Note] {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
         
@@ -74,6 +86,9 @@ final class NoteRepository: NoteRepositoryProtocol {
         return []
     }
     
+    /// Permite obtener una nota a partir de su identificador.
+    /// - Parameter id: identificador de la nota.
+    /// - Returns: devuelve un objeto de tipo Note.
     func fetchById(id: UUID) -> Note? {
         let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
@@ -87,6 +102,9 @@ final class NoteRepository: NoteRepositoryProtocol {
         return Note(title: "Error note")
     }
     
+    /// Permite obtener todas las notas de una carpeta en concreta.
+    /// - Parameter folderID: identificador de la carpeta.
+    /// - Returns: un array de tipo Note con todas las notas de una carpeta.
     func fetchNotesOfFolder(folderID: UUID) -> [Note] {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "folder.id == %@", folderID as CVarArg)
@@ -101,6 +119,8 @@ final class NoteRepository: NoteRepositoryProtocol {
         return []
     }
     
+    /// Permite guardar el contenido de una nota.
+    /// - Parameter note: nota a guardar.
     func save(note: Note){
         let fetchRequest = NoteRepository.fetchRequestByID(id: note.id, limit: 1)
         
@@ -119,10 +139,30 @@ final class NoteRepository: NoteRepositoryProtocol {
         CoreDataStack.shared.saveContext()
     }
     
-    func rename(id: UUID, newTitle: String){
+    /// Comprueba si alguna nota tiene el título indicado.
+    /// - Parameter title: titulo a comprobar si existe.
+    /// - Returns: un booleano con valor **True** si alguna nota tiene el título pasado
+    /// como argumento y **False** en caso contrario.
+    func noteTitleExist(_ title: String) -> Bool {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        fetchRequest.predicate = NSPredicate(format: "title == %@")
         fetchRequest.fetchLimit = 1
+        
+        do {
+            let count = try context.count(for: fetchRequest)
+            return count > 0
+        } catch {
+            print("Error")
+            return false
+        }
+    }
+    
+    /// Permite renombrar una nota con un nuevo título.
+    /// - Parameters:
+    ///   - id: identificador de la nota a renombrar.
+    ///   - newTitle: nuevo título de la nota.
+    func rename(id: UUID, newTitle: String){
+        let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
         do {
             if let noteEntity = try context.fetch(fetchRequest).first {
@@ -135,6 +175,10 @@ final class NoteRepository: NoteRepositoryProtocol {
         }
     }
     
+    /// Duplica una nota con un nuevo título
+    /// - Parameters:
+    ///   - id: identificador de la nota a duplicar.
+    ///   - title: título que tendrá la nota duplicada.
     func duplicate(id: UUID, title: String){
         let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
@@ -166,6 +210,10 @@ final class NoteRepository: NoteRepositoryProtocol {
         }
     }
     
+    /// Permite añadir una nota a una carpeta.
+    /// - Parameters:
+    ///   - noteID: identificador de la nota a añadir.
+    ///   - folderID: identificador de la carpeta a la que será añadida la nota.
     func addToFolder(noteID: UUID, to folderID: UUID){
         let noteFetchRequest = NoteRepository.fetchRequestByID(id: noteID, limit: 1)
         
@@ -193,6 +241,10 @@ final class NoteRepository: NoteRepositoryProtocol {
     
     }
     
+    /// Permite copiar una nota a una carpeta.
+    /// - Parameters:
+    ///   - id: identificador de la nota a copiar.
+    ///   - folderID: identificador de la carpeta en la que será copiada la nota.
     func copyToOtherFolder(id: UUID, to folderID: UUID){
         let fetchRequest = NoteRepository.fetchRequestByID(id: id, limit: 1)
         
@@ -221,6 +273,11 @@ final class NoteRepository: NoteRepositoryProtocol {
         }
     }
     
+    /// Devuelve una consulta que permite buscar una según un ID.
+    /// - Parameters:
+    ///   - id: identificador de la nota a buscar.
+    ///   - limit: límite de notas a devolver.
+    /// - Returns: un objeto de tipo NSFetchRequest<NoteEntity> que representa la consulta.
     private static func fetchRequestByID(id: UUID, limit: Int = Int.max) -> NSFetchRequest<NoteEntity> {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)

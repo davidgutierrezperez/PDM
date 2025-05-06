@@ -7,15 +7,22 @@
 
 import CoreData
 
+/// Clase que representa el motor de CoreData.
 final class CoreDataStack {
     
+    /// Instancia única de la clase que permite acceder a CoreData.
     static let shared = CoreDataStack()
+    
+    /// Contenedor que permite acceder a un modelo en concreto de CoreData.
     let persistentContainer: NSPersistentContainer
     
+    /// Objeto que permite acceder al modelo de la base de datos de CoreData.
     var context: NSManagedObjectContext {
         persistentContainer.viewContext
     }
     
+    /// Constructor privado que inicializa la instancia única de la clase y que
+    /// inicializa el motor de CoreData.
     private init(){
         persistentContainer = NSPersistentContainer(name: "AlphabetumModel")
         
@@ -28,6 +35,7 @@ final class CoreDataStack {
         }
     }
     
+    /// Actualiza la base de datos de CoreData.
     func saveContext(){
         let context = persistentContainer.viewContext
         
@@ -41,4 +49,5 @@ final class CoreDataStack {
             }
         }
     }
+    
 }

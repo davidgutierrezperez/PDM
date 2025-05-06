@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Enumerado que representa los diferentes tipos de
+/// formato que puede tener el texto de una nota.
 enum TextFormat {
     case bold
     case italic

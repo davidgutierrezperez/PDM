@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Estructura que representa una nota.
 struct Note {
     let id: UUID
     var content: NSMutableAttributedString

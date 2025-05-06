@@ -7,9 +7,14 @@
 
 import CoreData
 
+/// Clase que gestiona las consultas realizadas a CoreData.
 final class FolderRepository: FolderRepositoryProtocol {
+    
+    /// Contexto que permite acceder a la base de datos de CoreData.
     private let context = CoreDataStack.shared.context
     
+    /// Crea una carpeta y la almacena en la base de datos de CoreData.
+    /// - Parameter folder: carpeta a almacenar.
     func createFolder(folder: Folder) {
         let folderEntity = FolderEntity(context: context)
         
@@ -19,6 +24,9 @@ final class FolderRepository: FolderRepositoryProtocol {
         CoreDataStack.shared.saveContext()
     }
     
+    /// Elimina una carpeta de la base de datos de CoreData a partir de
+    /// su identificador.
+    /// - Parameter id: identificador de la carpeta.
     func deleteFolder(id: UUID) {
         let fetchRequest: NSFetchRequest<FolderEntity> = FolderEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -36,6 +44,10 @@ final class FolderRepository: FolderRepositoryProtocol {
         }
     }
     
+    /// Permite renombrar una carpeta con un nuevo título.
+    /// - Parameters:
+    ///   - id: identificador de la carpeta a renombrar.
+    ///   - newTitle: nuevo título de la carpeta.
     func renameFolder(id: UUID, newTitle: String){
         let fetchRequest: NSFetchRequest<FolderEntity> = FolderEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -52,6 +64,8 @@ final class FolderRepository: FolderRepositoryProtocol {
         }
     }
     
+    /// Devuelve todas las carpetas almacenadas en el sistema.
+    /// - Returns: un array de objetos Folder con todos las carpetas almacenadas.
     func fetchAllFolders() -> [Folder] {
         let fetchRequest: NSFetchRequest<FolderEntity> = FolderEntity.fetchRequest()
         

@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Protocolo que representa todas las funciones que deberá tener
+/// la clase FolderRepository.
 protocol FolderRepositoryProtocol {
     func createFolder(folder: Folder)
     func deleteFolder(id: UUID)

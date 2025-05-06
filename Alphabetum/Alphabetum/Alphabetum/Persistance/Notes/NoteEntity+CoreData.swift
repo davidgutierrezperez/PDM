@@ -7,7 +7,12 @@
 
 import CoreData
 
+/// Extensión que maneja la creación de una nota
+/// a partir de información proveniente de CoreData.
 extension Note {
+    /// Constructor que pemite generar una nota a partir de la información
+    /// almacenada en CoreData.
+    /// - Parameter entity: entidad que representa una nota en CoreData.
     init(entity: NoteEntity){
         self.id = entity.id ?? UUID()
         self.title = entity.title ?? "Sin título"
@@ -22,6 +27,8 @@ extension Note {
         }
     }
     
+    /// Genera una nota sin contenido alguno.
+    /// - Parameter title: título de la nota.
     init(title: String){
         self.id = UUID()
         self.title = title

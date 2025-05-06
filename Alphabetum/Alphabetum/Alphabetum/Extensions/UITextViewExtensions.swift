@@ -7,7 +7,11 @@
 
 import UIKit
 
+/// Gestiona las extensiones de objetos UITextView
 extension UITextView {
+    /// Permite insertar una imagen de forma embebida como si fuera
+    /// parte del texto.
+    /// - Parameter image: imagen a insertar.
     func insertImage(_ image: UIImage){
         let resizedImage = image.resize(maxWidth: self.frame.width - 40)
         let attachment = NSTextAttachment()
