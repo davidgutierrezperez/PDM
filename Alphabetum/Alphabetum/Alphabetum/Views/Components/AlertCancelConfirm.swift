@@ -7,6 +7,12 @@
 
 import UIKit
 
+/// Crea un controlador de alertas con un botón de cancelación y otro de confirmación.
+/// - Parameters:
+///   - title: título que tendrá la alerta del controlador.
+///   - placeholder: texto que se mostrará en el *TextField* de la alerta.
+///   - action: acción a realizar cuando se pulse sobre el botón de confirmación.
+/// - Returns: un objeto de tipo UIAlertController que representa el controlador de alertas ya configurado.
 func makeAlertCancelConfirm(title: String, placeholder: String, action: @escaping ((String) -> Void)) -> UIAlertController {
     let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
     

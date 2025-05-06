@@ -7,10 +7,17 @@
 
 import UIKit
 
+/// Clase que representa la vista asociada a un panel horizontal con múltiples botones
+/// asociados al formato de texto.
 class TextBodyFormatPanelView: TextFormatHorizontalPanelSubView {
     
+    /// Botón que activa el formato de texto en **negrita**
     private let boldButton = UIButton()
+    
+    /// Botón que activa el formato de texto en *itálica*.
     private let italicButton = UIButton()
+    
+    /// Botón que activa 
     private let underlineButton = UIButton()
     private let strikethroughButton = UIButton()
     

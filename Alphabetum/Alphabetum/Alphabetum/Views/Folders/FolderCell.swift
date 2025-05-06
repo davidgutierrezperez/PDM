@@ -7,25 +7,39 @@
 
 import UIKit
 
+/// Protocolo que permite gestionar los eventos de la celda
+/// desde otras vistas.
 protocol FolderCellDelegate: AnyObject {
     func folderCellRequestMenu(for cell: FolderCell) -> UIMenu
 }
 
+/// Clase que representa una celda con la información de una carpeta.
 class FolderCell: UITableViewCell {
     
+    /// Identificador de la celda.
     static let reusableIdentifier = "FolderCell"
     
+    /// Título de la carpeta asociada a la celda.
     private let title = UILabel()
+    
+    /// Icono a mostrar en cada celda.
     private var icon = UIImageView()
+    
+    /// Número de notas que tiene la carpeta asociada a la celda.
     private var numberOfNotes: Int = 0
     
+    /// Variable que permite gestionar los eventos de la celda desde
+    /// otras vistas.
     weak var delegate: FolderCellDelegate?
     
+    /// Constructor por defecto de la celda. Configura su estilo y su vista.
+    /// - Parameters:
+    ///   - style: estilo de la celda.
+    ///   - reuseIdentifier: identificador de la celda.
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         configureIcon()
-        
         setupView()
     }
     
@@ -33,6 +47,10 @@ class FolderCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Configura la información de la celda.
+    /// - Parameters:
+    ///   - title: título de la carpeta asociada a la celda.
+    ///   - numberOfNotes: número de notas de la carpeta asociada a la celda.
     func configure(title: String, numberOfNotes: Int = 0){
         configureTitle()
         
@@ -51,6 +69,7 @@ class FolderCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    /// Añade una interación cuando se produce un evento desde una vista padre.
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         
@@ -58,6 +77,7 @@ class FolderCell: UITableViewCell {
         self.addInteraction(interaction)
     }
     
+    /// Configura el icono de la celda.
     private func configureIcon(){
         let imageConfiguration = UIImage.SymbolConfiguration(pointSize: 50, weight: .bold)
         icon = UIImageView(image: UIImage(systemName: "folder", withConfiguration: imageConfiguration))
@@ -65,10 +85,12 @@ class FolderCell: UITableViewCell {
         icon.tintColor = .systemYellow
     }
     
+    /// Configura el título de la celda.
     private func configureTitle(){
         title.font = UIFont.boldSystemFont(ofSize: 16)
     }
     
+    /// Configura la vista de la celda.
     private func setupView(){
         contentView.addSubview(title)
         contentView.addSubview(icon)

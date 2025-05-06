@@ -7,13 +7,23 @@
 
 import UIKit
 
+/// Clase que gestiona la selección de una carpeta
+/// por parte de una nota.
 class FolderPickerVC: FolderListVC {
     
-    private let noteViewModel:NoteViewModel
+    /// Objeto que gestiona la información relacionada con una nota.
+    private let noteViewModel: NoteViewModel
+    
+    /// Identificador de la nota que selecciona una carpeta.
     private let noteID: UUID
     
+    /// Variable que indica cuando una nota ha selecciona una carpeta y
+    /// almacena su identificador.
     var onMoved: ((UUID) -> Void)?
     
+    /// Constructor por defecto. Inicializa la instancia con una nota
+    /// y su información.
+    /// - Parameter note: nota que selecciona una carpeta.
     init(note: Note){
         noteID = note.id
         noteViewModel = NoteViewModel(note: note)
@@ -27,6 +37,7 @@ class FolderPickerVC: FolderListVC {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Eventos a ocurrir cuandoi la vista se carga por primera vez.
     override func viewDidLoad() {
         super.viewDidLoad()
         

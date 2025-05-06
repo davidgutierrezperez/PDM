@@ -8,7 +8,7 @@
 import Foundation
 
 /// Clase que gestiona la información de una nota.
-class NoteViewModel {
+final class NoteViewModel {
     
     /// Objeto que gestiona las consultas relacionadas con notas a CoreData.
     private let noteRepository = NoteRepository()
@@ -56,28 +56,35 @@ class NoteViewModel {
         addToFolder(folderID: folderID)
     }
     
+    /// Actualiza el título de una nota
+    /// - Parameter newTitle: nuevo titulo de la nota.
     func updateTitle(_ newTitle: String){
         note.title = newTitle
         saveNote()
     }
     
+    /// Actualiza el contenido de una nota.
+    /// - Parameter newContent: nuevo contenido de la nota.
     func updateContent(_ newContent: NSMutableAttributedString){
         note.content = newContent
         saveNote()
     }
     
+    /// Devuelve la nota sobre la que se esta trabajando.
+    /// - Returns: objeto que representa la nota en el modelo.
     func getNote() -> Note {
         return note
     }
     
+    /// Añade una nota a una carpeta.
+    /// - Parameter folderID: identificador de la carpeta.
     func addToFolder(folderID: UUID){
         noteRepository.addToFolder(noteID: note.id, to: folderID)
     }
     
+    /// Actualiza una nota y guarda su contenido en la base de datos.
     func saveNote(){
         noteRepository.save(note: note)
     }
-    
-    
     
 }

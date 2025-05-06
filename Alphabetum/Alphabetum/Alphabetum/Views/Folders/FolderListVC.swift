@@ -7,13 +7,21 @@
 
 import UIKit
 
+/// Clase que gestiona la vista con la lista de carpetas almacendas
+/// en la tabla.
 class FolderListVC: UIViewController {
     
+    /// Objeto que gestiona la información de la lista de carpetas
     let viewModel = FolderListViewModel.shared
+    
+    /// Tabla que representa la lista de carpetas
     let tableView = FolderTableView()
     
+    /// Botón que permite crear una nueva carpeta.
     private let createFolderButton = UIBarButtonItem()
-
+    
+    /// Eventos a ocurrir cuando la vista se carga por primera vez. Se configura la tabla y
+    /// la vista.
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -31,6 +39,9 @@ class FolderListVC: UIViewController {
         setupView()
     }
     
+    /// Eventos a ocurrir cuando la vista carga nuevamente. Comprueba si ha habido
+    /// cambios y actualiza los datos de la tabla.
+    /// - Parameter animated: indica si se debe animar el accedo a la vista.
     override func viewDidAppear(_ animated: Bool) {
         if (viewModel.hasChanged){
             viewModel.fetchFolders()
@@ -39,6 +50,8 @@ class FolderListVC: UIViewController {
         }
     }
     
+    /// Establece una vista para la creación de una nueva carpeta y
+    /// actualiza los datos de la tabla de carpetas.
     @objc private func openCreateFolderVC(){
         let createFolderVC = CreateEntityVC(title: "New Folder", style: .modal)
         
@@ -52,6 +65,10 @@ class FolderListVC: UIViewController {
         present(navVC, animated: true)
     }
     
+    /// Crea una alerta que permite renombrar una carpeta.
+    /// - Parameters:
+    ///   - id: identificador de la carpeta a renombrar.
+    ///   - onRenamed: evento a ocurrir cuando se renombre la carpeta.
     private func openAlertToRenameFolder(id: UUID, onRenamed: @escaping () -> Void){
         let alert = UIAlertController(title: "Rename a folder", message: nil, preferredStyle: .alert)
         
@@ -69,11 +86,16 @@ class FolderListVC: UIViewController {
         present(alert, animated: true)
     }
     
+    /// Elimina una carpeta desde un menu de interación.
+    /// - Parameters:
+    ///   - id: identificador de la carpeta a eliminar.
+    ///   - onDelete: evento a ocurrir cuando se elimina la carpeta.
     private func deleteFolderByMenu(id: UUID, onDelete: @escaping () -> Void){
         viewModel.delete(id: id)
         onDelete()
     }
     
+    /// Configura el layout de la vista.
     private func setupView(){
         addChild(tableView)
         view.addSubview(tableView.view)
@@ -91,14 +113,23 @@ class FolderListVC: UIViewController {
 
 }
 
+/// Extensión que gestiona la actualización de resultados en la barra de búsqueda.
 extension FolderListVC: UISearchResultsUpdating, UISearchBarDelegate {
+    /// Gestiona la actualización de resultados en la barra de búsqueda y actualiza los
+    /// datos en la tabla de carpetas.
+    /// - Parameter searchController: barra de búsqueda.
     func updateSearchResults(for searchController: UISearchController) {
         viewModel.filterFolders(with: searchController.searchBar.text ?? "")
         tableView.reloadData()
     }
 }
 
+/// Gestiona los eventos relacionados con las celdas de la tabla de carpetas.
 extension FolderListVC: FolderCellDelegate {
+    
+    /// Crea un menu de interación que permite llevar a cabo acciones sobre una celda.
+    /// - Parameter cell: celda sobre la que se mostrará el menu de interacción.
+    /// - Returns: objeto de tipo UIMenu que representa el menu.
     func folderCellRequestMenu(for cell: FolderCell) -> UIMenu {
         guard let indexPath = tableView.tableView.indexPath(for: cell) else {
             return UIMenu()

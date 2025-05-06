@@ -8,7 +8,7 @@
 import Foundation
 
 /// Clase que gestiona la información almacenada en una lista de notas.
-class NoteListViewModel {
+final class NoteListViewModel {
     
     /// Instancia única de la clase.
     static let shared = NoteListViewModel()
