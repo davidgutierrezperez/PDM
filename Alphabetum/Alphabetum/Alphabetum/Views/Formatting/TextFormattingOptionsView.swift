@@ -7,20 +7,35 @@
 
 import UIKit
 
+/// Clase que representa la vista con todas las opciones de
 class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     
+    /// Botón que permite acceder al panel de selección de formato de texto.
     private let formattingTextButton = UIButton()
+    
+    /// Botón que permite acceder al menú de inserción de imágenes.
     private let insertImageButton = UIButton()
     
+    /// Panel de formatos de texto (bold, italic, etc).
     private let textFormatOptionsPanel = TextBodyFormatPanelView()
+    
+    /// Panel de formatos de título de texto.
     private let textHeadingFormatOptionsPanel = TextHeadingFormatPanelView()
+    
+    /// Panel de listas de texto.
     private let textListFormatOptionsPanel = TextListFormatPanelView()
     
+    /// Objeto que agrupa verticalmente los diferents paneles de formato de texto.
     private let verticalStackView = UIStackView()
     
+    /// Indica el formato seleccionado.
     var onFormatTap: ((TextFormat) -> Void)?
+    
+    /// Indica el tipo de fuente de la que proviene la imagen a insertar.
     var onImageButtonTap: ((ImageInputSource) -> Void)?
     
+    /// Constructor por defecto. Configura el layout de los paneles.
+    /// - Parameter frame: forma de la vista.
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -33,6 +48,8 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Actualiza los botones en función de los formatos activos en el texto.
+    /// - Parameter formats: conjunto de formatos activos.
     func updateButtons(with formats: Set<TextFormat>){
         textFormatOptionsPanel.updateButtons(with: formats)
         textHeadingFormatOptionsPanel.updateButtons(with: formats)
@@ -40,6 +57,7 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     }
     
     
+    /// Configura los botones de la vista.
     override func configureButtons(){
         let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
         
@@ -54,6 +72,7 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         insertImageButton.tintColor = .systemYellow
     }
     
+    /// Configura el panel principal de la vista.
     override func configureStackView(){
         super.configureStackView()
         
@@ -61,6 +80,7 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         stackView.addArrangedSubview(insertImageButton)
     }
     
+    /// Configura el panel vertical de formatos de texto.
     private func configureVerticalStackView(){
         verticalStackView.axis = .vertical
         verticalStackView.spacing = 15
@@ -68,6 +88,7 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         verticalStackView.distribution = .equalCentering
     }
     
+    /// Evento que gestiona la aparición de los diferentes panales de formato de texto.
     @objc private func showTextFormattingOptions() {
         let shoudExpand = verticalStackView.arrangedSubviews.isEmpty
         
@@ -88,7 +109,8 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
     }
     
     
-
+    
+    /// Configura el layout del panel vertical para los formatos de texto.
     private func configureTextFormatOptionsPanel() {
         addSubview(verticalStackView)
 
@@ -119,6 +141,8 @@ class TextFormattingOptionsView: TextFormatPanelHorizontalView {
         configureVerticalStackView()
     }
     
+    /// Crea una menu que permite seleccionar la forma de obtener una imagen para insertar en una nota.
+    /// - Returns: un objeto de tipo UIMeny con sus diferentes acciones.
     private func createImageOptionMenu() -> UIMenu {
         let imageMenu = UIMenu(title: "Insert image", children: [
             UIAction(title: "Choose an image", image: UIImage(systemName: "photo")) { [weak self] _ in

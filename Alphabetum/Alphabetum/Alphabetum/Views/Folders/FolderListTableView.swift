@@ -91,7 +91,7 @@ class FolderTableView: UITableViewController {
         return cell ?? UITableViewCell()
     }
     
-    /// Configura los eventos a ocurrir cuando se seleccoina una celda.
+    /// Configura los eventos a ocurrir cuando se selecciona una celda.
     /// - Parameters:
     ///   - tableView: tabla o lista de carpetas.
     ///   - indexPath: array con el número de índices de las celdas.

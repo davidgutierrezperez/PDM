@@ -7,10 +7,15 @@
 
 import UIKit
 
+/// Clase que representa una vista con un panel horizontal.
 class TextFormatPanelHorizontalView: UIView {
-
+    
+    /// Objeto que agrupa los dfierentes botones en horizontal
     let stackView = UIStackView()
     
+    /// Constructor por defecto de la clase. Configura los diferentes elementos
+    /// y el layout de la vista.
+    /// - Parameter frame: forma de la vista.
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -25,8 +30,10 @@ class TextFormatPanelHorizontalView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Función a sobreescribir. Configura los diferentes botones del panel.
     func configureButtons(){}
     
+    /// Configura el stackView del panel.
     func configureStackView(){
         stackView.axis = .horizontal
         stackView.spacing = 30
@@ -34,6 +41,7 @@ class TextFormatPanelHorizontalView: UIView {
         stackView.distribution = .equalSpacing
     }
     
+    /// Configura el layout de la vista.
     func setupView(){
         addSubview(stackView)
         

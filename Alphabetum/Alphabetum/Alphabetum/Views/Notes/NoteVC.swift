@@ -7,27 +7,44 @@
 
 import UIKit
 
+/// Clase que representa la vista de una nota y su información.
 class NoteVC: UIViewController {
     
+    /// Objeto que gestiona las consultas relacionadas con notas a CoreData.
     private let noteRepository = NoteRepository()
+    
+    /// Objeto que gestiona la información de una nota.
     private let viewModel: NoteViewModel
+    
+    /// Objeto que gestiona la información relacionada con el formato de texto de una nota.
     private let formattingViewModel: TextFormattingViewModel
     
+    /// Campo de texto para el título de la nota.
     private var titleField = UITextField()
+    
+    /// Campo de texto para el contenido de una nota.
     private var contentView = UITextView()
     
+    /// Botón que permite acceder a la vista de selección de una carpeta para la nota.
     private var selectFolderButton = UIBarButtonItem()
+    
+    /// Botón que permite hacer desaparecer el teclado cuando se está escribiendo
     private var disableKeyboardButton = UIBarButtonItem()
     
+    /// Objeto que representa el panel con las diferentes opciones de formato de texto
     private let textFormattingOptionsView = TextFormattingOptionsView()
     
     
+    /// Constructor por defecto. Se crea una nota vacía sin contenido alguno.
     init() {
         self.viewModel = NoteViewModel()
         self.formattingViewModel = TextFormattingViewModel()
         super.init(nibName: nil, bundle: nil)
     }
     
+    /// Constructor mediante identificador. Se accede a la información de una nota
+    /// previamente guardada.
+    /// - Parameter id: identificador de la vista.
     init(id: UUID){
         if let existingNote = noteRepository.fetchById(id: id) {
             self.viewModel = NoteViewModel(note: existingNote)
@@ -43,6 +60,8 @@ class NoteVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Eventos a ocurrir cuando se carga la vista por primera vez. Se configura el aspecto visual
+    /// de la vista y su layout.
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -75,16 +94,22 @@ class NoteVC: UIViewController {
             object: nil)
     }
     
+    /// Eventos a ocurrir cuando se carga la vista nuevamente. El contenido de
+    /// la nota se vuelve el objeto principal.
+    /// - Parameter animated: indica si la aparición de la vista debe ser animada.
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         contentView.becomeFirstResponder()
         contentView.reloadInputViews()
     }
     
+    /// Oculta la vista con los paneles de formatos de texto.
     func hideFormattingViewOptions(){
         textFormattingOptionsView.isHidden = true
     }
     
+    /// Gestiona el evento de aparición del teclado.
+    /// - Parameter notification: notificación que indica que el teclado debe aparecer.
     @objc private func keyboardWillShow(notification: Notification){
         guard let userInfo = notification.userInfo,
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
@@ -96,11 +121,14 @@ class NoteVC: UIViewController {
         contentView.verticalScrollIndicatorInsets.bottom = bottomInset
     }
     
+    /// Gestiona el evento de desaparición del teclado.
+    /// - Parameter notification: notificación que indica que el teclado debe desaparecer.
     @objc private func keyboardWillHide(notification: Notification){
         contentView.contentInset.bottom = 0
         contentView.verticalScrollIndicatorInsets.bottom = 0
     }
     
+    /// Configura los paneles con botones de formato de texto y actualiza sus estados.
     private func configureTextFormattingOptionsView(){
         textFormattingOptionsView.onFormatTap = { [weak self] format in
             self?.toggleFormating(format)
@@ -111,6 +139,8 @@ class NoteVC: UIViewController {
         }
     }
     
+    /// Muestra una pestaña que permite obtener una imagen para insertar en la nota.
+    /// - Parameter sourceType: tipo de pestaña a mostrar.
     private func presentImagePicker(sourceType: UIImagePickerController.SourceType){
         guard UIImagePickerController.isSourceTypeAvailable(sourceType) else { return }
         
@@ -120,6 +150,8 @@ class NoteVC: UIViewController {
         present(picker, animated: true)
     }
     
+    /// Actualiza el estado de un formato en función de lo que se haya seleccionado en el panel de formatos.
+    /// - Parameter format: formato seleccionado.
     private func toggleFormating(_ format: TextFormat){
         let defaultFontSize: CGFloat = 16
         let currentFont = (contentView.typingAttributes[.font] as? UIFont) ?? UIFont.systemFont(ofSize: defaultFontSize)
@@ -166,6 +198,11 @@ class NoteVC: UIViewController {
         }
     }
     
+    /// Establece el tipo de fuente a utilizar en función del formato seleccionado.
+    /// - Parameters:
+    ///   - format: formato seleccionado.
+    ///   - baseFont: fuente por defecto del texto.
+    /// - Returns: un objeto de tipo UIFont que representa la fuente a utilizar en el texto.
     private func fontWith(_ format: TextFormat, baseFont: UIFont) -> UIFont {
         switch format {
         case .bold:
@@ -183,6 +220,11 @@ class NoteVC: UIViewController {
         }
     }
     
+    /// Aplica los atributos seleccionados sobre el texto de la nota.
+    /// - Parameters:
+    ///   - key: atributo a modificar.
+    ///   - value: valor del atributo.
+    ///   - range: rango del texto sobre el que se aplicará el atributo.
     private func applyAttribute(_ key: NSAttributedString.Key, value: Any?, to range: NSRange){
         let mutableText = NSMutableAttributedString(attributedString: contentView.attributedText)
         
@@ -196,61 +238,75 @@ class NoteVC: UIViewController {
         contentView.selectedRange = range
     }
     
-    private func insertListAtCurrentLine(_ format: TextFormat){
-        var listSymbol: String = ""
+    /// Inserta una lista en el texto seleccionado.
+    /// - Parameter format: formato de lista seleccionado.
+    private func insertListAtCurrentLine(_ format: TextFormat) {
+        var listSymbol = ""
         
         switch format {
         case .bulletlist:
             listSymbol = "• "
-            break
         case .dashList:
             listSymbol = "- "
-            break
         case .numberedList:
             listSymbol = "1. "
-            break
         default:
-            break
+            return
         }
         
         let selectedRange = contentView.selectedRange
         guard let fullText = contentView.attributedText?.mutableCopy() as? NSMutableAttributedString else { return }
         
         let plainText = fullText.string as NSString
-        let lineRange = plainText.lineRange(for: selectedRange)
+        let selectionRange = plainText.lineRange(for: selectedRange)
+        let selectedText = plainText.substring(with: selectionRange)
         
-        let lineText = plainText.substring(with: lineRange)
-        if lineText.contains(listSymbol) {
-            return
+        let lines = selectedText.components(separatedBy: .newlines)
+        var offset = 0
+        
+        for (index, line) in lines.enumerated() {
+            let lineStart = plainText.lineRange(for: NSRange(location: selectionRange.location + offset, length: 0)).location
+            if !line.trimmingCharacters(in: .whitespaces).hasPrefix(listSymbol) {
+                let symbol = (format == .numberedList) ? "\(index + 1). " : listSymbol
+                let symbolAttr = NSMutableAttributedString(string: symbol, attributes: contentView.typingAttributes)
+                fullText.insert(symbolAttr, at: lineStart)
+                offset += symbol.count
+            } else {
+                offset += 0
+            }
+            offset += (line as NSString).length + 1 // +1 for newline
         }
         
-        let bulletAttr = NSMutableAttributedString(string: listSymbol)
-        fullText.insert(bulletAttr, at: lineRange.location)
-        
         contentView.attributedText = fullText
-        contentView.selectedRange = NSRange(location: selectedRange.location + listSymbol.count, length: 0)
+        contentView.selectedRange = NSRange(location: selectedRange.location + listSymbol.count, length: selectedRange.length)
     }
+
     
+    /// Evento que gestiona la actualización del título de la nota.
     @objc private func updateTitle(){
         viewModel.updateTitle(titleField.text!)
     }
     
+    /// Evento que gestiona la actualización de contenido.
     @objc private func updateContent(){
         let newContent = contentView.attributedText?.mutableCopy() as? NSMutableAttributedString
         viewModel.updateContent(newContent ?? NSMutableAttributedString(""))
     }
     
+    /// Evento que gestiona la selección de una carpeta a la que se añadirá una nota.
     @objc private func selectFolder(){
         let folderPickerVC = FolderPickerVC(note: viewModel.getNote())
         let navVC = UINavigationController(rootViewController: folderPickerVC)
         
         present(navVC, animated: true)
     }
-                                                              
+    
+    /// Evento que gestiona la desapirición del teclado.
     @objc private func disableKeyboard(){
         contentView.endEditing(true)
     }
-                                            
+    
+    /// Configura el layout de la vista.
     private func setupView(){
         view.addSubview(titleField)
         view.addSubview(contentView)
@@ -273,6 +329,7 @@ class NoteVC: UIViewController {
         ])
     }
     
+    /// Configura los campos de texto del título y del contenido de la nota.
     private func configureTextFields(){
         titleField.addTarget(self, action: #selector(updateTitle), for: .editingChanged)
         titleField.font = .preferredFont(forTextStyle: .title1)
@@ -284,18 +341,29 @@ class NoteVC: UIViewController {
         contentView.layer.cornerRadius = 8
         
     }
-
+    
+    /// Configura los botones de la vista.
     private func configureButtons(){
         selectFolderButton = createBarButton(image: UIImage(systemName: "folder.badge.plus") ?? UIImage(), selector: #selector(selectFolder))
         disableKeyboardButton = createBarButton(image: UIImage(systemName: "checkmark") ?? UIImage(), selector: #selector(disableKeyboard))
     }
 }
 
+/// Extensión que gestiona los eventos relacionados con los campos de texto
 extension NoteVC: UITextViewDelegate {
+    
+    /// Actualiza y guarda el contenido de una nota cuando termina de editarse.
+    /// - Parameter textView: campo de texto editado.
     func textViewDidChange(_ textView: UITextView) {
         viewModel.updateContent(textView.attributedText.mutableCopy() as! NSMutableAttributedString)
     }
     
+    /// <#Description#>
+    /// - Parameters:
+    ///   - textView: <#textView description#>
+    ///   - range: <#range description#>
+    ///   - text: <#text description#>
+    /// - Returns: <#description#>
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         
         if text != "\n" { return true }

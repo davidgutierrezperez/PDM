@@ -17,10 +17,15 @@ class TextBodyFormatPanelView: TextFormatHorizontalPanelSubView {
     /// Botón que activa el formato de texto en *itálica*.
     private let italicButton = UIButton()
     
-    /// Botón que activa 
+    /// Botón que activa el formato de texto subrayado.
     private let underlineButton = UIButton()
+    
+    /// Botón que activa el formato de texto tachado.
     private let strikethroughButton = UIButton()
     
+    /// Constructor por defecto de la clase. Establece los diferentes formatos de texto
+    /// del panel.
+    /// - Parameter frame: frame que representa el objeto de la clase.
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -36,6 +41,7 @@ class TextBodyFormatPanelView: TextFormatHorizontalPanelSubView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Configura los diferentes botones de la vista.
     override func configureButtons(){
         let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular)
         
@@ -45,6 +51,7 @@ class TextBodyFormatPanelView: TextFormatHorizontalPanelSubView {
         strikethroughButton.setSFImageAndTarget(systemName: "strikethrough", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
     }
     
+    /// Configura el stackView de la vista y añade los diferentes botones.
     override func configureStackView(){
         super.configureStackView()
         
@@ -54,6 +61,9 @@ class TextBodyFormatPanelView: TextFormatHorizontalPanelSubView {
         stackView.addArrangedSubview(strikethroughButton)
     }
     
+    /// Gestiona el evento de pulsar sobre un botón de formato de texto y
+    /// actualiza su estado.
+    /// - Parameter sender: botón que ha sido pulsado.
     @objc private func buttonTapped(_ sender: UIButton){
         if sender == boldButton {
             onFormatTap?(.bold)

@@ -7,14 +7,24 @@
 
 import UIKit
 
+/// Clase que representa
 class NoteTableView: UITableViewController {
     
+    /// Objeto que gestiona la información de la tabla de notas.
     private let viewModel = NoteListViewModel.shared
+    
+    /// Variable que indica que se ha seleccionado una celda.
     var onSelectionChanged: (() -> Void)?
+    
+    /// Variable que indica que se ha borrado una celda.
     var onDeletion: (() -> Void)?
     
+    /// Objeto que permite gestionar los eventos de una celda
+    /// desde otras vistas
     weak var noteCellDelegate: NoteCellDelegate?
 
+    /// Eventos a ocurrir cuando la vista se carga por primera vez. Se cargan las notas
+    ///  de la carpeta y se configuran las celdas.
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -23,7 +33,8 @@ class NoteTableView: UITableViewController {
         viewModel.fetchNotesOfFolder(id: viewModel.folderID)
     }
     
-    // TODO: Estoy hay que mejorarlo
+    /// Eventos a ocurrir cuando la vista carga nuevamente. Si hay cambios en
+    /// el modelo de datos, actualiza la tabla.
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -31,28 +42,40 @@ class NoteTableView: UITableViewController {
         tableView.reloadData()
     }
     
+    /// Carga las notas de la carpeta en el modelo de datos y actualiza la tabla.
     func fetchAndReload(){
         viewModel.fetchNotesOfFolder(id: viewModel.folderID)
         tableView.reloadData()
     }
-
+    
+    /// Actualiza la información de la tabla
     func reloadData(){
         tableView.reloadData()
     }
 
-    // MARK: - Table view data source
-
+    /// Indica el número de secciones de la tabla.
+    /// - Parameter tableView: tabla que contiene la lista de notas.
+    /// - Returns: entero con el número de secciones de la tabla.
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
+    /// Indica el número de filas de la tabla, es decir, el número de notas que se muestran en la lista.
+    /// - Parameters:
+    ///   - tableView: tabla o lista de notas.
+    ///   - section: númeor de filas en la sección actual de la tabla.
+    /// - Returns: entero con el número de notas en la tabla.
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return viewModel.numberOfNotes()
     }
 
-    
+    /// Configura cada una de las celdas de la tabla.
+    /// - Parameters:
+    ///   - tableView: tabla o lista de notas.
+    ///   - indexPath: array con el número de índices de las celdas.
+    /// - Returns: celdas de la tabla ya configurada.
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: NoteCell.reuseIdentifier, for: indexPath) as! NoteCell
 
@@ -67,6 +90,10 @@ class NoteTableView: UITableViewController {
         return cell
     }
     
+    /// Configura los eventos a ocurrir cuando se selecciona una celda.
+    /// - Parameters:
+    ///   - tableView: tabla o lista de notas.
+    ///   - indexPath: array con el número de índices de las celdas.
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let noteID = viewModel.note(at: indexPath.row).id
         
@@ -79,17 +106,12 @@ class NoteTableView: UITableViewController {
             navigationController?.pushViewController(noteVC, animated: true)
         }
     }
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
     
-    // Override to support editing the table view.
+    /// Configura la edición de las celdas de la tabla.
+    /// - Parameters:
+    ///   - tableView: tabla o lista de notas
+    ///   - editingStyle: estilo de edición de la tabla.
+    ///   - indexPath: array de índices de las celdas de la tabla.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let noteID = viewModel.note(at: indexPath.row).id
@@ -102,14 +124,6 @@ class NoteTableView: UITableViewController {
             
         }
     }
-    
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
 
         // Override to support conditional rearranging of the table view.
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {

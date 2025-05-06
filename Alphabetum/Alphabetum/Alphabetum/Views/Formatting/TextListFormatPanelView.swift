@@ -7,13 +7,22 @@
 
 import UIKit
 
+/// Clase que representa la vista con el panel que posee los botones para establecer
+/// el tipo de lista a insertar en una nota.
 class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
     
+    /// Botón que activa el tipo de lista ' *' .
     private let bulletListButton = UIButton()
+    
+    /// Botón que activa el tipo de lista ' - ' .
     private let dashListButton = UIButton()
+    
+    /// Botón que activa el tipo de lista enumerada.
     private let numberedListButton = UIButton()
 
-    
+    /// Constructor por defecto de la clase. Establece los diferentes formatos de texto
+    /// del panel.
+    /// - Parameter frame: frame que representa el objeto de la clase.
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -28,6 +37,7 @@ class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Configura los diferentes botones de la vista.
     override func configureButtons() {
         let buttonConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular)
         
@@ -36,6 +46,7 @@ class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
         numberedListButton.setSFImageAndTarget(systemName: "list.number", configuration: buttonConfig, target: self, selector: #selector(buttonTapped(_:)))
     }
     
+    /// Configura el stackView de la vista y añade los diferentes botones.
     override func configureStackView() {
         super.configureStackView()
         
@@ -44,6 +55,9 @@ class TextListFormatPanelView: TextFormatHorizontalPanelSubView {
         stackView.addArrangedSubview(numberedListButton)
     }
 
+    /// Gestiona el evento de pulsar sobre un botón de formato de texto y
+    /// actualiza su estado.
+    /// - Parameter sender: botón que ha sido pulsado.
     @objc private func buttonTapped(_ sender: UIButton){
         var newFormat: TextFormat = .bulletlist
         
