@@ -358,12 +358,12 @@ extension NoteVC: UITextViewDelegate {
         viewModel.updateContent(textView.attributedText.mutableCopy() as! NSMutableAttributedString)
     }
     
-    /// <#Description#>
+    /// Cambia el texto de la nota en función del tipo de lista a insertar.
     /// - Parameters:
-    ///   - textView: <#textView description#>
-    ///   - range: <#range description#>
-    ///   - text: <#text description#>
-    /// - Returns: <#description#>
+    ///   - textView: campo de texto de la nota.
+    ///   - range: rango de líneas del campo de texto.
+    ///   - text: texto que sustituirá al que hay en la nota.
+    /// - Returns: un booleano con **True** si puede continuar con los cambios y **False** en caso contrario
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         
         if text != "\n" { return true }
@@ -405,6 +405,8 @@ extension NoteVC: UITextViewDelegate {
         return true
     }
     
+    /// Cambia el formato del texto seleccionado en la nota.
+    /// - Parameter textView: campo de texto de la nota.
     func textViewDidChangeSelection(_ textView: UITextView) {
         let range = textView.selectedRange
         let index = max(range.location, 0)
@@ -432,6 +434,9 @@ extension NoteVC: UITextViewDelegate {
         textFormattingOptionsView.updateButtons(with: activeFormats)
     }
     
+    /// Detecta el tipo de formato de texto en función de su tamaño.
+    /// - Parameter font: fuente del texto de la nota.
+    /// - Returns: formato del texto actual.
     func detectHeadingType(for font: UIFont) -> TextFormat {
         switch font.pointSize {
         case 28:
@@ -445,6 +450,9 @@ extension NoteVC: UITextViewDelegate {
         }
     }
     
+    /// Detecta el tipo de lista del texto seleccionado.
+    /// - Parameter lineText: línea del texto seleccionado.
+    /// - Returns: formato del texto actual.
     func detectListType(for lineText: String) -> TextFormat? {
         let trimmedText = lineText.trimmingCharacters(in: .whitespaces)
         
@@ -465,7 +473,12 @@ extension NoteVC: UITextViewDelegate {
     }
 }
 
+/// Extensión que maneja la selección de imágenes para su inserción en la nota.
 extension NoteVC: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    /// Gestiona el controlador para la selección de imágenes que serán insertadas en el contenido de la nota.
+    /// - Parameters:
+    ///   - picker: controlador que permita seleccionar imágenes.
+    ///   - info: información de la selección realizada.
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
         
