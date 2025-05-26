@@ -146,7 +146,7 @@ final class NoteRepository: NoteRepositoryProtocol {
     /// como argumento y **False** en caso contrario.
     func noteTitleExist(_ title: String) -> Bool {
         let fetchRequest: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "title == %@")
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title)
         fetchRequest.fetchLimit = 1
         
         do {

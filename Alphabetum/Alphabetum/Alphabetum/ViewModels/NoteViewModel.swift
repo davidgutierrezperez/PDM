@@ -25,11 +25,15 @@ final class NoteViewModel {
     /// Contenido de la nota.
     private var content: NSMutableAttributedString { note.content }
     
+    private(set) var isNew: Bool = false
+    
     /// Constructor que gestiona la inicialización de una nota sin contenido alguno
     /// y la almacena en la base de datos.
     init() {
         note = Note(title: "Sin titulo")
         id = note.id
+        
+        isNew = true
         
         saveNote()
     }
@@ -40,6 +44,8 @@ final class NoteViewModel {
     init(note: Note){
         self.note = note
         self.id = note.id
+        
+        isNew = true
         
         saveNote()
     }
@@ -52,6 +58,8 @@ final class NoteViewModel {
     convenience init(note: Note, folderID: UUID){
         self.init(note: note)
         
+        isNew = true
+        
         saveNote()
         addToFolder(folderID: folderID)
     }
@@ -61,6 +69,7 @@ final class NoteViewModel {
     func updateTitle(_ newTitle: String){
         note.title = newTitle
         saveNote()
+        isNew = false
     }
     
     /// Actualiza el contenido de una nota.

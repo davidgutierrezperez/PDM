@@ -101,4 +101,9 @@ final class FolderListViewModel {
         let notes = folderRepository.fetchAllFolders()
         return notes.count
     }
+    
+    func folderExists(title: String) -> Bool {
+        let folderTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        return folderRepository.titleExist(title: folderTitle)
+    }
 }

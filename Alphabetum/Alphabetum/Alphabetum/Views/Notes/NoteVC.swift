@@ -39,6 +39,7 @@ class NoteVC: UIViewController {
     init() {
         self.viewModel = NoteViewModel()
         self.formattingViewModel = TextFormattingViewModel()
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -92,6 +93,10 @@ class NoteVC: UIViewController {
             selector: #selector(keyboardWillHide),
             name: UIResponder.keyboardWillHideNotification,
             object: nil)
+        
+        if (viewModel.isNew){
+            createAlertToRenameTitle()
+        }
     }
     
     /// Eventos a ocurrir cuando se carga la vista nuevamente. El contenido de
@@ -99,7 +104,6 @@ class NoteVC: UIViewController {
     /// - Parameter animated: indica si la aparición de la vista debe ser animada.
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        contentView.becomeFirstResponder()
         contentView.reloadInputViews()
     }
     
@@ -107,6 +111,42 @@ class NoteVC: UIViewController {
     func hideFormattingViewOptions(){
         textFormattingOptionsView.isHidden = true
     }
+    
+    private func createAlertToRenameTitle(){
+        guard let title = titleField.text, !title.isEmpty else {
+            let alert = makeAlertCancelConfirmWithoutTextfield(
+                title: "Title cannot be empty. Please enter a new name.",
+                action: { [weak self] _ in
+                    self?.createAlertToRenameTitle()
+                }
+            )
+            present(alert, animated: true)
+            return
+        }
+
+        if NoteListViewModel.shared.titleExist(title: title) {
+            let alert = makeCompolsoryAlertConfirm(
+                title: "There is already a note with this name. Please, introduce a new name",
+                placeholder: "Title of the note"
+            ) { [weak self] newTitle in
+                guard let self = self else { return }
+                
+                // Validación directa sin 'if let'
+                if !newTitle.isEmpty, !NoteListViewModel.shared.titleExist(title: newTitle) {
+                    self.titleField.text = newTitle
+                    self.viewModel.updateTitle(newTitle)
+                } else {
+                    self.createAlertToRenameTitle()
+                }
+            }
+            present(alert, animated: true)
+        } else {
+            viewModel.updateTitle(title)
+        }
+
+    }
+
+
     
     /// Gestiona el evento de aparición del teclado.
     /// - Parameter notification: notificación que indica que el teclado debe aparecer.
@@ -283,9 +323,19 @@ class NoteVC: UIViewController {
 
     
     /// Evento que gestiona la actualización del título de la nota.
-    @objc private func updateTitle(){
-        viewModel.updateTitle(titleField.text!)
+    @objc private func updateTitle() {
+        guard let title = titleField.text, !title.isEmpty else {
+            createAlertToRenameTitle()
+            return
+        }
+        
+        if NoteListViewModel.shared.titleExist(title: title) {
+            createAlertToRenameTitle()
+        } else {
+            viewModel.updateTitle(title)
+        }
     }
+
     
     /// Evento que gestiona la actualización de contenido.
     @objc private func updateContent(){

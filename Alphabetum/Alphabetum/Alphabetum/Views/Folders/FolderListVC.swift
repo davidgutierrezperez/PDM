@@ -33,7 +33,6 @@ class FolderListVC: UIViewController {
         navigationItem.searchController = createSearchController(placeholder: "Search a folder", searchResultsUpdater: self, delegate: self)
         navigationItem.searchController?.searchBar.isHidden = false
         navigationItem.hidesSearchBarWhenScrolling = false
-        navigationController?.navigationBar.prefersLargeTitles = true
         
         addRightBarButton(image: UIImage(systemName: "folder.badge.plus")!, selector: #selector(openCreateFolderVC))
         setupView()
@@ -43,6 +42,8 @@ class FolderListVC: UIViewController {
     /// cambios y actualiza los datos de la tabla.
     /// - Parameter animated: indica si se debe animar el accedo a la vista.
     override func viewDidAppear(_ animated: Bool) {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        
         if (viewModel.hasChanged){
             viewModel.fetchFolders()
             tableView.reloadData()
@@ -56,15 +57,35 @@ class FolderListVC: UIViewController {
         let createFolderVC = CreateEntityVC(title: "New Folder", style: .modal)
         
         createFolderVC.onCreated = { [weak self] folderTitle in
-            self?.viewModel.createFolder(title: folderTitle)
-            self?.tableView.onCreatedNewFolder()
-            self?.viewModel.hasChanged = true
+            self?.createFolderWithValidation(title: folderTitle)
         }
         
         let navVC = UINavigationController(rootViewController: createFolderVC)
         present(navVC, animated: true)
     }
-    
+
+    private func createFolderWithValidation(title: String) {
+        let viewModel = self.viewModel
+        
+        if viewModel.folderExists(title: title) {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                let alert = makeAlertCancelConfirm(
+                    title: "Folder already exists. Please enter a new name.",
+                    placeholder: "New title",
+                    action: { newTitle in
+                        self.createFolderWithValidation(title: newTitle)
+                    }
+                )
+                self.present(alert, animated: true)
+            }
+        } else {
+            viewModel.createFolder(title: title)
+            tableView.onCreatedNewFolder()
+            viewModel.hasChanged = true
+        }
+    }
+
     /// Crea una alerta que permite renombrar una carpeta.
     /// - Parameters:
     ///   - id: identificador de la carpeta a renombrar.

@@ -93,6 +93,9 @@ final class NoteListViewModel {
     /// - Parameter id: identificador de la carpeta.
     func fetchNotesOfFolder(id: UUID){
         notes = (isAllFolder) ? noteRepository.fetchAll() : noteRepository.fetchNotesOfFolder(folderID: id)
+        if (id.uuidString == "00000000-0000-0000-0000-000000000000"){
+            notes.removeFirst()
+        }
         filteredNotes = notes
     }
     
@@ -101,7 +104,8 @@ final class NoteListViewModel {
     /// - Returns: un booleano con valor **True** si ya existe una nota
     /// con ese título y **False** en caso contrario.
     func titleExist(title: String) -> Bool {
-        return noteRepository.noteTitleExist(title)
+        let noteTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        return noteRepository.noteTitleExist(noteTitle)
     }
     
     /// Número de notas en la lista o tabla.
@@ -217,4 +221,7 @@ final class NoteListViewModel {
             }
         }
     }
+    
+    
+
 }

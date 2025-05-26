@@ -89,7 +89,7 @@ final class CreateEntityVC: UIViewController {
         textfield.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            textfield.topAnchor.constraint(equalTo: view.topAnchor, constant: 250),
+            textfield.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
             textfield.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
@@ -103,9 +103,9 @@ final class CreateEntityVC: UIViewController {
         textfield.placeholder = placeholder
         textfield.layer.borderWidth = 1
         textfield.layer.cornerRadius = 5
-        textfield.layer.borderColor = UIColor.white.cgColor
+        textfield.layer.borderColor = UIColor.gray.cgColor
         
-        let paddingView = UIView(frame: CGRect(x:0,y:0,width: 10, height: textfield.frame.height))
+        let paddingView = UIView(frame: CGRect(x:0,y:0,width: 0, height: textfield.frame.height + 20))
         textfield.leftView = paddingView
         textfield.leftViewMode = .always
         

@@ -79,4 +79,18 @@ final class FolderRepository: FolderRepositoryProtocol {
         return []
     }
     
+    func titleExist(title: String) -> Bool {
+        let fetchRequest: NSFetchRequest<FolderEntity> = FolderEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title)
+        fetchRequest.fetchLimit = 1
+        
+        do {
+            let count = try context.count(for: fetchRequest)
+            print("Count:", count)
+            return count > 0
+        } catch {
+            return false
+        }
+    }
+    
 }

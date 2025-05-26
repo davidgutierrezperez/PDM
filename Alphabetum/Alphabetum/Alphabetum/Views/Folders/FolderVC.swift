@@ -97,6 +97,7 @@ class FolderVC: UIViewController, UISearchBarDelegate {
     @objc private func addNoteToFolder(){
         let newNote = Note(title: "Sin titulo")
         let _ = NoteViewModel(note: newNote, folderID: viewModel.folderID)
+        FolderListViewModel.shared.hasChanged = true
         
         navigationController?.pushViewController(NoteVC(id: newNote.id), animated: true)
     }
@@ -142,10 +143,22 @@ class FolderVC: UIViewController, UISearchBarDelegate {
     
     /// Gestiona el evento de eliminación de notas seleccionadas.
     @objc private func deleteSelectedNotes(){
-        viewModel.deleteSelectedNotes()
-        updateEditButton()
-        cancelSelection()
+        if viewModel.numberOfSelectedNotes() == 0 {
+            let alert = makeAlertCancelConfirmWithoutTextfield(title: "Do you want to delete all notes?") { _ in
+                self.viewModel.deleteSelectedNotes()
+                self.updateEditButton()
+                self.cancelSelection()
+                self.tableView.fetchAndReload()
+            }
+            present(alert, animated: true)
+        } else {
+            viewModel.deleteSelectedNotes()
+            updateEditButton()
+            cancelSelection()
+            tableView.fetchAndReload()
+        }
     }
+
     
     /// Establece una alerta que permite gestionar el renombramiento de una nota.
     /// - Parameters:

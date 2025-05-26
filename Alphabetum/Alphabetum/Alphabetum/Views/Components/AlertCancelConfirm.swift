@@ -31,3 +31,35 @@ func makeAlertCancelConfirm(title: String, placeholder: String, action: @escapin
         
     return alert
 }
+
+func makeAlertCancelConfirmWithoutTextfield(title: String, action: @escaping ((String) -> Void)) -> UIAlertController {
+    let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+    
+    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+    let confirmAction = UIAlertAction(title: "Confirm", style: .default) { _ in
+        let text = alert.textFields?.first?.text ?? ""
+        action(text)
+    }
+        
+    alert.addAction(cancelAction)
+    alert.addAction(confirmAction)
+        
+    return alert
+}
+
+func makeCompolsoryAlertConfirm(title: String, placeholder: String, action: @escaping ((String) -> Void)) -> UIAlertController {
+    let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+    
+    alert.addTextField { textfield in
+        textfield.placeholder = placeholder
+    }
+    
+    let confirmAction = UIAlertAction(title: "Confirm", style: .default) { _ in
+        let text = alert.textFields?.first?.text ?? ""
+        action(text)
+    }
+        
+    alert.addAction(confirmAction)
+        
+    return alert
+}
