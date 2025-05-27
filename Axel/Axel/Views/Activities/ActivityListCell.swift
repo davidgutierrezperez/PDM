@@ -22,7 +22,7 @@ class ActivityListCell: UITableViewCell {
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        backgroundColor = AppColors.cell
+        setupView()
     }
     
     required init?(coder: NSCoder) {
@@ -37,7 +37,16 @@ class ActivityListCell: UITableViewCell {
     }
     
     private func setupView(){
+        contentView.addSubview(distanceLabel)
         
+        backgroundColor = AppColors.cell
+        
+        distanceLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            distanceLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            distanceLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+        ])
     }
 
     override func awakeFromNib() {
@@ -46,9 +55,6 @@ class ActivityListCell: UITableViewCell {
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
 }

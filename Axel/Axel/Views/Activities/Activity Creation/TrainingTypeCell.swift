@@ -49,6 +49,7 @@ class TrainingTypeCell: UITableViewCell {
         title.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.backgroundColor = AppColors.primary
+        layer.borderColor = nil
         
         NSLayoutConstraint.activate([
             // Icono a la izquierda, centrado verticalmente

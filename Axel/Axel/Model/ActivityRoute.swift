@@ -8,5 +8,16 @@
 import Foundation
 
 struct ActivityRoute {
+    let id: UUID
     let points: [RoutePoint]
+    
+    init(){
+        id = UUID()
+        points = []
+    }
+    
+    init(id: UUID, points: [RoutePoint]){
+        self.id = id
+        self.points = points
+    }
 }

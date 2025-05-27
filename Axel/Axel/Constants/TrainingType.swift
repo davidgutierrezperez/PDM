@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum TrainingType {
+enum TrainingType: Int16 {
     case FREE_RUN
     case TIME_INTERVAL
     case DISTANCE_INTERVAL

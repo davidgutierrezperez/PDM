@@ -14,9 +14,22 @@ class SelectTrainingTypeViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = AppColors.primary
+        setupView()
         
         tableView.register(TrainingTypeCell.self, forCellReuseIdentifier: TrainingTypeCell.reuseIdentifier)
+    }
+    
+    private func configureNavigationController(){
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+        
+        navigationItem.title = "Tipo de actividad"
+        tabBarItem.title = "New Activity"
+    }
+    
+    private func setupView(){
+        configureNavigationController()
+        view.backgroundColor = AppColors.primary
     }
 
     // MARK: - Table view data source
@@ -46,6 +59,8 @@ class SelectTrainingTypeViewController: UITableViewController {
         
         if type == .FREE_RUN {
             navigationController?.pushViewController(LiveActivityViewController(), animated: true)
+        } else {
+            navigationController?.pushViewController(IntervalSettingsViewController(), animated: true)
         }
     }
     

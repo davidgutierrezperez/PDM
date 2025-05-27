@@ -12,7 +12,19 @@ class IntervalSettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        configureNavigationController()
+    }
+    
+    private func configureNavigationController(){
+        navigationController?.navigationBar.prefersLargeTitles = false
+        title = "Configuración de actividad"
+    }
+    
+    private func setupView(){
+        
     }
     
 
