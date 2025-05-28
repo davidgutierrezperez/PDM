@@ -78,4 +78,31 @@ class ActivityRepository {
             print("No se puedo guardar la nueva actividad")
         }
     }
+    
+    func delete(id: UUID){
+        guard let entity = fetchEntityById(id: id) else { return }
+        
+        do {
+            context.delete(entity)
+            
+            try context.save()
+        } catch {
+            print("No se ha podido borrar la actividad con ID: ", id)
+        }
+    }
+    
+    private func fetchEntityById(id: UUID) -> ActivityEntity? {
+        let fetchRequest: NSFetchRequest<ActivityEntity> = NSFetchRequest(entityName: "ActivityEntity")
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        fetchRequest.fetchLimit = 1
+        
+        do {
+            let entity = try context.fetch(fetchRequest).first
+            
+            return entity
+        } catch {
+            print("No se ha podido encontrar la actividad con ID: ", id)
+            return nil
+        }
+    }
 }

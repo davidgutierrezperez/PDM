@@ -61,7 +61,25 @@ extension ActivityListViewController: UITableViewDelegate, UITableViewDataSource
         navigationController?.pushViewController(activityDetailVC, animated: true)
     }
     
-    
-    
-    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let activity = viewModel.at(indexPath.row) else { return nil }
+     
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let deleteAction = UIAction(title: "Eliminar", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                let alert = UIAlertController()
+                
+                alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
+                alert.addAction(UIAlertAction(title: "Confirmar", style: .default) {_ in
+                    self.viewModel.delete(id: activity.id)
+                    DispatchQueue.main.async {
+                        self.activityListView.tableView.reloadData()
+                    }
+                })
+                
+                self.present(alert, animated: true)
+            }
+            
+            return UIMenu(title: "", children: [deleteAction])
+        }
+    }
 }

@@ -11,9 +11,17 @@ class LiveActivityViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.hidesBackButton = true
+        navigationController?.tabBarController?.isTabBarHidden = true
 
         let activity = Activity()
         ActivityRepository.shared.create(activity: activity)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
     
 

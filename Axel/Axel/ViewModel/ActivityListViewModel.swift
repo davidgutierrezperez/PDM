@@ -26,6 +26,11 @@ class ActivityListViewModel {
         
     }
     
+    func delete(id: UUID){
+        activities.removeAll(where: {$0.id == id})
+        repository.delete(id: id)
+    }
+    
     func at(_ index: Int) -> Activity? {
         return activities[index]
     }
