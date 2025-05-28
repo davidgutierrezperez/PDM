@@ -9,13 +9,16 @@ import UIKit
 
 class ActivityListViewController: ViewController {
     
-    private let tableView = UITableView()
     private let viewModel = ActivityListViewModel.shared
+    private let activityListView = ActivityListView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupView()
+        configureNavigationController()
+        configureTableView()
+        
+        self.view = activityListView
     }
     
     private func configureNavigationController(){
@@ -25,28 +28,12 @@ class ActivityListViewController: ViewController {
     }
     
     private func configureTableView(){
-        tableView.register(ActivityListCell.self, forCellReuseIdentifier: ActivityListCell.reuseIdentifier)
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.backgroundColor = AppColors.primary
+        activityListView.tableView.register(ActivityListCell.self, forCellReuseIdentifier: ActivityListCell.reuseIdentifier)
+        activityListView.tableView.delegate = self
+        activityListView.tableView.dataSource = self
+        activityListView.tableView.backgroundColor = AppColors.primary
         
         viewModel.fetch()
-    }
-    
-    private func setupView() {
-        configureNavigationController()
-        configureTableView()
-        
-        view.addSubview(tableView)
-        
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
     }
     
 }
@@ -73,6 +60,8 @@ extension ActivityListViewController: UITableViewDelegate, UITableViewDataSource
         
         navigationController?.pushViewController(activityDetailVC, animated: true)
     }
+    
+    
     
     
 }
