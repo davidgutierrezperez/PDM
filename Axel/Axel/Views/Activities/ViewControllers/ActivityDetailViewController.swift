@@ -9,9 +9,15 @@ import UIKit
 
 class ActivityDetailViewController: UIViewController {
     
+    
     private let viewModel: ActivityDetailViewModel
+    private let activityDetailView = ActivityDetailView()
+    private let pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
+    
+    private var lastOptionButtonPressed = ActivityDetailOptionButton(detail: .SUMMARY)
     
     init(id: UUID){
+        ActivityDetailStore.shared.loadActivity(id: id)
         viewModel = ActivityDetailViewModel(id: id)
         
         super.init(nibName: nil, bundle: nil)
@@ -21,21 +27,86 @@ class ActivityDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        title = viewModel.getId().uuidString
+    override func loadView() {
+        self.view = activityDetailView
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationItem.largeTitleDisplayMode = .always
 
-    /*
-    // MARK: - Navigation
+        showDetailView(activityDetailView.optionButtons.first!)
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        configureTitleView()
+        
+        configurePageViewController()
+        configureOptionsStackButtons()
     }
-    */
-
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        ActivityDetailStore.shared.clear()
+    }
+    
+    @objc private func showDetailView(_ sender: ActivityDetailOptionButton){
+        guard let id = viewModel.activity?.id else { return }
+        
+        if (sender.detailOption != lastOptionButtonPressed.detailOption){
+            lastOptionButtonPressed.toggleUnderline()
+        }
+        
+        sender.toggleUnderline()
+        
+        var detailVC = UIViewController()
+        
+        switch sender.detailOption {
+        case .SUMMARY:
+            break
+        case .STATISTICS:
+            detailVC = ActivityDetailStatisticsViewController(id: id)
+            break
+        case .LAPS:
+            detailVC = ActivityDetailLapsViewController(id: id)
+            break
+        case .GRAPHICS:
+            break
+        }
+        
+        lastOptionButtonPressed = sender
+        pageViewController.setViewControllers([detailVC], direction: .forward, animated: true)
+    }
+    
+    private func configurePageViewController(){
+        addChild(pageViewController)
+        view.addSubview(pageViewController.view)
+        pageViewController.didMove(toParent: self)
+        
+        pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            pageViewController.view.topAnchor.constraint(equalTo: activityDetailView.detailOptionsStack.bottomAnchor, constant: 16),
+            pageViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            pageViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            pageViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    private func configureOptionsStackButtons(){
+        for button in activityDetailView.optionButtons {
+            button.addTarget(self, action: #selector(showDetailView(_:)), for: .touchUpInside)
+        }
+    }
+    
+    private func configureTitleView(){
+        var location = viewModel.activity?.location
+        location! += " - " + (viewModel.activity?.date.formatted() ?? Date().formatted())
+        
+        title = location
+    }
+    
+    
+    
 }

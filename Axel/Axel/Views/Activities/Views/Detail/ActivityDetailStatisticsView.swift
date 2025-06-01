@@ -1,14 +1,14 @@
 //
-//  ActivityListView.swift
+//  ActivityListDetailView.swift
 //  Axel
 //
-//  Created by David Gutierrez on 27/5/25.
+//  Created by David Gutierrez on 1/6/25.
 //
 
 import UIKit
 
-class ActivityListView: UIView {
-    
+class ActivityDetailStatisticsView: UIView {
+
     let tableView = UITableView()
     
     override init(frame: CGRect) {
@@ -26,7 +26,6 @@ class ActivityListView: UIView {
         backgroundColor = AppColors.primary
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.rowHeight = 120
         
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),

@@ -11,5 +11,6 @@ enum AppColors {
     static let primary = UIColor.systemGray6
     static let background = UIColor.black
     static let cell = UIColor.systemOrange
-    
+    static let statistic = UIColor.systemGray5
+    static let statisticOptionLabel = UIColor.systemGray3
 }

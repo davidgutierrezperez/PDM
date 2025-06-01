@@ -21,8 +21,14 @@ class ActivityListViewController: ViewController {
         self.view = activityListView
     }
     
-    private func configureNavigationController(){
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+    }
+    
+    private func configureNavigationController(){
         navigationItem.title = "Mis actividades"
         tabBarItem.title = "Home"
     }
