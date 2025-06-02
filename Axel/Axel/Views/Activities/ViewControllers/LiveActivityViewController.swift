@@ -8,15 +8,18 @@
 import UIKit
 
 class LiveActivityViewController: UIViewController {
+    
+    private let liveActivityView = LiveActivityView()
+    
+    override func loadView() {
+        self.view = liveActivityView
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.hidesBackButton = true
         navigationController?.tabBarController?.isTabBarHidden = true
-
-        let activity = Activity()
-        ActivityRepository.shared.create(activity: activity)
     }
     
     override func viewWillDisappear(_ animated: Bool) {

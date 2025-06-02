@@ -64,6 +64,7 @@ class ActivityDetailViewController: UIViewController {
         
         switch sender.detailOption {
         case .SUMMARY:
+            detailVC = ActivityDetailSummaryViewController(id: id)
             break
         case .STATISTICS:
             detailVC = ActivityDetailStatisticsViewController(id: id)

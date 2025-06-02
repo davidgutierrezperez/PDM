@@ -14,4 +14,6 @@ enum SFSymbols {
     static let runner_in_square = "figure.run.square.stack"
     static let add = "plus.circle.fill"
     static let clock = "clock.fill"
+    static let pause = "pause.circle.fill"
+    static let play = "play.circle.fill"
 }
