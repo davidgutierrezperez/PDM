@@ -10,7 +10,7 @@ import Foundation
 struct Activity {
     let id: UUID
     let date: Date
-    let location: String
+    var location: String
     var duration: TimeInterval
     var distance: Double
     var avaragePace: TimeInterval?

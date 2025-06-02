@@ -12,6 +12,8 @@ class LiveActivityView: UIStackView {
     let playPauseButton = UIButton()
     let saveActivityButton = UIButton()
     
+    private var isPlayButton: Bool = true
+    
     private let distanceStack = ActivityDetailVerticalStackView(alignment: .center, largeValue: true)
     private let durationStack = ActivityDetailVerticalStackView(alignment: .center, largeValue: true)
     private let paceStack = ActivityDetailVerticalStackView(alignment: .center, largeValue: true)
@@ -33,6 +35,15 @@ class LiveActivityView: UIStackView {
         distanceStack.updateValue(newValue: FormatHelper.formatDistance(distance))
         durationStack.updateValue(newValue: duration.formatted())
         paceStack.updateValue(newValue: pace.formatted())
+    }
+
+    func togglePlayPauseButton(){
+        let configuration = UIImage.SymbolConfiguration(pointSize: 150)
+        let image = (isPlayButton) ? UIImage(systemName: SFSymbols.pause, withConfiguration: configuration)
+                                    : UIImage(systemName: SFSymbols.play, withConfiguration: configuration)
+        
+        playPauseButton.setImage(image, for: .normal)
+        isPlayButton.toggle()
     }
     
     private func setupView(){
@@ -56,6 +67,7 @@ class LiveActivityView: UIStackView {
         infoActivityStack.addArrangedSubview(durationStack)
         infoActivityStack.addArrangedSubview(paceStack)
         infoActivityStack.addArrangedSubview(playPauseButton)
+        infoActivityStack.addArrangedSubview(saveActivityButton)
         
         infoActivityStack.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -67,5 +79,7 @@ class LiveActivityView: UIStackView {
         
         let configuration = UIImage.SymbolConfiguration(pointSize: 150)
         playPauseButton.setImage(UIImage(systemName: SFSymbols.play, withConfiguration: configuration), for: .normal)
+        
+        saveActivityButton.setImage(UIImage(systemName: SFSymbols.save, withConfiguration: UIImage.SymbolConfiguration(pointSize: 50)), for: .normal)
     }
 }
