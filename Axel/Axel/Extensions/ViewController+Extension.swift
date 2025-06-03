@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension ViewController {
+extension UIViewController {
     func addDoneAndDimishButton(){
         if (navigationController!.isBeingPresented)  {
             let doneAndDismishButton = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(dismissVC))

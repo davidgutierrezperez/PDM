@@ -17,4 +17,5 @@ enum SFSymbols {
     static let pause = "pause.circle.fill"
     static let play = "play.circle.fill"
     static let save = "stop.circle.fill"
+    static let trash = "trash.circle.fill"
 }

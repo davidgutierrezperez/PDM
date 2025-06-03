@@ -20,15 +20,15 @@ class ActivityRepository {
         do {
             let entities = try context.fetch(fetchRequest)
             
-            let activities: [Activity] = entities.map {
-                let laps = CoreDataHelper.shared.getLapsFromNSSet($0.laps!)
+            var activities: [Activity] = entities.map {
+                let laps = CoreDataHelper.shared.getLapsFromNSSet($0.laps!).sorted { $0.index < $1.index }
                 let type = CoreDataHelper.shared.getTrainingTypeFromInt16(type: $0.type)
                 let route = CoreDataHelper.shared.getRouteFromActivityEntity($0.route!)
                 
                 return Activity(id: $0.id ?? UUID(), date: $0.date ?? Date(), location: $0.location ?? "Desconocido", distance: $0.distance, duration: $0.duration, avaragePace: $0.avaragePace, maxPace: $0.maxPace, avarageSpeed: $0.avarageSpeed, minAltitude: $0.minAltitude, maxAltitude: $0.maxAltitude, totalAscent: $0.totalAscent, totalDescent: $0.totalDescent, laps: laps, type: type, route: route)
             }
-            
-            return activities
+
+            return activities.sorted { $0.date > $1.date }
         } catch {
             print("Error al obtener las actividades del usuario")
         }
@@ -79,7 +79,7 @@ class ActivityRepository {
         }
     }
     
-    func delete(id: UUID){
+    public func delete(id: UUID){
         guard let entity = fetchEntityById(id: id) else { return }
         
         do {
@@ -91,7 +91,7 @@ class ActivityRepository {
         }
     }
     
-    private func fetchEntityById(id: UUID) -> ActivityEntity? {
+    public func fetchEntityById(id: UUID) -> ActivityEntity? {
         let fetchRequest: NSFetchRequest<ActivityEntity> = NSFetchRequest(entityName: "ActivityEntity")
         fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         fetchRequest.fetchLimit = 1

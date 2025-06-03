@@ -11,12 +11,14 @@ class LiveActivityView: UIStackView {
 
     let playPauseButton = UIButton()
     let saveActivityButton = UIButton()
+    let discardActivityButton = UIButton()
     
     private var isPlayButton: Bool = true
     
     private let distanceStack = ActivityDetailVerticalStackView(alignment: .center, largeValue: true)
     private let durationStack = ActivityDetailVerticalStackView(alignment: .center, largeValue: true)
     private let paceStack = ActivityDetailVerticalStackView(alignment: .center, largeValue: true)
+    private let saveAndDiscardStack = UIStackView()
     
     private let infoActivityStack = UIStackView()
     
@@ -33,8 +35,8 @@ class LiveActivityView: UIStackView {
     
     func updateValues(distance: Double, duration: TimeInterval, pace: Double){
         distanceStack.updateValue(newValue: FormatHelper.formatDistance(distance))
-        durationStack.updateValue(newValue: duration.formatted())
-        paceStack.updateValue(newValue: pace.formatted())
+        durationStack.updateValue(newValue: FormatHelper.formatTime(duration))
+        paceStack.updateValue(newValue: FormatHelper.formatTime(pace))
     }
 
     func togglePlayPauseButton(){
@@ -46,8 +48,14 @@ class LiveActivityView: UIStackView {
         isPlayButton.toggle()
     }
     
+    func toggleEnablingSaveAndDiscardButtons(){
+        saveActivityButton.isEnabled.toggle()
+        discardActivityButton.isEnabled.toggle()
+    }
+    
     private func setupView(){
-        initialConfiguration()
+        setupButtons()
+        setupSaveAndDiscardStack()
         
         addSubview(infoActivityStack)
         configureInfoActivityStack()
@@ -67,19 +75,34 @@ class LiveActivityView: UIStackView {
         infoActivityStack.addArrangedSubview(durationStack)
         infoActivityStack.addArrangedSubview(paceStack)
         infoActivityStack.addArrangedSubview(playPauseButton)
-        infoActivityStack.addArrangedSubview(saveActivityButton)
+        infoActivityStack.addArrangedSubview(saveAndDiscardStack)
         
         infoActivityStack.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    private func initialConfiguration(){
+    private func setupSaveAndDiscardStack(){
+        saveAndDiscardStack.axis = .horizontal
+        saveAndDiscardStack.distribution = .equalCentering
+        saveAndDiscardStack.spacing = 20
+        
+        saveAndDiscardStack.addArrangedSubview(saveActivityButton)
+        saveAndDiscardStack.addArrangedSubview(discardActivityButton)
+    }
+    
+    private func setupButtons(){
         distanceStack.configure(value: FormatHelper.formatDistance(0), title: "Distance")
         durationStack.configure(value: "0:00", title: "Duration")
-        paceStack.configure(value: "0:00 min/km", title: "Pace")
+        paceStack.configure(value: "0:00", title: "Pace")
         
         let configuration = UIImage.SymbolConfiguration(pointSize: 150)
         playPauseButton.setImage(UIImage(systemName: SFSymbols.play, withConfiguration: configuration), for: .normal)
         
         saveActivityButton.setImage(UIImage(systemName: SFSymbols.save, withConfiguration: UIImage.SymbolConfiguration(pointSize: 50)), for: .normal)
+        saveActivityButton.isEnabled = false
+        saveActivityButton.tintColor = .white
+        
+        discardActivityButton.setImage(UIImage(systemName: SFSymbols.trash, withConfiguration: UIImage.SymbolConfiguration(pointSize: 50)), for: .normal)
+        discardActivityButton.isEnabled = false
+        discardActivityButton.tintColor = .red
     }
 }

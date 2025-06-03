@@ -41,15 +41,18 @@ class ActivityDetailLapsCell: UITableViewCell {
         configureInfoLapStack()
         
         NSLayoutConstraint.activate([
-            infoLapStack.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 8),
-            infoLapStack.centerXAnchor.constraint(equalTo: centerXAnchor)
+            infoLapStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            infoLapStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            infoLapStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            infoLapStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
     }
     
     private func configureInfoLapStack(){
         infoLapStack.axis = .horizontal
-        infoLapStack.distribution = .equalCentering
-        infoLapStack.spacing = 20
+        infoLapStack.distribution = .fillEqually
+        infoLapStack.alignment = .center
+        infoLapStack.spacing = 80
         infoLapStack.translatesAutoresizingMaskIntoConstraints = false
         
         infoLapStack.addArrangedSubview(indexLabel)

@@ -64,7 +64,7 @@ class ActivityDetailLapsView: UIView {
     
     private func configureInfoHeaderStack(){
         infoHeaderStack.axis = .horizontal
-        infoHeaderStack.distribution = .equalCentering
+        infoHeaderStack.distribution = .fillEqually
         infoHeaderStack.spacing = 20
         infoHeaderStack.translatesAutoresizingMaskIntoConstraints = false
         infoHeaderStack.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50)

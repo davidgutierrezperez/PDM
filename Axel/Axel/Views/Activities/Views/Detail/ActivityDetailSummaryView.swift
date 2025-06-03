@@ -35,7 +35,7 @@ class ActivityDetailSummaryView: UIView {
         
         distanceStackView.configure(value: FormatHelper.formatDistance(activity.distance), title: "Distancia")
         avaragePaceStackView.configure(value: activity.avaragePace!.toString(), title: "Ritmo medio")
-        durationStackView.configure(value: activity.duration.formatted(), title: "Tiempo total")
+        durationStackView.configure(value: FormatHelper.formatTime(activity.duration), title: "Tiempo total")
         configureDateStack(activity: activity)
     }
     

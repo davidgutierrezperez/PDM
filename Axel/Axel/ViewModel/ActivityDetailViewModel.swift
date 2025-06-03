@@ -23,15 +23,15 @@ class ActivityDetailViewModel {
         activity = activityDetailStore.activity
         
         details = [
-            ActivityDetail(type: .duration, value: activity?.duration.toString() ?? "-"),
-            ActivityDetail(type: .distance, value: activity?.distance.toString() ?? "-"),
-            ActivityDetail(type: .avaragePace, value: activity?.avaragePace?.toString() ?? "-"),
+            ActivityDetail(type: .duration, value: FormatHelper.formatTime(activity!.duration) ?? "-"),
+            ActivityDetail(type: .distance, value: FormatHelper.formatDistance(activity!.distance) ?? "-"),
+            ActivityDetail(type: .avaragePace, value: FormatHelper.formatTime(activity!.avaragePace!) ?? "-"),
             ActivityDetail(type: .maxPace, value: activity?.maxPace?.toString() ?? "-"),
             ActivityDetail(type: .avarageSpeed, value: activity?.avarageSpeed?.toString() ?? "-"),
-            ActivityDetail(type: .minAltitude, value: activity?.minAltitude?.toString() ?? "-"),
-            ActivityDetail(type: .maxAltitude, value: activity?.maxAltitude?.toString() ?? "-"),
-            ActivityDetail(type: .totalAscent, value: activity?.totalAscent?.toString() ?? "-"),
-            ActivityDetail(type: .totalDescent, value: activity?.totalDescent?.toString() ?? "-"),
+            ActivityDetail(type: .minAltitude, value: FormatHelper.formatAltitude((activity?.minAltitude!)!) ?? "-"),
+            ActivityDetail(type: .maxAltitude, value: FormatHelper.formatAltitude((activity?.maxAltitude!)!) ?? "-"),
+            ActivityDetail(type: .totalAscent, value: FormatHelper.formatAltitude((activity?.totalAscent!)!) ?? "-"),
+            ActivityDetail(type: .totalDescent, value: FormatHelper.formatAltitude((activity?.totalDescent!)!) ?? "-"),
         ]
     }
     

@@ -32,6 +32,7 @@ class LiveActivityViewController: UIViewController {
         navigationItem.hidesBackButton = true
         navigationController?.tabBarController?.isTabBarHidden = true
         
+        setupTimerBinding()
         setupButtonActions()
     }
     
@@ -49,9 +50,11 @@ class LiveActivityViewController: UIViewController {
             break
         case .ACTIVE:
             viewModel.pauseActivity()
+            liveActivityView.toggleEnablingSaveAndDiscardButtons()
             break
         case .PAUSED:
             viewModel.resumeActivity()
+            liveActivityView.toggleEnablingSaveAndDiscardButtons()
             break
         default:
             viewModel.pauseActivity()
@@ -60,23 +63,36 @@ class LiveActivityViewController: UIViewController {
     }
     
     @objc private func stopActivityAndSave(_ sender: UIButton){
-        let alert = UIAlertController(title: nil, message: "¿Desea guardar la actividad?", preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel, handler: nil))
-        
-        alert.addAction(UIAlertAction(title: "Confirmar", style: .default, handler: {_ in
+        let alert = AlertControllerFactory.makeCancelConfirmAndRedirectAlert(message: "¿Desea guardar la actividad", view: ActivityListViewController(), navigationController: navigationController!, onConfirm: {
             self.viewModel.endActivity()
-            
-            let activityListVC = ActivityListViewController()
-            self.navigationController?.setViewControllers([activityListVC], animated: true)
-        }))
+        })
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    @objc private func discardActivity(_ sender: UIButton){
+        let alert = AlertControllerFactory.makeCancelConfirmAndRedirectAlert(message: "¿Desea descartar la actividad", view: ActivityListViewController(), navigationController: navigationController!, onConfirm: {})
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func setupTimerBinding(){
+    
+        
+        viewModel.onTimerUpdate = { [weak self] duration in
+            guard let self = self,
+                  let activity = viewModel.activity else { return }
+            
+            DispatchQueue.main.async {
+                self.liveActivityView.updateValues(distance: activity.distance, duration: duration, pace: self.viewModel.currentPace)
+            }
+        }
     }
     
     private func setupButtonActions(){
         liveActivityView.playPauseButton.addTarget(self, action: #selector(togglePlayPauseButton), for: .touchUpInside)
         liveActivityView.saveActivityButton.addTarget(self, action: #selector(stopActivityAndSave(_:)), for: .touchUpInside)
+        liveActivityView.discardActivityButton.addTarget(self, action: #selector(discardActivity(_:)), for: .touchUpInside)
     }
     
 

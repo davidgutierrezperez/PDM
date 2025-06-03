@@ -19,6 +19,15 @@ final class MainTabBarController: UITabBarController {
         tabBar.backgroundColor = AppColors.background
         
         setupTabBarItems()
+        setupViewControllers()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupViewControllers()
+    }
+    
+    private func setupViewControllers(){
         viewControllers = [UINavigationController(rootViewController: activityListVC),
                            UINavigationController(rootViewController: selectTrainingTypeVC),
                            UINavigationController(rootViewController: settingsVC)]
@@ -28,8 +37,6 @@ final class MainTabBarController: UITabBarController {
         activityListVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: SFSymbols.home), tag: 0)
         selectTrainingTypeVC.tabBarItem = UITabBarItem(title: "New activity", image: UIImage(systemName: SFSymbols.add), tag: 1)
         settingsVC.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: SFSymbols.settings), tag: 2)
-        
-        
     }
     
 

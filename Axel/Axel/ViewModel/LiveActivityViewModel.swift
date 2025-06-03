@@ -11,30 +11,44 @@ import CoreLocation
 final class LiveActivityViewModel {
     var activity: Activity?
     
-    private(set) var status = ActivityStatus.NOT_INTIATED
-    private var durationTimer: Timer?
+    private let activityRepository = ActivityRepository.shared
+    private let lapRepository = LapRepository.shared
     
-    private let locationSertice = LocationService()
-    private let repository = ActivityRepository.shared
+    private(set) var status = ActivityStatus.NOT_INTIATED
+    private let locationService = LocationService()
+    
+    private let lapManager = LapManager()
+    
+    private let timerManager = ActivityTimerManager()
+    var onTimerUpdate: ((TimeInterval) -> Void)?
+    
+    private(set) var currentPace: Double = 0
+
     
     init(){
         activity = Activity()
     }
     
     func startActivity(){
-        locationSertice.requestCity{ [weak self] city in
+        activateTimer()
+        
+        locationService.requestCity { [weak self] city in
             self?.activity?.location = city ?? "Desconocido"
-            print("LA CIUDAD ES: ", city ?? "Nada")
         }
         
+        updateActivityData()
         status = ActivityStatus.ACTIVE
     }
     
     func pauseActivity(){
+        timerManager.stop()
         status = ActivityStatus.PAUSED
     }
     
     func resumeActivity(){
+        activateTimer()
+        
+        updateActivityData()
         status = ActivityStatus.ACTIVE
     }
     
@@ -42,7 +56,8 @@ final class LiveActivityViewModel {
         guard let activity = activity else { return }
 
         status = ActivityStatus.ENDED
-        repository.create(activity: activity)
+        activityRepository.create(activity: activity)
+        saveData()
     }
     
     func discardActivity(){
@@ -50,7 +65,93 @@ final class LiveActivityViewModel {
         status = ActivityStatus.DISCARDED
     }
     
- 
+    private func saveData(){
+        guard let laps = activity?.laps,
+              let activity = activity else { return }
+        
+        activityRepository.create(activity: activity)
+        
+        print("El número de vueltas es: ", laps.count)
+        
+        for lap in laps {
+            lapRepository.create(lap: lap, activity: activity)
+        }
+    }
     
+    private func activateTimer(){
+        timerManager.start()
+    
+        timerManager.onTick = { [weak self] duration in
+            self?.activity?.duration = duration
+            self?.onTimerUpdate?(duration)
+        }
+    }
+    
+    private func updateActivityData(){
+        updateTotalDistance()
+        updateLocationDataRelated()
+    }
+
+    
+    private func updateTotalDistance(){
+        locationService.onDistanceUpdate = { [weak self] distance in
+            DispatchQueue.main.async {
+                self?.activity?.distance = distance
+            }
+        }
+    }
+    
+    private func updateLocationDataRelated(){
+        var didStartFirstLap = false
+        
+        locationService.onLocationUpdate = { [weak self] location in
+            guard let self = self else { return }
+            
+            if !didStartFirstLap {
+                self.lapManager.startFirstLap(at: location, time: Date())
+                didStartFirstLap = true
+            }
+            
+            DispatchQueue.main.async {
+                self.updatePace(lastLocation: self.locationService.lastLocation!,
+                                currentLocation: location,
+                                timeLastLocation: self.locationService.lastTimeLocation!)
+                self.checkIfLapIsCompleted(currentLocation: location)
+                self.updateAltitudeData(currentLocation: location)
+            }
+        }
+    }
+    
+    private func updatePace(lastLocation: CLLocation, currentLocation: CLLocation, timeLastLocation: Date){
+        currentPace =  PaceManager.checkForCurrentPace(lastLocation: (self.locationService.lastLocation!), currentLocation: currentLocation, timeLastLocation: (self.locationService.lastTimeLocation!))
+    }
+    
+    private func checkIfLapIsCompleted(currentLocation: CLLocation){
+        guard activity != nil else { return }
+        
+        if let lap = self.lapManager.checkForNewLap(currentLocation: currentLocation, currentTime: Date()){
+            activity!.laps.append(lap)
+        }
+    }
+    
+    private func updateAltitudeData(currentLocation: CLLocation){
+        guard activity != nil else { return }
+        
+        let currentAltitude = currentLocation.altitude
+        
+        if (currentAltitude > (activity?.maxAltitude)!){
+            activity?.maxAltitude = currentAltitude
+            
+            let ascent = currentAltitude - (activity?.maxAltitude)!
+            activity?.totalAscent! += ascent
+        }
+        
+        if (currentAltitude < (activity?.minAltitude)!){
+            activity?.minAltitude = currentAltitude
+            
+            let descent = currentAltitude - (activity?.minAltitude)!
+            activity?.totalDescent! += descent
+        }
+    }
     
 }
