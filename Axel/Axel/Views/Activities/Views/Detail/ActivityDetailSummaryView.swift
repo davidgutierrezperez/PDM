@@ -6,9 +6,15 @@
 //
 
 import UIKit
+import MapKit
 
 class ActivityDetailSummaryView: UIView {
 
+    let mapView = MKMapView()
+    
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    
     private let locationLabel = UILabel()
     private let dateStackView = UIStackView()
     private let distanceStackView = ActivityDetailVerticalStackView(valueSize: 48)
@@ -40,25 +46,52 @@ class ActivityDetailSummaryView: UIView {
     }
     
     private func setupView(){
-        addSubview(summaryVerticalStack)
+        scrollView.alwaysBounceVertical = true
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(summaryVerticalStack)
         
         configureSummaryStack()
         
         NSLayoutConstraint.activate([
-            summaryVerticalStack.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
-            summaryVerticalStack.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20)
+            // scrollView llena la vista
+            scrollView.topAnchor.constraint(equalTo: topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
+
+            // contentView igual ancho que scrollView y altura flexible
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+
+            // stack dentro del contentView
+            summaryVerticalStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            summaryVerticalStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            summaryVerticalStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            summaryVerticalStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
     }
     
     private func configureSummaryStack(){
         summaryVerticalStack.axis = .vertical
-        summaryVerticalStack.distribution = .equalCentering
+        summaryVerticalStack.distribution = .fillProportionally
         summaryVerticalStack.spacing = 20
         
+        mapView.heightAnchor.constraint(equalToConstant: 350).isActive = true
+        mapView.translatesAutoresizingMaskIntoConstraints = false
+
         summaryVerticalStack.addArrangedSubview(dateStackView)
+        summaryVerticalStack.addArrangedSubview(mapView)
         summaryVerticalStack.addArrangedSubview(locationLabel)
         summaryVerticalStack.addArrangedSubview(distanceStackView)
         summaryVerticalStack.addArrangedSubview(UIStackView.createHorizontalFromTwoStacks(avaragePaceStackView, durationStackView))
+
         
         summaryVerticalStack.translatesAutoresizingMaskIntoConstraints = false
     }

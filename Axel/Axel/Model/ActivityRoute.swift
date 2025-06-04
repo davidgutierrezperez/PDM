@@ -9,7 +9,7 @@ import Foundation
 
 struct ActivityRoute {
     let id: UUID
-    let points: [RoutePoint]
+    var points: [RoutePoint]
     
     init(){
         id = UUID()

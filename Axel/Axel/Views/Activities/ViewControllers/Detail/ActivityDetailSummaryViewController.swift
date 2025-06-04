@@ -23,14 +23,16 @@ class ActivityDetailSummaryViewController: UIViewController {
     }
 
     override func loadView() {
-        activityDetailSummaryView.configure(activity: viewModel.activity)
         self.view = activityDetailSummaryView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        activityDetailSummaryView.configure(activity: viewModel.activity)
 
-        // Do any additional setup after loading the view.
+        let routeMapManager = RouteMapManager(activity: viewModel.activity!, mapView: activityDetailSummaryView.mapView)
+        
+        routeMapManager.renderRoute()
     }
     
 

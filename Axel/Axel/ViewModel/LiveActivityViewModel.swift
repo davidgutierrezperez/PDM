@@ -13,6 +13,7 @@ final class LiveActivityViewModel {
     
     private let activityRepository = ActivityRepository.shared
     private let lapRepository = LapRepository.shared
+    private let routeRepository = ActivityRouteRepository.shared
     
     private(set) var status = ActivityStatus.NOT_INTIATED
     private let locationService = LocationService()
@@ -58,6 +59,7 @@ final class LiveActivityViewModel {
 
         status = ActivityStatus.ENDED
         activityRepository.create(activity: activity)
+        routeRepository.create(for: activity)
         saveData()
     }
     
@@ -71,8 +73,6 @@ final class LiveActivityViewModel {
               let activity = activity else { return }
         
         activityRepository.create(activity: activity)
-        
-        print("El número de vueltas es: ", laps.count)
         
         for lap in laps {
             lapRepository.create(lap: lap, activity: activity)
@@ -119,8 +119,17 @@ final class LiveActivityViewModel {
                                 timeLastLocation: self.locationService.lastTimeLocation!)
                 self.checkIfLapIsCompleted(currentLocation: location)
                 self.updateAltitudeData(currentLocation: location)
+                self.updateRoute(currentLocation: location)
             }
         }
+    }
+    
+    private func updateRoute(currentLocation: CLLocation){
+        let currentCoordinate = currentLocation.coordinate
+        
+        let routePoint = RoutePoint(id: UUID(), latitude: currentCoordinate.latitude, longitude: currentCoordinate.longitude, timestamp: Date(), altitude: currentLocation.altitude, speed: activity?.avarageSpeed)
+        
+        activity?.route.points.append(routePoint)
     }
     
     private func updatePace(lastLocation: CLLocation, currentLocation: CLLocation, timeLastLocation: Date){
