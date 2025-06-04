@@ -149,6 +149,7 @@
 				DEVELOPMENT_TEAM = PMF8WTF672;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Axel/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
@@ -177,6 +178,7 @@
 				DEVELOPMENT_TEAM = PMF8WTF672;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Axel/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = "";

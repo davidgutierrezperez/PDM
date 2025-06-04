@@ -19,11 +19,11 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<string></string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<array>
-		<string></string>
-	</array>
 </dict>
 </plist>

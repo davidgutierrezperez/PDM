@@ -5,7 +5,7 @@
 //  Created by David Gutierrez on 2/6/25.
 //
 
-import Foundation
+import UIKit
 import CoreLocation
 
 final class LiveActivityViewModel {
@@ -29,6 +29,11 @@ final class LiveActivityViewModel {
     
     init(){
         activity = Activity()
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(appWillEnterForeground),
+                                               name: UIApplication.willEnterForegroundNotification,
+                                               object: nil)
     }
     
     func startActivity(){
@@ -68,6 +73,10 @@ final class LiveActivityViewModel {
     func discardActivity(){
         activity = nil
         status = ActivityStatus.DISCARDED
+    }
+    
+    @objc private func appWillEnterForeground(){
+        timerManager.updateElpased()
     }
     
     private func saveData(){
