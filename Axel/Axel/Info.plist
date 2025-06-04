@@ -22,6 +22,8 @@
 	<key>UILaunchScreen</key>
 	<string></string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<array>
+		<string></string>
+	</array>
 </dict>
 </plist>

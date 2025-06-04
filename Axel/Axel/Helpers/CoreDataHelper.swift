@@ -16,7 +16,9 @@ class CoreDataHelper {
     func getLapsFromNSSet(_ entityLaps: NSSet) -> [Lap] {
         guard let lapEntities = entityLaps.allObjects as? [LapEntity] else { return [] }
         
-        return lapEntities.compactMap {
+        let sortedLapEntities = lapEntities.sorted { ($0.index) < ($1.index) }
+        
+        return sortedLapEntities.compactMap {
             let startCoordinate = CLLocationCoordinate2D(latitude: $0.startLatitude, longitude: $0.startLongitude)
             let endCoordinate = CLLocationCoordinate2D(latitude: $0.endLatitude, longitude: $0.endLongitude)
             

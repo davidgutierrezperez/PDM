@@ -21,7 +21,7 @@ class ActivityRepository {
             let entities = try context.fetch(fetchRequest)
             
             var activities: [Activity] = entities.map {
-                let laps = CoreDataHelper.shared.getLapsFromNSSet($0.laps!).sorted { $0.index < $1.index }
+                let laps = CoreDataHelper.shared.getLapsFromNSSet($0.laps!)
                 let type = CoreDataHelper.shared.getTrainingTypeFromInt16(type: $0.type)
                 let route = CoreDataHelper.shared.getRouteFromActivityEntity($0.route!)
                 

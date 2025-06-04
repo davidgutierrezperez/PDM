@@ -18,6 +18,7 @@ final class LiveActivityViewModel {
     private let locationService = LocationService()
     
     private let lapManager = LapManager()
+    private let notificationManager = NotificationManager.shared
     
     private let timerManager = ActivityTimerManager()
     var onTimerUpdate: ((TimeInterval) -> Void)?
@@ -131,6 +132,7 @@ final class LiveActivityViewModel {
         
         if let lap = self.lapManager.checkForNewLap(currentLocation: currentLocation, currentTime: Date()){
             activity!.laps.append(lap)
+            notificationManager.sendLapCompletedNotification(lap: lap)
         }
     }
     
