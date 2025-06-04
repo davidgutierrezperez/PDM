@@ -9,7 +9,8 @@ import Foundation
 
 class FormatHelper {
     public static func formatDistance(_ distance: Double) -> String {
-        return String(format: "%.2f km", distance)
+        let kilometers = distance / 1000
+        return String(format: "%.2f km", kilometers)
     }
     
     public static func formatTime(_ time: TimeInterval) -> String {

@@ -20,8 +20,8 @@ class ActivityRepository {
         do {
             let entities = try context.fetch(fetchRequest)
             
-            var activities: [Activity] = entities.map {
-                let laps = CoreDataHelper.shared.getLapsFromNSSet($0.laps!)
+            let activities: [Activity] = entities.map {
+                let laps = CoreDataHelper.shared.getLapsFromNSSet($0.laps!).sorted { $0.index < $1.index }
                 let type = CoreDataHelper.shared.getTrainingTypeFromInt16(type: $0.type)
                 let route = CoreDataHelper.shared.getRouteFromActivityEntity($0.route!)
                 
@@ -55,28 +55,67 @@ class ActivityRepository {
     
     public func create(activity: Activity){
         let context = CoreDataStack.shared.persistentContainer.viewContext
-        
-        do {
-            let entity = ActivityEntity(context: context)
-            
-            entity.id = activity.id
-            entity.date = activity.date
-            entity.location = activity.location
-            entity.duration = activity.duration
-            entity.distance = activity.distance
-            entity.avaragePace = activity.avaragePace ?? 0.0
-            entity.minAltitude = activity.minAltitude ?? 0.0
-            entity.maxAltitude = activity.maxAltitude ?? 0.0
-            entity.totalAscent = activity.totalAscent ?? 0.0
-            entity.totalDescent = activity.totalDescent ?? 0.0
-            entity.laps = Lap.getNSSetFromLapArray(laps: activity.laps)
-            entity.type = activity.type.rawValue
-            entity.route = ActivityRoute.getEntityFromActivityRoute(from: activity.route)
-            
-            CoreDataStack.shared.saveContext()
-        } catch {
-            print("No se puedo guardar la nueva actividad")
-        }
+
+            let activityEntity = ActivityEntity(context: context)
+            activityEntity.id = activity.id
+            activityEntity.date = activity.date
+            activityEntity.location = activity.location
+            activityEntity.duration = activity.duration
+            activityEntity.distance = activity.distance
+            activityEntity.avaragePace = activity.avaragePace ?? 0.0
+            activityEntity.minAltitude = activity.minAltitude ?? 0.0
+            activityEntity.maxAltitude = activity.maxAltitude ?? 0.0
+            activityEntity.totalAscent = activity.totalAscent ?? 0.0
+            activityEntity.totalDescent = activity.totalDescent ?? 0.0
+            activityEntity.type = activity.type.rawValue
+
+            // Crear ruta
+            let routeEntity = ActivityRouteEntity(context: context)
+            routeEntity.id = activity.route.id
+            routeEntity.activity = activityEntity
+
+            var routePointsEntities: [RoutePointEntity] = []
+            for point in activity.route.points {
+                let pointEntity = RoutePointEntity(context: context)
+                pointEntity.id = point.id
+                pointEntity.latitude = point.latitude
+                pointEntity.longitude = point.longitude
+                pointEntity.altitude = point.altitude ?? 0.0
+                pointEntity.speed = point.speed ?? 0.0
+                pointEntity.timestamp = point.timestamp
+                pointEntity.activityRoute = routeEntity
+                routePointsEntities.append(pointEntity)
+            }
+
+            routeEntity.points = NSSet(array: routePointsEntities)
+            activityEntity.route = routeEntity
+
+            // Crear vueltas
+            var lapEntities: [LapEntity] = []
+            for lap in activity.laps {
+                let lapEntity = LapEntity(context: context)
+                lapEntity.id = lap.id
+                lapEntity.duration = lap.duration ?? 0.0
+                lapEntity.distance = lap.distance ?? 0.0
+                lapEntity.avaragePace = lap.avaragePace
+                lapEntity.avarageSpeed = lap.avarageSpeed ?? 0.0
+                lapEntity.startLatitude = lap.startCoordinate.latitude
+                lapEntity.startLongitude = lap.startCoordinate.longitude
+                lapEntity.endLatitude = lap.endCoordinate.latitude
+                lapEntity.endLongitude = lap.endCoordinate.longitude
+                lapEntity.index = lap.index
+                lapEntity.activity = activityEntity
+                lapEntities.append(lapEntity)
+            }
+
+            activityEntity.laps = NSSet(array: lapEntities)
+
+            do {
+                try context.save()
+                print("Actividad guardada correctamente")
+            } catch {
+                print("Error al guardar actividad: \(error)")
+            }
     }
     
     public func delete(id: UUID){

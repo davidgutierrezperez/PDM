@@ -53,7 +53,7 @@ final class RouteMapManager: NSObject {
     }
     
     private func zoomToFill(){
-        var allCoords = lapPoints + routePoints.map {
+        let allCoords = lapPoints + routePoints.map {
             return CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
         }
         

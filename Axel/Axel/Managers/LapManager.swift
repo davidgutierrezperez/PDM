@@ -12,7 +12,10 @@ final class LapManager {
     private var lastLapStartLocation: CLLocation?
     private var lastLapStartTime: Date?
     
-    private let lapDistance: Double = 10
+    private var previousLocaiton: CLLocation?
+    
+    private let lapDistance: Double = 20
+    private var currentLapDistance: Double = 0
     
     func startFirstLap(at location: CLLocation, time: Date){
         lastLapStartTime = time
@@ -25,10 +28,17 @@ final class LapManager {
             return nil
         }
         
-        let distance = currentLocation.distance(from: lastLapStartLocation) / 10
-        print("La distancia es: ", distance)
+        if let previous = previousLocaiton {
+            let increment = currentLocation.distance(from: previous)
+            currentLapDistance += increment
+        }
         
-        print("Dentro despues del guard")
+        previousLocaiton = currentLocation
+        
+        guard currentLapDistance >= lapDistance else { return nil }
+        currentLapDistance = 0
+        
+        print("He pasado")
         
         let duration = currentTime.timeIntervalSince(lastLapStartTime)
         let pace = (duration / (lapDistance / 1000)) / 60

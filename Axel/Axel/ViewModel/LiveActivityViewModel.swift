@@ -32,19 +32,22 @@ final class LiveActivityViewModel {
     }
     
     func startActivity(){
-        activateTimer()
+        locationService.requestLocationPermission()
+        locationService.startUpdatingLocation()
         
         locationService.requestCity { [weak self] city in
             self?.activity?.location = city ?? "Desconocido"
         }
         
         updateActivityData()
+        activateTimer()
         status = ActivityStatus.ACTIVE
     }
     
     func pauseActivity(){
         timerManager.stop()
         status = ActivityStatus.PAUSED
+        locationService.disable()
     }
     
     func resumeActivity(){
@@ -52,14 +55,13 @@ final class LiveActivityViewModel {
         
         updateActivityData()
         status = ActivityStatus.ACTIVE
+        locationService.enable()
     }
     
     func endActivity(){
         guard let activity = activity else { return }
 
         status = ActivityStatus.ENDED
-        activityRepository.create(activity: activity)
-        routeRepository.create(for: activity)
         saveData()
     }
     
@@ -73,10 +75,6 @@ final class LiveActivityViewModel {
               let activity = activity else { return }
         
         activityRepository.create(activity: activity)
-        
-        for lap in laps {
-            lapRepository.create(lap: lap, activity: activity)
-        }
     }
     
     private func activateTimer(){

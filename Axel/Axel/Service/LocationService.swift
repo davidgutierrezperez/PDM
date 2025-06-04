@@ -19,20 +19,41 @@ final class LocationService: NSObject {
     var onDistanceUpdate: ((CLLocationDistance) -> Void)?
     var onLocationUpdate: ((CLLocation) -> Void)?
     
+    private var isActive: Bool = true
+    
     override init() {
         super.init()
         locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.activityType = .fitness
+    }
+    
+    func requestLocationPermission(){
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
+    func startUpdatingLocation(){
+        locationManager.startUpdatingLocation()
     }
     
     func requestCity(completition: @escaping (String?) -> Void){
+        requestLocationPermission()
+        locationManager.requestLocation()
         self.completition = completition
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
+    }
+    
+    func enable(){
+        isActive = true
+    }
+    
+    func disable(){
+        isActive = false
     }
 }
 
 extension LocationService: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard isActive else { return }
         guard let cityLocation = locations.first else {
             completition?(nil)
             return
@@ -42,20 +63,32 @@ extension LocationService: CLLocationManagerDelegate {
         
         onLocationUpdate?(newLocation)
         
-        CLGeocoder().reverseGeocodeLocation(cityLocation) { placemarks, _ in
-            let city = placemarks?.first?.locality
-            self.completition?(city)
-            self.locationManager.stopUpdatingLocation()
+        if let completition = completition {
+            CLGeocoder().reverseGeocodeLocation(cityLocation) { placemarks, _ in
+                let city = placemarks?.first?.locality
+                completition(city)
+                self.completition = nil
+            }
         }
         
         if let last = lastLocation {
             let distance = newLocation.distance(from: last)
             totalDistance += distance
             onDistanceUpdate?(totalDistance)
+            print("La distancia total es: ", totalDistance)
         }
         
         lastLocation = newLocation
         lastTimeLocation = Date()
     }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+            print("Error de localización: \(error.localizedDescription)")
+            
+            if let completition = completition {
+                completition(nil)
+                self.completition = nil
+            }
+        }
     
 }
