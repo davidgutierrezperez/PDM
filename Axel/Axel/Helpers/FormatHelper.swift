@@ -20,4 +20,14 @@ class FormatHelper {
     public static func formatAltitude(_ altitude: Double) -> String {
         return String(format: "%.0f m", altitude)
     }
+    
+    public static func formatPace(_ pace: Double, showUnit: Bool = false) -> String {
+        guard pace.isFinite && pace > 0 else { return "– min/km" }
+
+        let minutes = Int(pace)
+        let seconds = Int((pace - Double(minutes)) * 60)
+        let format: String = (showUnit) ? "%d:%02d min/km" : "%d:%02d"
+        return String(format: format, minutes, seconds)
+    }
+
 }

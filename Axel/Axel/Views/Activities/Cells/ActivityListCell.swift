@@ -42,8 +42,8 @@ class ActivityListCell: UITableViewCell {
     
     func configure(activity: Activity){
         distanceLabel.text = FormatHelper.formatDistance(activity.distance)
-        durationLabel.text = activity.duration.toString()
-        paceLabel.text = activity.avaragePace?.toString()
+        durationLabel.text = FormatHelper.formatTime(activity.duration)
+        paceLabel.text = FormatHelper.formatPace(activity.avaragePace!)
         locationLabel.text = activity.location
         dateLabel.text = activity.date.formatted()
     }

@@ -20,5 +20,15 @@ final class PaceManager {
         return (100 / (distance / timeInterval) / 60)
     }
     
+    static func getAvaragePaceForActivity(for activity: Activity) -> Double {
+        var avarage: Double = 0
+        
+        for lap in activity.laps {
+            avarage += lap.avaragePace
+        }
+        
+        return avarage / Double(activity.laps.count)
+    }
+    
     
 }

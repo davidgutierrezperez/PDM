@@ -32,7 +32,7 @@ class ActivityDetailLapsCell: UITableViewCell {
         indexLabel.text = String(lap.index)
         distanceLabel.text = FormatHelper.formatDistance(lap.distance ?? 0.0)
         durationLabel.text = FormatHelper.formatTime(lap.duration ?? 0.0)
-        paceLabel.text = FormatHelper.formatTime(lap.avaragePace)
+        paceLabel.text = FormatHelper.formatPace(lap.avaragePace)
     }
     
     private func setupView(){
@@ -52,7 +52,7 @@ class ActivityDetailLapsCell: UITableViewCell {
         infoLapStack.axis = .horizontal
         infoLapStack.distribution = .fillEqually
         infoLapStack.alignment = .center
-        infoLapStack.spacing = 50
+        infoLapStack.spacing = 45
         infoLapStack.translatesAutoresizingMaskIntoConstraints = false
         
         infoLapStack.addArrangedSubview(indexLabel)

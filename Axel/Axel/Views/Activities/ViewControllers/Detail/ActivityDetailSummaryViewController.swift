@@ -31,7 +31,7 @@ class ActivityDetailSummaryViewController: UIViewController {
         activityDetailSummaryView.configure(activity: viewModel.activity)
 
         let routeMapManager = RouteMapManager(activity: viewModel.activity!, mapView: activityDetailSummaryView.mapView)
-        
+
         routeMapManager.renderRoute()
     }
     

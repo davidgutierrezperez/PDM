@@ -17,18 +17,35 @@ final class RouteMapManager: NSObject {
         routePoints = activity.route.points
         routeMap = mapView
         routeMap.mapType = .satellite
+        routeMap.showsUserLocation = true
         
         for lap in activity.laps {
             lapPoints.append(lap.endCoordinate)
         }
+        
+        super.init()
+        
+        routeMap.delegate = self
     }
     
     public func renderRoute(){
         addLapAnnotations()
         drawRoutePolyline()
-        zoomToFill()
         
-        routeMap.delegate = self
+        if lapPoints.isEmpty && routePoints.isEmpty {
+                if let userCoordinate = routeMap.userLocation.location?.coordinate {
+                    centerMap(on: userCoordinate)
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        if let userCoordinate = self.routeMap.userLocation.location?.coordinate {
+                            self.centerMap(on: userCoordinate)
+                        }
+                    }
+                }
+            } else {
+                routeMap.showsUserLocation = false
+                zoomToFill()
+            }
     }
     
     private func addLapAnnotations(){
@@ -62,6 +79,15 @@ final class RouteMapManager: NSObject {
         let region = MKCoordinateRegion(center: allCoords.first!, latitudinalMeters: 1000, longitudinalMeters: 1000)
         routeMap.setRegion(region, animated: true)
     }
+    
+    public func centerMap(on coordinate: CLLocationCoordinate2D, regionRadius: CLLocationDistance = 50) {
+        let coordinateRegion = MKCoordinateRegion(
+            center: coordinate,
+            latitudinalMeters: regionRadius,
+            longitudinalMeters: regionRadius
+        )
+        routeMap.setRegion(coordinateRegion, animated: true)
+    }
 }
 
 extension RouteMapManager: MKMapViewDelegate {
@@ -74,5 +100,14 @@ extension RouteMapManager: MKMapViewDelegate {
         }
         
         return MKOverlayRenderer()
+    }
+    
+    func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
+        guard routePoints.isEmpty && lapPoints.isEmpty else { return }
+        
+        if let userCoordinate = mapView.userLocation.location?.coordinate {
+            let region = MKCoordinateRegion(center: userCoordinate, latitudinalMeters: 300, longitudinalMeters: 300)
+            routeMap.setRegion(region, animated: true)
+        }
     }
 }

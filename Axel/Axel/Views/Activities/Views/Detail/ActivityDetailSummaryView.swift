@@ -40,7 +40,7 @@ class ActivityDetailSummaryView: UIView {
         locationLabel.font = UIFont.boldSystemFont(ofSize: 32)
         
         distanceStackView.configure(value: FormatHelper.formatDistance(activity.distance), title: "Distancia")
-        avaragePaceStackView.configure(value: activity.avaragePace!.toString(), title: "Ritmo medio")
+        avaragePaceStackView.configure(value: FormatHelper.formatPace(activity.avaragePace!, showUnit: true), title: "Ritmo medio")
         durationStackView.configure(value: FormatHelper.formatTime(activity.duration), title: "Tiempo total")
         configureDateStack(activity: activity)
     }

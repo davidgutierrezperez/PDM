@@ -71,10 +71,12 @@ final class LiveActivityViewModel {
     }
     
     private func saveData(){
-        guard let laps = activity?.laps,
-              let activity = activity else { return }
+        guard activity != nil, activity!.avaragePace != nil else { return }
+        print("Ritmo medio: ", FormatHelper.formatPace(activity!.avaragePace!))
+        activity!.avaragePace = PaceManager.getAvaragePaceForActivity(for: activity!)
+        activity!.maxPace = lapManager.maxPace
         
-        activityRepository.create(activity: activity)
+        activityRepository.create(activity: activity!)
     }
     
     private func activateTimer(){
