@@ -49,23 +49,33 @@ final class RouteMapManager: NSObject {
     }
     
     private func addLapAnnotations(){
+        let startPoint = routePoints.sorted { $0.timestamp < $1.timestamp }.first
+        let startCoordinate = CLLocationCoordinate2D(latitude: startPoint!.latitude, longitude: startPoint!.longitude)
+        
+        let firstAnnotation = MKPointAnnotation()
+        firstAnnotation.coordinate = startCoordinate
+        firstAnnotation.title = "Inicio"
+        
+        routeMap.addAnnotation(firstAnnotation)
+        
         for (index, coordinate) in lapPoints.enumerated() {
             let annotation = MKPointAnnotation()
             
             annotation.coordinate = coordinate
-            annotation.title = String(index)
+            annotation.title = String(index + 1)
             
             routeMap.addAnnotation(annotation)
         }
     }
     
     private func drawRoutePolyline(){
-        let coordinates = routePoints.map {
-            return MKMapPoint(CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude))
+        let sortedPoints = routePoints.sorted { $0.timestamp < $1.timestamp }
+        
+        let coordinates = sortedPoints.map {
+            CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
         }
         
-        let polyline = MKPolyline(points: coordinates, count: coordinates.count)
-        
+        let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
         routeMap.addOverlay(polyline)
     }
     

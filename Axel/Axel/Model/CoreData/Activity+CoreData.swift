@@ -9,31 +9,31 @@ import CoreData
 import CoreLocation
 
 extension Activity {
-    init?(entity: ActivityEntity){
-        guard let id = entity.id,
-              let date = entity.date else { return nil }
-        
-        self.id = id
-        self.date = date
-        
-        self.laps = []
-        self.route = ActivityRoute()
-        self.type = .FREE_RUN
-        
-        location = entity.location ?? "Desconocido"
-        duration = entity.duration
-        distance = entity.distance
-        avaragePace = entity.avaragePace
-        maxPace = entity.maxPace
-        avarageSpeed = entity.avarageSpeed
-        minAltitude = entity.minAltitude
-        maxAltitude = entity.maxAltitude
-        totalAscent = entity.totalAscent
-        totalDescent = entity.totalDescent
-        laps = Activity.getLapsFromNSSet(entity.laps!)
-        route = Activity.getRouteFromActivityEntity(entity.route!)
-        type = Activity.getTrainingTypeFromInt16(type: entity.type)
-        
+    init(entity: ActivityEntity) {
+            let laps = CoreDataHelper.shared.getLapsFromNSSet(entity.laps ?? [])
+                .sorted { $0.index < $1.index }
+
+            let type = CoreDataHelper.shared.getTrainingTypeFromInt16(type: entity.type)
+
+            let route = CoreDataHelper.shared.getRouteFromActivityEntity(entity.route!)
+
+            self.init(
+                id: entity.id ?? UUID(),
+                date: entity.date ?? Date(),
+                location: entity.location ?? "Desconocido",
+                distance: entity.distance,
+                duration: entity.duration,
+                avaragePace: entity.avaragePace,
+                maxPace: entity.maxPace,
+                avarageSpeed: entity.avarageSpeed,
+                minAltitude: entity.minAltitude,
+                maxAltitude: entity.maxAltitude,
+                totalAscent: entity.totalAscent,
+                totalDescent: entity.totalDescent,
+                laps: laps,
+                type: type,
+                route: route
+            )
     }
     
     static func getLapsFromNSSet(_ entityLaps: NSSet) -> [Lap] {

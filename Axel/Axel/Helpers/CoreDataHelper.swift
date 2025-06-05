@@ -30,18 +30,23 @@ class CoreDataHelper {
     }
     
     func getRouteFromActivityEntity(_ entityRoute: ActivityRouteEntity) -> ActivityRoute {
-        guard let entityPoints = entityRoute.points?.allObjects as? [RoutePoint] else { return ActivityRoute() }
+        guard let entityPoints = entityRoute.points?.allObjects as? [RoutePointEntity] else {
+            return ActivityRoute()
+        }
+
         
         let points = entityPoints.map {
-                RoutePoint(
-                    id: $0.id,
-                    latitude: $0.latitude,
-                    longitude: $0.longitude,
-                    timestamp: $0.timestamp,
-                    altitude: $0.altitude ?? 0.0,
-                    speed: $0.speed
+            RoutePoint(
+                id: $0.id ?? UUID(),
+                latitude: $0.latitude,
+                longitude: $0.longitude,
+                timestamp: $0.timestamp ?? Date(),
+                altitude: $0.altitude,
+                speed: $0.speed
             )
         }
+
+        print("Número de puntos obtenidos: ", points.count)
         
         return ActivityRoute(id: entityRoute.id ?? UUID(), points: points)
     }

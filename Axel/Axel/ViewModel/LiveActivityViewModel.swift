@@ -25,6 +25,7 @@ final class LiveActivityViewModel {
     var onTimerUpdate: ((TimeInterval) -> Void)?
     
     private(set) var currentPace: Double = 0
+    private(set) var lastAltitude: CLLocationDistance?
 
     
     init(){
@@ -43,6 +44,8 @@ final class LiveActivityViewModel {
         locationService.requestCity { [weak self] city in
             self?.activity?.location = city ?? "Desconocido"
         }
+        
+        LiveActivityManager.shared.startActivity(id: activity!.id)
         
         updateActivityData()
         activateTimer()
@@ -68,6 +71,7 @@ final class LiveActivityViewModel {
 
         status = ActivityStatus.ENDED
         saveData()
+        locationService.disable()
     }
     
     func discardActivity(){
@@ -94,6 +98,7 @@ final class LiveActivityViewModel {
         timerManager.onTick = { [weak self] duration in
             self?.activity?.duration = duration
             self?.onTimerUpdate?(duration)
+            LiveActivityManager.shared.updateElapsedTime(duration)
         }
     }
     
@@ -136,9 +141,14 @@ final class LiveActivityViewModel {
     private func updateRoute(currentLocation: CLLocation){
         let currentCoordinate = currentLocation.coordinate
         
-        let routePoint = RoutePoint(id: UUID(), latitude: currentCoordinate.latitude, longitude: currentCoordinate.longitude, timestamp: Date(), altitude: currentLocation.altitude, speed: activity?.avarageSpeed)
+        let routePoint = RoutePoint(id: UUID(), latitude: currentCoordinate.latitude, longitude: currentCoordinate.longitude, timestamp: Date(), altitude: currentLocation.altitude, speed: 0)
+        
+        print("Calculando el punto")
+        
+        print("Latitude del punto: ", currentCoordinate.latitude)
         
         activity?.route.points.append(routePoint)
+        print("Número de puntos: ", activity!.route.points.count)
     }
     
     private func updatePace(lastLocation: CLLocation, currentLocation: CLLocation, timeLastLocation: Date){
@@ -159,19 +169,29 @@ final class LiveActivityViewModel {
         
         let currentAltitude = currentLocation.altitude
         
+        if (lastAltitude == nil){
+            lastAltitude = currentAltitude
+            activity?.minAltitude = currentAltitude
+            activity?.maxAltitude = currentAltitude
+        }
+        
+        let delta = currentAltitude - lastAltitude!
+        
+        if delta > 0 {
+            activity!.totalAscent! += delta
+        } else if delta < 0 {
+            activity!.totalDescent! += abs(delta)
+        }
+        
         if (currentAltitude > (activity?.maxAltitude)!){
             activity?.maxAltitude = currentAltitude
-            
-            let ascent = currentAltitude - (activity?.maxAltitude)!
-            activity?.totalAscent! += ascent
         }
         
         if (currentAltitude < (activity?.minAltitude)!){
             activity?.minAltitude = currentAltitude
-            
-            let descent = currentAltitude - (activity?.minAltitude)!
-            activity?.totalDescent! += descent
         }
+        
+        lastAltitude = currentAltitude
     }
     
 }

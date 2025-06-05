@@ -14,7 +14,7 @@ final class LapManager {
     
     private var previousLocation: CLLocation?
     
-    private let lapDistance: Double = 20
+    private let lapDistance: Double = 1000
     private var currentLapDistance: Double = 0
     
     private(set) var maxPace: Double = 0
