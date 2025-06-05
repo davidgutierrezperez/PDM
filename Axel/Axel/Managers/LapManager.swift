@@ -18,6 +18,7 @@ final class LapManager {
     private var currentLapDistance: Double = 0
     
     private(set) var maxPace: Double = 0
+    private(set) var maxSpeed: Double = 0
     
     func startFirstLap(at location: CLLocation, time: Date){
         lastLapStartTime = time
@@ -48,6 +49,10 @@ final class LapManager {
         currentLapDistance = 0
         
         let speed = (lapDistance / 1000) / (duration / 3600)
+        
+        if maxSpeed < speed {
+            maxSpeed = speed
+        }
         
         let lap = Lap(
                     id: UUID(),

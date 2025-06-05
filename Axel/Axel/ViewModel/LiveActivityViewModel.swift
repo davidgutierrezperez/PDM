@@ -88,6 +88,7 @@ final class LiveActivityViewModel {
         print("Ritmo medio: ", FormatHelper.formatPace(activity!.avaragePace!))
         activity!.avaragePace = PaceManager.getAvaragePaceForActivity(for: activity!)
         activity!.maxPace = lapManager.maxPace
+        activity!.avarageSpeed = lapManager.maxSpeed
         
         activityRepository.create(activity: activity!)
     }

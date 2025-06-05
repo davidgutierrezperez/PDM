@@ -8,13 +8,13 @@
 import Foundation
 
 enum ActivityDetailType: String, CaseIterable {
-    case avaragePace = "Avarage Pace"
-    case maxPace = "Max Pace"
-    case avarageSpeed = "Max Speed"
-    case minAltitude = "Min Altitude"
-    case maxAltitude = "Max Altitude"
-    case totalAscent = "Total Ascent"
-    case totalDescent = "Total descent"
-    case duration = "Time"
-    case distance = "Distance"
+    case avaragePace = "Ritmo medio"
+    case maxPace = "Ritmo máx."
+    case avarageSpeed = "Máx. velocidad"
+    case minAltitude = "Altura mín."
+    case maxAltitude = "Máx. altura"
+    case totalAscent = "Ascenso total"
+    case totalDescent = "Descenso total"
+    case duration = "Duración"
+    case distance = "Distancia"
 }

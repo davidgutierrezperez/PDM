@@ -58,7 +58,7 @@ struct Activity {
         self.maxAltitude = maxAltitude
         self.totalAscent = totalAscent
         self.totalDescent = totalDescent
-        self.laps = laps
+        self.laps = laps.sorted { $0.id > $1.id }
         self.type = type
         self.route = route
     }

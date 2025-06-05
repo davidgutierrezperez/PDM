@@ -29,13 +29,12 @@ final class MainTabBarController: UITabBarController {
     
     private func setupViewControllers(){
         viewControllers = [UINavigationController(rootViewController: activityListVC),
-                           UINavigationController(rootViewController: selectTrainingTypeVC),
-                           UINavigationController(rootViewController: settingsVC)]
+                           UINavigationController(rootViewController: selectTrainingTypeVC)]
     }
     
     private func setupTabBarItems(){
-        activityListVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: SFSymbols.home), tag: 0)
-        selectTrainingTypeVC.tabBarItem = UITabBarItem(title: "New activity", image: UIImage(systemName: SFSymbols.add), tag: 1)
+        activityListVC.tabBarItem = UITabBarItem(title: "Inicio", image: UIImage(systemName: SFSymbols.home), tag: 0)
+        selectTrainingTypeVC.tabBarItem = UITabBarItem(title: "Nueva actividad", image: UIImage(systemName: SFSymbols.add), tag: 1)
         settingsVC.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: SFSymbols.settings), tag: 2)
     }
     
