@@ -36,7 +36,7 @@ class LiveActivityView: UIStackView {
     func updateValues(distance: Double, duration: TimeInterval, pace: Double){
         distanceStack.updateValue(newValue: FormatHelper.formatDistance(distance))
         durationStack.updateValue(newValue: FormatHelper.formatTime(duration))
-        paceStack.updateValue(newValue: FormatHelper.formatTime(pace))
+        paceStack.updateValue(newValue: FormatHelper.formatPace(pace))
     }
 
     func togglePlayPauseButton(){

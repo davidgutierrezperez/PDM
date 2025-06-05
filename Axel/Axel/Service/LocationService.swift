@@ -64,16 +64,6 @@ extension LocationService: CLLocationManagerDelegate {
         
         guard let newLocation = locations.last else { return }
         
-        onLocationUpdate?(newLocation)
-        
-        if let completition = completition {
-            CLGeocoder().reverseGeocodeLocation(cityLocation) { placemarks, _ in
-                let city = placemarks?.first?.locality
-                completition(city)
-                self.completition = nil
-            }
-        }
-        
         if let last = lastLocation {
             let distance = newLocation.distance(from: last)
             totalDistance += distance
@@ -83,6 +73,16 @@ extension LocationService: CLLocationManagerDelegate {
         
         lastLocation = newLocation
         lastTimeLocation = Date()
+        
+        onLocationUpdate?(newLocation)
+        
+        if let completition = completition {
+            CLGeocoder().reverseGeocodeLocation(cityLocation) { placemarks, _ in
+                let city = placemarks?.first?.locality
+                completition(city)
+                self.completition = nil
+            }
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

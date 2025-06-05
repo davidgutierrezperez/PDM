@@ -9,15 +9,24 @@ import CoreLocation
 
 final class PaceManager {
     
+    static var lastPaceLocation: CLLocation?
+    static var lastPaceTime: Date?
+    
     static func checkForCurrentPace(lastLocation: CLLocation, currentLocation: CLLocation, timeLastLocation: Date) -> Double {
         let currentTime = Date()
         let timeInterval = currentTime.timeIntervalSince(timeLastLocation)
         
         let distance = currentLocation.distance(from: lastLocation)
         
-        guard distance != 0.0 else { return 0.0 }
+        print("DISTANCIA: ", distance)
+        print("TIME_INTERVAL: ", timeInterval)
         
-        return (100 / (distance / timeInterval) / 60)
+        guard distance > 0, timeInterval > 0 else { return 0.0 }
+        
+        let pace = (timeInterval / distance) * 1000 / 60
+        print("Distancia: \(distance) m, Tiempo: \(timeInterval) s, Ritmo: \(pace) min/km")
+
+        return pace
     }
     
     static func getAvaragePaceForActivity(for activity: Activity) -> Double {

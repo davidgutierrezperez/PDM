@@ -40,7 +40,7 @@ final class LapManager {
         let duration = currentTime.timeIntervalSince(lastLapStartTime)
         let pace = (duration / (lapDistance / 1000)) / 60
         
-        if maxPace < pace {
+        if maxPace == 0 || pace < maxPace {
             maxPace = pace
         }
         

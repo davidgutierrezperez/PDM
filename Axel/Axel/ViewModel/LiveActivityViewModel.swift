@@ -152,7 +152,16 @@ final class LiveActivityViewModel {
     }
     
     private func updatePace(lastLocation: CLLocation, currentLocation: CLLocation, timeLastLocation: Date){
-        currentPace =  PaceManager.checkForCurrentPace(lastLocation: (self.locationService.lastLocation!), currentLocation: currentLocation, timeLastLocation: (self.locationService.lastTimeLocation!))
+        if let lastLocation = PaceManager.lastPaceLocation, let lastTime = PaceManager.lastPaceTime {
+                currentPace = PaceManager.checkForCurrentPace(
+                    lastLocation: lastLocation,
+                    currentLocation: currentLocation,
+                    timeLastLocation: lastTime
+                )
+            }
+
+        PaceManager.lastPaceLocation = currentLocation
+        PaceManager.lastPaceTime = Date()
     }
     
     private func checkIfLapIsCompleted(currentLocation: CLLocation){
