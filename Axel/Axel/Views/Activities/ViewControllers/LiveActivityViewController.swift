@@ -29,11 +29,13 @@ class LiveActivityViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.hidesBackButton = true
-        navigationController?.tabBarController?.isTabBarHidden = true
-        
         setupTimerBinding()
         setupButtonActions()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -47,6 +49,7 @@ class LiveActivityViewController: UIViewController {
         switch (viewModel.status){
         case .NOT_INTIATED:
             viewModel.startActivity()
+            navigationItem.hidesBackButton = true
             break
         case .ACTIVE:
             viewModel.pauseActivity()
@@ -65,13 +68,16 @@ class LiveActivityViewController: UIViewController {
     @objc private func stopActivityAndSave(_ sender: UIButton){
         let alert = AlertControllerFactory.makeCancelConfirmAndRedirectAlert(message: "¿Desea guardar la actividad", view: ActivityListViewController(), navigationController: navigationController!, onConfirm: {
             self.viewModel.endActivity()
+            self.navigationController?.popToRootViewController(animated: true)
         })
         
         present(alert, animated: true, completion: nil)
     }
     
     @objc private func discardActivity(_ sender: UIButton){
-        let alert = AlertControllerFactory.makeCancelConfirmAndRedirectAlert(message: "¿Desea descartar la actividad", view: ActivityListViewController(), navigationController: navigationController!, onConfirm: {})
+        let alert = AlertControllerFactory.makeCancelConfirmAndRedirectAlert(message: "¿Desea descartar la actividad", view: ActivityListViewController(), navigationController: navigationController!, onConfirm: {
+            self.navigationController?.popToRootViewController(animated: true)
+        })
         
         present(alert, animated: true, completion: nil)
     }

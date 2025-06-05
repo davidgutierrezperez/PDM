@@ -15,8 +15,6 @@ final class AlertControllerFactory {
         
         alert.addAction(UIAlertAction(title: "Confirmar", style: .default, handler: { _ in
             onConfirm()
-            
-            navigationController.setViewControllers([view], animated: true)
         }))
         
         return alert

@@ -26,6 +26,7 @@ class ActivityListViewController: ViewController {
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
+        tabBarController?.tabBar.isHidden = false
     }
     
     private func configureNavigationController(){
