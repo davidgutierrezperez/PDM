@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Estato de una actividad.
 enum ActivityStatus {
     case NOT_INTIATED
     case ACTIVE

@@ -29,6 +29,24 @@ class ActivityListViewController: ViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        reloadTableDataIfNeeded()
+    }
+    
+    private func reloadTableDataIfNeeded(){
+        guard let activity = ActivityDetailStore.shared.activity else {
+            return
+        }
+        
+        if !viewModel.isActivityInList(activity: activity){
+            viewModel.fetch()
+            activityListView.reloadData()
+            ActivityDetailStore.shared.clear()
+        }
+    }
+    
     private func configureNavigationController(){
         navigationItem.title = "Mis actividades"
         tabBarItem.title = "Home"

@@ -22,8 +22,8 @@ class ActivityListViewModel {
         activities = repository.fetchAll()
     }
     
-    func add(activity: Activity){
-        
+    func isActivityInList(activity: Activity) -> Bool {
+        return activities.contains(where: { $0.id == activity.id })
     }
     
     func delete(id: UUID){

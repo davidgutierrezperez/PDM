@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Tipos de actividad.
 enum TrainingType: Int16 {
     case FREE_RUN
     case TIME_INTERVAL

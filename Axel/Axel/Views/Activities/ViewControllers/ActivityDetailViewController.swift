@@ -16,12 +16,26 @@ class ActivityDetailViewController: UIViewController {
     
     private var lastOptionButtonPressed = ActivityDetailOptionButton(detail: .SUMMARY)
     
+    private var isActivitySaved: Bool
+    
     init(id: UUID){
         ActivityDetailStore.shared.loadActivity(id: id)
         viewModel = ActivityDetailViewModel(id: id)
         
+        isActivitySaved = true
+        
         super.init(nibName: nil, bundle: nil)
     }
+    
+    init(activity: Activity){
+        ActivityDetailStore.shared.loadActivity(activity: activity)
+        viewModel = ActivityDetailViewModel(activity: activity)
+        
+        isActivitySaved = false
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -34,11 +48,19 @@ class ActivityDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = AppColors.background
+        
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.largeTitleDisplayMode = .always
-
+        
+        if (!isActivitySaved){
+            navigationItem.hidesBackButton = true
+            addBarButtonAndAction(title: "Save", onRight: true, selector: #selector(saveActivity))
+            addBarButtonAndAction(title: "Discard", onRight: false, selector: #selector(discardActivity))
+        }
+        
         showDetailView(activityDetailView.optionButtons.first!)
-
+        
         configureTitleView()
         
         configurePageViewController()
@@ -48,7 +70,9 @@ class ActivityDetailViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        ActivityDetailStore.shared.clear()
+        if isActivitySaved {
+            ActivityDetailStore.shared.clear()
+        }
     }
     
     @objc private func showDetailView(_ sender: ActivityDetailOptionButton){
@@ -78,6 +102,16 @@ class ActivityDetailViewController: UIViewController {
         
         lastOptionButtonPressed = sender
         pageViewController.setViewControllers([detailVC], direction: .forward, animated: true)
+    }
+    
+    @objc private func saveActivity(){
+        viewModel.saveActivity()
+        
+        redirectToViewWithoutBackButton(view: ActivityListViewController())
+    }
+    
+    @objc private func discardActivity(){
+        redirectToViewWithoutBackButton(view: SelectTrainingTypeViewController())
     }
     
     private func configurePageViewController(){

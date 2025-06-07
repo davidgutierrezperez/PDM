@@ -20,6 +20,10 @@ class ActivityListView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func reloadData(){
+        tableView.reloadData()
+    }
+    
     private func setupView(){
         addSubview(tableView)
         

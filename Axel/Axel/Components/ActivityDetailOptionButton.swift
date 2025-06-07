@@ -7,12 +7,19 @@
 
 import UIKit
 
+/// Clase que representa un botón que permite el acceso a
+/// una vista de detalle de una actividad
 class ActivityDetailOptionButton: UIButton {
     
+    /// Tipo de detalle al que permitirá acceso el botón
     let detailOption: ActivityDetailOptions
     
+    /// Indica si el contenido del botón debe mostrarse subrayado
     private var isUnderline = false
     
+    /// Constructor por defecto del botón. Se configura el tipo de detalle
+    /// al que permitirá acceso.
+    /// - Parameter detail: tipo de detalle.
     init(detail: ActivityDetailOptions){
         detailOption = detail
         
@@ -25,11 +32,16 @@ class ActivityDetailOptionButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Activa o desactiva el subrayado del contenido en función del estado
+    /// del botón.
     func toggleUnderline(){
         isUnderline.toggle()
         underlineTitle(isUnderline)
     }
     
+    /// Activa o desactiva el subrayado del título del botón en función
+    /// de lo indicado en el parámetro **underline**.
+    /// - Parameter underline: indica si el título del botón debe subrayarse.
     private func underlineTitle(_ underline: Bool){
         guard let title = self.title(for: .normal) else { return }
         
@@ -41,13 +53,5 @@ class ActivityDetailOptionButton: UIButton {
         let attributedTitle = NSAttributedString(string: title, attributes: attributes)
         setAttributedTitle(attributedTitle, for: .normal)
     }
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
 
 }

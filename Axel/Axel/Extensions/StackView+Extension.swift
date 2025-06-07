@@ -7,7 +7,13 @@
 
 import UIKit
 
+/// Extensiones del componente UIStackView()
 extension UIStackView {
+    /// Permite crear un UIStackView() horizontal formado por otros dos UIStackView() apilados.
+    /// - Parameters:
+    ///   - first: primer UIStackView() a apilar.
+    ///   - second: segundo UIStackView() a apilar.
+    /// - Returns: UIStackView() personalizado.
     static func createHorizontalFromTwoStacks(_ first: UIStackView, _ second: UIStackView) -> UIStackView {
         let horizontalStack = UIStackView()
         

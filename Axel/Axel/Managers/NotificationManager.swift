@@ -25,7 +25,7 @@ final class NotificationManager {
     public func sendLapCompletedNotification(lap: Lap){
         let contentNotification = UNMutableNotificationContent()
         contentNotification.title = "Vuelta completada"
-        contentNotification.body = "Has completada la vuelta \(lap.index) en \(FormatHelper.formatTime(lap.avaragePace))"
+        contentNotification.body = "Has completada la vuelta \(lap.index) en \(FormatHelper.formatTime(lap.duration ?? 0.0))"
         contentNotification.sound = .default
         
         let triggerNotification = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)

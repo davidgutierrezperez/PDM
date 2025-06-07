@@ -19,6 +19,10 @@ final class ActivityDetailStore {
         activity = repository.fetchById(id: id)
     }
     
+    func loadActivity(activity: Activity?){
+        self.activity = activity
+    }
+    
     func clear(){
         self.activity = nil
     }

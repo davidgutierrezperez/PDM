@@ -66,9 +66,11 @@ class LiveActivityViewController: UIViewController {
     }
     
     @objc private func stopActivityAndSave(_ sender: UIButton){
-        let alert = AlertControllerFactory.makeCancelConfirmAndRedirectAlert(message: "¿Desea guardar la actividad", view: ActivityListViewController(), navigationController: navigationController!, onConfirm: {
-            self.viewModel.endActivity()
-            self.navigationController?.popToRootViewController(animated: true)
+        guard let activity = viewModel.activity else { return }
+        
+        let detailVC = ActivityDetailViewController(activity: activity)
+        let alert = AlertControllerFactory.makeCancelConfirmAndRedirectAlert(message: "¿Desea terminar la actividad", view: detailVC, navigationController: navigationController!, onConfirm: {
+            self.navigationController?.pushViewController(detailVC, animated: true)
         })
         
         present(alert, animated: true, completion: nil)
@@ -83,8 +85,6 @@ class LiveActivityViewController: UIViewController {
     }
     
     private func setupTimerBinding(){
-    
-        
         viewModel.onTimerUpdate = { [weak self] duration in
             guard let self = self,
                   let activity = viewModel.activity else { return }

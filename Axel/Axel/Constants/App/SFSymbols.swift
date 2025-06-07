@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Conjunto de símbolos a mostrar en la aplicación.
 enum SFSymbols {
     static let home = "house.fill"
     static let settings = "gearshape"

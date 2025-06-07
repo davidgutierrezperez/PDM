@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Tipos de vistas de detalle a mostrar para cada actividad.
 enum ActivityDetailOptions: String {
     case SUMMARY = "Resumen"
     case STATISTICS = "Estadísticas"

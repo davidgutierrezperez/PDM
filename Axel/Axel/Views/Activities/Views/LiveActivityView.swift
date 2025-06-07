@@ -49,8 +49,8 @@ class LiveActivityView: UIStackView {
     }
     
     func toggleEnablingSaveAndDiscardButtons(){
-        saveActivityButton.isEnabled.toggle()
-        discardActivityButton.isEnabled.toggle()
+        saveActivityButton.isHidden.toggle()
+        discardActivityButton.isHidden.toggle()
     }
     
     private func setupView(){
@@ -98,11 +98,11 @@ class LiveActivityView: UIStackView {
         playPauseButton.setImage(UIImage(systemName: SFSymbols.play, withConfiguration: configuration), for: .normal)
         
         saveActivityButton.setImage(UIImage(systemName: SFSymbols.save, withConfiguration: UIImage.SymbolConfiguration(pointSize: 50)), for: .normal)
-        saveActivityButton.isEnabled = false
+        saveActivityButton.isHidden = true
         saveActivityButton.tintColor = .white
         
         discardActivityButton.setImage(UIImage(systemName: SFSymbols.trash, withConfiguration: UIImage.SymbolConfiguration(pointSize: 50)), for: .normal)
-        discardActivityButton.isEnabled = false
+        discardActivityButton.isHidden = true
         discardActivityButton.tintColor = .red
     }
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Conjunto de colores a utilizar en la aplicación.
 enum AppColors {
     static let primary = UIColor.systemGray6
     static let background = UIColor.black

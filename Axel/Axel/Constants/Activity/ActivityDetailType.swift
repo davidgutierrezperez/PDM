@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Tipos de estadística a mostrar para cada actividad.
 enum ActivityDetailType: String, CaseIterable {
     case avaragePace = "Ritmo medio"
     case maxPace = "Ritmo máx."
