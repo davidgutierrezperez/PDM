@@ -45,6 +45,7 @@ class LiveActivityViewController: UIViewController {
     
     @objc private func togglePlayPauseButton(){
         liveActivityView.togglePlayPauseButton()
+        liveActivityView.movePlayPauseButton()
         
         switch (viewModel.status){
         case .NOT_INTIATED:

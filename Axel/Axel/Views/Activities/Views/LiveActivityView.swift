@@ -48,6 +48,17 @@ class LiveActivityView: UIStackView {
         isPlayButton.toggle()
     }
     
+    func movePlayPauseButton(){
+        infoActivityStack.removeArrangedSubview(playPauseButton)
+        playPauseButton.removeFromSuperview()
+        
+        if isPlayButton {
+            infoActivityStack.insertArrangedSubview(playPauseButton, at: infoActivityStack.arrangedSubviews.count - 1)
+        } else {
+            infoActivityStack.insertArrangedSubview(playPauseButton, at: 0)
+        }
+    }
+    
     func toggleEnablingSaveAndDiscardButtons(){
         saveActivityButton.isHidden.toggle()
         discardActivityButton.isHidden.toggle()
