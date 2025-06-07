@@ -11,6 +11,6 @@ import Foundation
 enum ActivityDetailOptions: String {
     case SUMMARY = "Resumen"
     case STATISTICS = "Estadísticas"
-    case LAPS = "Vueltas"
+    case LAPS = "Intervalos"
     case GRAPHICS = "Gráficos"
 }

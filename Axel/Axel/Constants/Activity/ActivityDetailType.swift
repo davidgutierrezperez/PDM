@@ -18,4 +18,5 @@ enum ActivityDetailType: String, CaseIterable {
     case totalDescent = "Descenso total"
     case duration = "Duración"
     case distance = "Distancia"
+    case empty = ""
 }

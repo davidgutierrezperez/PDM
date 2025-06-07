@@ -42,9 +42,11 @@ class ActivityDetailViewModel {
         details = [
             ActivityDetail(type: .duration, value: FormatHelper.formatTime(activity!.duration) ?? "-"),
             ActivityDetail(type: .distance, value: FormatHelper.formatDistance(activity!.distance) ?? "-"),
+            ActivityDetail(type: .empty, value: ""),
             ActivityDetail(type: .avaragePace, value: FormatHelper.formatPace(activity!.avaragePace!) ?? "-"),
             ActivityDetail(type: .maxPace, value: FormatHelper.formatPace(activity!.maxPace!) ?? "-"),
             ActivityDetail(type: .avarageSpeed, value: FormatHelper.formatPace(activity!.avarageSpeed!) ?? "-"),
+            ActivityDetail(type: .empty, value: ""),
             ActivityDetail(type: .minAltitude, value: FormatHelper.formatAltitude((activity?.minAltitude!)!) ?? "-"),
             ActivityDetail(type: .maxAltitude, value: FormatHelper.formatAltitude((activity?.maxAltitude!)!) ?? "-"),
             ActivityDetail(type: .totalAscent, value: FormatHelper.formatAltitude((activity?.totalAscent!)!) ?? "-"),

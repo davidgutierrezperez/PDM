@@ -10,8 +10,8 @@ import Foundation
 /// Información a mostrar en el encabezado de las estadísticas de las
 /// vueltas de cada actividad.
 enum ActivityDetailLapsInfoHeader: String {
-    case index = "Vuelta"
+    case index = "Intervalo"
     case duration = "Tiempo"
     case distance = "Distancia"
-    case pace = "Ritmo medio"
+    case pace = "Ritmo med."
 }

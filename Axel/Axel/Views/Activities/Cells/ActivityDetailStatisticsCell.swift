@@ -14,6 +14,8 @@ class ActivityDetailStatisticsCell: UITableViewCell {
     private let statisticsNameLabel = UILabel()
     private let statisticsValueLabel = UILabel()
     private let stackView = UIStackView()
+    
+    private static let fontSize: CGFloat = 21
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -28,6 +30,8 @@ class ActivityDetailStatisticsCell: UITableViewCell {
     func configure(detail: ActivityDetail){
         statisticsNameLabel.text = detail.type.rawValue
         statisticsValueLabel.text = detail.value
+        
+        configureLayer()
     }
     
     private func setupView(){
@@ -41,8 +45,8 @@ class ActivityDetailStatisticsCell: UITableViewCell {
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
 
     }
@@ -59,7 +63,17 @@ class ActivityDetailStatisticsCell: UITableViewCell {
     }
 
     private func configureLabels(){
-        statisticsNameLabel.font = UIFont.boldSystemFont(ofSize: statisticsNameLabel.font.pointSize)
+        statisticsNameLabel.font = UIFont.boldSystemFont(ofSize: ActivityDetailStatisticsCell.fontSize)
         statisticsNameLabel.textColor = .systemGray
+        
+        statisticsValueLabel.font = UIFont.systemFont(ofSize: ActivityDetailStatisticsCell.fontSize)
+    }
+    
+    private func configureLayer(){
+        guard let nameText = statisticsNameLabel.text else { return }
+        
+        if nameText.isEmpty {
+            contentView.layer.borderWidth = 0
+        }
     }
 }
