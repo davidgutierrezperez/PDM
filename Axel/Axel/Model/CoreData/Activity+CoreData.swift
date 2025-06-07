@@ -8,7 +8,13 @@
 import CoreData
 import CoreLocation
 
+/// Extensión que gestiona la creación de una actividad a partir de la
+/// información obtenida de CoreData.
 extension Activity {
+    
+    /// Constructor que permite crear un activdad a partir de la información
+    /// almacenada en CoreData de la actividad.
+    /// - Parameter entity: entidad de CoreData que contiene la información de la actividad.
     init(entity: ActivityEntity) {
             let laps = CoreDataHelper.shared.getLapsFromNSSet(entity.laps ?? [])
                 .sorted { $0.index < $1.index }
@@ -36,6 +42,9 @@ extension Activity {
             )
     }
     
+    /// Permite obtener un array de intervalos a partir de un objeto de tipo NSSet proporciando por CoreData.
+    /// - Parameter entityLaps: objeto de tipo NSSet proporciando por CoreData que contiene información de los intervalos de la actividad.
+    /// - Returns: un array de tipo Lap con la información sobre los intervalos de la actividad.
     static func getLapsFromNSSet(_ entityLaps: NSSet) -> [Lap] {
         guard let lapEntities = entityLaps.allObjects as? [LapEntity] else { return [] }
         
@@ -50,6 +59,9 @@ extension Activity {
         }
     }
     
+    /// Permite obtener un ruta de un actividad.
+    /// - Parameter entityRoute: información de CoreData sobre la ruta de una actividad.
+    /// - Returns: objeto de tipo ActivityRoute que representa la ruta de una actividad.
     static func getRouteFromActivityEntity(_ entityRoute: ActivityRouteEntity) -> ActivityRoute {
         guard let entityPoints = entityRoute.points?.allObjects as? [RoutePoint] else { return ActivityRoute() }
         
@@ -67,6 +79,9 @@ extension Activity {
         return ActivityRoute(id: entityRoute.id ?? UUID(), points: points)
     }
     
+    /// Permite obtener el tipo de entrenamiento a partir de un entero de 16 bits.
+    /// - Parameter type: entero de 16 bits que representa el tipo de entrenamiento.
+    /// - Returns: enumerado de tipo TrainingType que representa el tipo de actividad que llevará a cabo el usuario.
     static func getTrainingTypeFromInt16(type: Int16) -> TrainingType {
         switch type {
         case 1:

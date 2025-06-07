@@ -8,12 +8,22 @@
 import Foundation
 import CoreData
 
-class ActivityRepository {
+
+/// Clase que gestiona la interacción entre la aplicación y CoreData.
+final class ActivityRepository {
+    
+    /// Instancia única de la clase.
     static let shared = ActivityRepository()
+    
+    /// Contexto de CoreData para poder interactuar con su motor de almacenamiento.
     private let context = CoreDataStack.shared.persistentContainer.viewContext
     
+    /// Constructor privado de la clase. Al ser un singleton se evita
+    ///  poder instanciar un objeto de la clase.
     private init() {}
     
+    /// Obtiene todas las actividades almacenadas.
+    /// - Returns: un array de tipo Activity con todas las actividades del usuario.
     public func fetchAll() -> [Activity] {
         let fetchRequest: NSFetchRequest<ActivityEntity> = NSFetchRequest(entityName: "ActivityEntity")
         
@@ -36,6 +46,9 @@ class ActivityRepository {
         return []
     }
     
+    /// Obtiene una actividad a partir de su identificador.
+    /// - Parameter id: identificador de la actividad a obtener.
+    /// - Returns: un objeto de tipo Activity que representa una actividad del usuario.
     public func fetchById(id: UUID) -> Activity? {
         let fetchRequest: NSFetchRequest<ActivityEntity> = NSFetchRequest(entityName: "ActivityEntity")
         fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -53,6 +66,8 @@ class ActivityRepository {
         return nil
     }
     
+    /// Crea y almacena una actividad en la base de datos.
+    /// - Parameter activity: actividad a almacenar.
     public func create(activity: Activity){
         let context = CoreDataStack.shared.persistentContainer.viewContext
 
@@ -118,6 +133,8 @@ class ActivityRepository {
             }
     }
     
+    /// Elimina una actividad de CoreData.
+    /// - Parameter id: identificador de la actividad a eliminar.
     public func delete(id: UUID){
         guard let entity = fetchEntityById(id: id) else { return }
         
@@ -130,6 +147,9 @@ class ActivityRepository {
         }
     }
     
+    /// Obtiene la entidad de CoreData asociada a un actividad partir de su identificador.
+    /// - Parameter id: identificador de la actividad.
+    /// - Returns: un objeto de tipo ActivityEntity que representa un actividad almacenada en CoreData.
     public func fetchEntityById(id: UUID) -> ActivityEntity? {
         let fetchRequest: NSFetchRequest<ActivityEntity> = NSFetchRequest(entityName: "ActivityEntity")
         fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)

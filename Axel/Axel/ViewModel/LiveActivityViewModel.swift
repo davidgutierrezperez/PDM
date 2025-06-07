@@ -12,8 +12,6 @@ final class LiveActivityViewModel {
     var activity: Activity?
     
     private let activityRepository = ActivityRepository.shared
-    private let lapRepository = LapRepository.shared
-    private let routeRepository = ActivityRouteRepository.shared
     
     private(set) var status = ActivityStatus.NOT_INTIATED
     private let locationService = LocationService()
@@ -44,8 +42,6 @@ final class LiveActivityViewModel {
         locationService.requestCity { [weak self] city in
             self?.activity?.location = city ?? "Desconocido"
         }
-        
-        LiveActivityManager.shared.startActivity(id: activity!.id)
         
         updateActivityData()
         activateTimer()
@@ -99,7 +95,6 @@ final class LiveActivityViewModel {
         timerManager.onTick = { [weak self] duration in
             self?.activity?.duration = duration
             self?.onTimerUpdate?(duration)
-            LiveActivityManager.shared.updateElapsedTime(duration)
         }
     }
     

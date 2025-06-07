@@ -7,12 +7,17 @@
 
 import CoreData
 
+/// Clase que representa el motor de almacenamiento de CoreData.
 final class CoreDataStack: ObservableObject {
     
+    /// Instancia única de la clase.
     static let shared = CoreDataStack()
     
+    /// Constructor por defecto de la clase. Al ser un singleton, se impide
+    /// instanciar un objeto de la clase.
     private init(){}
     
+    /// Contenedor que representa el motor de almacenamiento de CoreData.
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "AxelModel")
         
@@ -25,6 +30,7 @@ final class CoreDataStack: ObservableObject {
         return container
     }()
     
+    /// Permite llevar a cabo acciones sobre CoreData.
     func saveContext(){
         do {
             try persistentContainer.viewContext.save()

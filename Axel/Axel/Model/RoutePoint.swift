@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Modelo que representa un punto en la ruta de la actividad del usuario.
 struct RoutePoint {
     let id: UUID
     let latitude: Double
@@ -15,6 +16,7 @@ struct RoutePoint {
     let altitude: Double?
     let speed: Double?
     
+    /// Constructor por defecto. Crea un punto sin información alguna.
     init(){
         id = UUID()
         latitude = 0.0
@@ -24,6 +26,7 @@ struct RoutePoint {
         speed = 0.0
     }
     
+    /// Constructor que crea un punto de la ruta con toda la información necesaria.
     init(id: UUID, latitude: Double, longitude: Double, timestamp: Date, altitude: Double, speed: Double?){
         self.id = id
         self.latitude = latitude

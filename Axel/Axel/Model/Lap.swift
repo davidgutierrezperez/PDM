@@ -8,6 +8,7 @@
 import UIKit
 import CoreLocation
 
+/// Modelo que representa un intervalor de la actividad.
 struct Lap {
     let id: UUID
     let index: Int16
@@ -19,6 +20,7 @@ struct Lap {
     let startCoordinate: CLLocationCoordinate2D
     let endCoordinate: CLLocationCoordinate2D
     
+    /// Constructor por defecto. Crea un intervalo sin información asociada.
     init(){
         id = UUID()
         index = 0
@@ -30,6 +32,7 @@ struct Lap {
         endCoordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     }
     
+    /// Constructor que crea un intervalo completa con toda la información necesaria.
     init(id: UUID,
          index: Int16,
          distance: Double?,

@@ -7,11 +7,18 @@
 
 import UserNotifications
 
+/// Clase que gestiona el envio de notificaciones al usuario tras haber completado
+/// un intervalo. Es un singleton.
 final class NotificationManager {
+    
+    /// Instancia única de la clase
     static let shared = NotificationManager()
     
+    /// Constructor por defecto de la clase. Dado que la clase es
+    /// un singleton, no se permite instanciar objetos de la clase.
     private init(){}
     
+    /// Solicita al usuario autorización para poder enviar notificaciones.
     public func requestAuthorization(){
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
             if let error = error {
@@ -22,6 +29,7 @@ final class NotificationManager {
         }
     }
     
+    /// Envia una notificación al usuario tras haber completado un intervalo.
     public func sendLapCompletedNotification(lap: Lap){
         let contentNotification = UNMutableNotificationContent()
         contentNotification.title = "Vuelta completada"

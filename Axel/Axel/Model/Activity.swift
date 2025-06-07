@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Modelo que representa una actividad.
 struct Activity {
     let id: UUID
     let date: Date
@@ -24,6 +25,8 @@ struct Activity {
     var type: TrainingType
     var route: ActivityRoute
     
+    /// Constructor por defecto de una actividad. Crea una actividad
+    /// sin información asociada.
     init(){
         id = UUID()
         date = Date()
@@ -42,6 +45,7 @@ struct Activity {
         route = ActivityRoute()
     }
     
+    /// Construye una actividad inicializando todos sus datos.
     init(id: UUID, date: Date, location: String,
          distance: Double, duration: Double, avaragePace: TimeInterval, maxPace: TimeInterval,
          avarageSpeed: Double, minAltitude: Double, maxAltitude: Double,
